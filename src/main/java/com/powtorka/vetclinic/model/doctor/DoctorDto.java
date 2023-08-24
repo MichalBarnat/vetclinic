@@ -11,8 +11,6 @@ public class DoctorDto {
     String name;
 
     public static DoctorDto fromDoctor(Doctor doctor) {
-        System.out.println("conv DTO");
-
         return DoctorDto.builder()
                 .id(doctor.getId())
                 .name(doctor.getName())

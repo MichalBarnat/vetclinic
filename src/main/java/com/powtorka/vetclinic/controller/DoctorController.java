@@ -7,6 +7,8 @@ import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/doctor")
@@ -16,9 +18,7 @@ public class DoctorController {
 
     @GetMapping("/{id}")
     private DoctorDto findById(@PathVariable("id") Long id) {
-        System.out.println("przed find");
          Doctor doctor = doctorService.findById(id);
-        System.out.println("po find");
          return DoctorDto.fromDoctor(doctor);
     }
 
@@ -27,5 +27,13 @@ public class DoctorController {
         Doctor toSave = CreateDoctorCommand.toDoctor(command);
         Doctor savedDoctor = doctorService.save(toSave);
         return DoctorDto.fromDoctor(savedDoctor);
+    }
+
+    @GetMapping
+    private List<DoctorDto> findAll() {
+        return doctorService.findAll()
+                .stream()
+                .map(DoctorDto::fromDoctor)
+                .toList();
     }
 }

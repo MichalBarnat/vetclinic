@@ -19,7 +19,7 @@ public class VetclinicApplication {
 
 	// commandy od appointment nie maja zawierac lekarza i pacjenta, a ich id - potrzebny bedzie converter na bazie modelMappera (wyszukac w mvnRepository)
 	// w ktorym znajdziecie doctora i patienta po ich id przez ich serwisy
-	
+
 	// aplikacja ma byc tzw CRUDem REST - crud to inaczej create/read/update/delete
 	// ma posiadac warstwy controller - tu dajemy same tzw endpointy, koncowki - kazdy ma miec nastepujace koncowki:
 	// findAll - zwraca wszystkie obiekty danego typu @GetMapping
@@ -30,5 +30,12 @@ public class VetclinicApplication {
 	// editPartially @PatchMapping
 
 	// controller ma wylacznei przenosic do serwisu - nie moze w nim byc tzw logiki biznesowej
+
+	// Michal robi Doctor
+	// Krystian robi Patient
+	// Mateusz robi Appointment
+
+	// po stworzeniu powyzszego sprobujcie potestowac swoje odpowiednie serwisy
+
 
 }
