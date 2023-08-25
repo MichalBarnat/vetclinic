@@ -24,4 +24,9 @@ public class DoctorService {
     public List<Doctor> findAll() {
         return doctorRepository.findAll();
     }
+
+    public void deleteById(long id) {
+        doctorRepository.deleteById(id);
+    }
+
 }

@@ -5,8 +5,10 @@ import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
 import java.util.List;
 
 @RestController
@@ -36,4 +38,13 @@ public class DoctorController {
                 .map(DoctorDto::fromDoctor)
                 .toList();
     }
+
+    @DeleteMapping("/{id}")
+    private ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+        doctorService.deleteById(id);
+        return ResponseEntity.ok("Doctor with ID: "+ id + " has been deleted");
+    }
+
+
+
 }
