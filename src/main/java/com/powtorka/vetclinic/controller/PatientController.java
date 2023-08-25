@@ -18,8 +18,10 @@ public class PatientController {
 
     @GetMapping("/{id}")
     private PatientDto findById(@PathVariable("id") Long id) {
+        System.out.println("sddasda");
         Patient patient = patientService.findById(id);
         return PatientDto.fromPatient(patient);
+
     }
 
     @PostMapping
