@@ -5,6 +5,7 @@ import com.powtorka.vetclinic.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.print.Doc;
 import java.util.List;
 
 @Service
@@ -28,5 +29,6 @@ public class DoctorService {
     public void deleteById(long id) {
         doctorRepository.deleteById(id);
     }
+
 
 }

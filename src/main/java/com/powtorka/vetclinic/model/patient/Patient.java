@@ -24,4 +24,5 @@ public class Patient {
     private String breed;
     private String ownerName;
     private String ownerEmail;
+    private int age;
 }

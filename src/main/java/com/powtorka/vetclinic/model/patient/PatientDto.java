@@ -11,6 +11,7 @@ public class PatientDto {
     String species;
     String breed;
     String ownerName;
+    int age;
 
     public static PatientDto fromPatient(Patient patient) {
         return PatientDto.builder()
@@ -19,6 +20,7 @@ public class PatientDto {
                 .species(patient.getSpecies())
                 .breed(patient.getBreed())
                 .ownerName(patient.getOwnerName())
+                .age(patient.getAge())
                 .build();
     }
 

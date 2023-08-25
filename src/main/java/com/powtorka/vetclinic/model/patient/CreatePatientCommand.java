@@ -14,6 +14,7 @@ public class CreatePatientCommand {
     private String breed;
     private String ownerName;
     private String ownerEmail;
+    private int age;
 
     public static Patient toPatient(CreatePatientCommand command) {
         return Patient.builder()
@@ -22,6 +23,7 @@ public class CreatePatientCommand {
                 .breed(command.getBreed())
                 .ownerName(command.getOwnerName())
                 .ownerEmail(command.getOwnerEmail())
+                .age(command.getAge())
                 .build();
     }
 }
