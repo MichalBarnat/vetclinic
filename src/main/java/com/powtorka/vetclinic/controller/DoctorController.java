@@ -8,6 +8,7 @@ import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -19,8 +20,8 @@ public class DoctorController {
 
     @GetMapping("/{id}")
     private DoctorDto findById(@PathVariable("id") Long id) {
-         Doctor doctor = doctorService.findById(id);
-         return DoctorDto.fromDoctor(doctor);
+        Doctor doctor = doctorService.findById(id);
+        return DoctorDto.fromDoctor(doctor);
     }
 
     @PostMapping
@@ -41,7 +42,7 @@ public class DoctorController {
     @DeleteMapping("/{id}")
     private ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
-        return ResponseEntity.ok("Doctor with ID: "+ id + " has been deleted");
+        return ResponseEntity.ok("Doctor with ID: " + id + " has been deleted");
     }
 
     @PutMapping("/{id}")
@@ -52,6 +53,11 @@ public class DoctorController {
         return DoctorDto.fromDoctor(savedDoctor);
     }
 
+    @PatchMapping("/{id}")
+    private DoctorDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
+        Doctor editedDoctor = doctorService.editPartially(id, command);
+        return DoctorDto.fromDoctor(editedDoctor);
+    }
 
 
 }
