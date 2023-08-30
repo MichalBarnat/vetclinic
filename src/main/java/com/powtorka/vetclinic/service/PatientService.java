@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.model.patient.EditPatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +28,30 @@ public class PatientService {
     public void deleteById(long id) {
         patientRepository.deleteById(id);
     }
+
+    public Patient editPartially(Long id, EditPatientCommand command){
+        Patient patientForEdit = findById(id);
+        if (command.getName() != null){
+            patientForEdit.setName(command.getName());
+        }
+        if (command.getBreed() != null){
+            patientForEdit.setBreed(command.getBreed());
+        }
+        if (command.getOwnerName() != null){
+            patientForEdit.setOwnerName(command.getOwnerName());
+        }
+        if (command.getOwnerEmail() != null){
+            patientForEdit.setOwnerEmail(command.getOwnerEmail());
+        }
+        if (command.getAge() > 0){
+            patientForEdit.setAge(command.getAge());
+        }
+        return save(patientForEdit);
+
+
+
+    }
+
+
+
 }
