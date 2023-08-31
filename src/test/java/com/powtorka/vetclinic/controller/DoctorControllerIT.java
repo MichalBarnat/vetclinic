@@ -44,6 +44,7 @@ public class DoctorControllerIT {
         databaseCleaner.cleanUp();
     }
 
+    @Autowired
     public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner) {
         this.postman = postman;
         this.objectMapper = objectMapper;

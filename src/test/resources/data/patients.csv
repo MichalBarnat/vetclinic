@@ -1,4 +1,4 @@
-name,species,breed,ownerName,ownerEmail,age
+name,species,breed,owner_name,owner_email,age
 Rex,Canis lupus familiaris,Labrador Retriever,Tomas,tomas@gmail.com,5
 Rexa,Canis lupus familiaris,Jamnik,Tomas,tomas@gmail.com,6
 Rexio,Canis lupus familiaris,Buldog,Tomas,tomas@gmail.com,12

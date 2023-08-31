@@ -10,8 +10,8 @@
             <column header="name" name="name"/>
             <column header="species" name="species"/>
             <column header="breed" name="breed"/>
-            <column header="ownerName" name="ownerName"/>
-            <column header="ownerEmail" name="ownerEmail"/>
+            <column header="owner_name" name="owner_name"/>
+            <column header="owner_email" name="owner_email"/>
             <column header="age" name="age"/>
         </loadData>
         <loadData encoding="UTF-8" file="data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
@@ -19,7 +19,7 @@
             <column header="name" name="name"/>
             <column header="surname" name="surname"/>
             <column header="specialty" name="specialty"/>
-            <column header="animalSpecialty" name="animalSpecialty"/>
+            <column header="animal_specialty" name="animal_specialty"/>
             <column header="email" name="email"/>
             <column header="rate" name="rate"/>
             <column header="pesel" name="pesel"/>
@@ -28,7 +28,7 @@
             <column header="id" name="id"/>
             <column header="doctor_id" name="doctor_id"/>
             <column header="patient_id" name="patient_id"/>
-            <column header="dateTime" name="dateTime"/>
+            <column header="date_time" name="date_time"/>
             <column header="price" name="price"/>
         </loadData>
     </changeSet>

@@ -1,4 +1,4 @@
-doctorId,patientId,dateTime,price
+doctor_id,patient_id,date_time,price
 1,1,2023-08-31T20:26:03.934080200,105.2
 1,2,2023-08-31T20:26:03.934080200,12.2
 2,3,2023-08-31T20:26:03.934080200,80.2
