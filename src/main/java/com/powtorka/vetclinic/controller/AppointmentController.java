@@ -25,9 +25,6 @@ import java.util.Map;
 @RequestMapping("/appointment")
 public class AppointmentController {
     private final AppointmentService appointmentService;
-    private final DoctorRepository doctorRepository;
-    private final PatientRepository patientRepository;
-    private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
     private AppointmentDto findById(@PathVariable("id") Long id) {
@@ -37,9 +34,7 @@ public class AppointmentController {
 
     @PostMapping
     public AppointmentDto save(@RequestBody CreateAppointmentCommand command) {
-        Appointment toSave = CreateAppointmentCommand.toAppointment(command, doctorRepository,patientRepository,modelMapper);
-        Appointment savedAppointment = appointmentService.save(toSave);
-        return AppointmentDto.fromAppointment(savedAppointment);
+        return appointmentService.save(command);
     }
 
     @GetMapping

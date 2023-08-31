@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+<!--TODO zmienic ponizej na patients/doctors/appointments-->
+    <changeSet author="pawel" id="2">
+        <loadData encoding="UTF-8" file="data/students.csv" quotchar="&quot;" separator="," tableName="student">
+            <column header="id" name="id"/>
+            <column header="email" name="email"/>
+            <column header="name" name="name"/>
+            <column header="rate" name="rate"/>
+            <column header="registration_date" name="registration_date"/>
+            <column header="active" name="active"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="data/teachers.csv" quotchar="&quot;" separator="," tableName="teacher">
+            <column header="id" name="id"/>
+            <column header="email" name="email"/>
+            <column header="name" name="name"/>
+            <column header="rate" name="rate"/>
+            <column header="grade" name="grade"/>
+            <column header="active" name="active"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="data/lessons.csv" quotchar="&quot;" separator="," tableName="lesson">
+            <column header="id" name="id"/>
+            <column header="date" name="date"/>
+            <column header="student_id" name="student_id"/>
+            <column header="teacher_id" name="teacher_id"/>
+            <column header="active" name="active"/>
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>

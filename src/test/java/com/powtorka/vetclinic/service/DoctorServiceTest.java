@@ -39,7 +39,8 @@ public class DoctorServiceTest {
 
         Doctor foundDoctor = doctorServiceMock.findById(doctorId);
 
-        assertEquals(doctorId, doctor.getId());
+        assertEquals(foundDoctor.getId(), doctor.getId());
+        assertEquals(foundDoctor.getRate(), doctor.getRate());
         verify(doctorRepositoryMock, times(1)).findById(doctorId);
     }
 
