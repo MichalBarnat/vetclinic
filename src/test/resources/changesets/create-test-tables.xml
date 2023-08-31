@@ -19,29 +19,30 @@
     </changeSet>
 <!--    TODO popodmieniac dane nizej-->
     <changeSet author="Admin (generated)" id="1642024192330-2">
-        <createTable tableName="student">
+        <createTable tableName="doctor">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="email" type="VARCHAR(255)">
-                <constraints unique="true"/>
-            </column>
             <column name="name" type="VARCHAR(255)"/>
+            <column name="surname" type="VARCHAR(255)"/>
+            <column name="speciality" type="VARCHAR(255)"/>
+            <column name="animal_speciality" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
             <column name="rate" type="INT"/>
-            <column name="registration_date" type="date"/>
-            <column name="active" type="BOOLEAN"/>
+            <column name="pesel" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="Admin (generated)" id="1642024192330-3">
-        <createTable tableName="teacher">
+        <createTable tableName="patient">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="email" type="VARCHAR(255)"/>
-            <column name="grade" type="INT"/>
             <column name="name" type="VARCHAR(255)"/>
-            <column name="rate" type="INT"/>
-            <column name="active" type="BOOLEAN"/>
+            <column name="species" type="VARCHAR(255)"/>
+            <column name="breed" type="VARCHAR(255)"/>
+            <column name="owner_name" type="VARCHAR(255)"/>
+            <column name="owner_email" type="VARCHAR(255)"/>
+            <column name="age" type="INT"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
