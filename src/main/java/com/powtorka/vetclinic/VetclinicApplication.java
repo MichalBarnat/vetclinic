@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic;
 
+import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -36,6 +37,7 @@ public class VetclinicApplication {
 	// Mateusz robi Appointment
 
 	// po stworzeniu powyzszego sprobujcie potestowac swoje odpowiednie serwisy
+
 
 
 }

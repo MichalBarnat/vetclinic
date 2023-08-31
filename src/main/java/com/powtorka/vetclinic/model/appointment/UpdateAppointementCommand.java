@@ -1,11 +1,6 @@
 package com.powtorka.vetclinic.model.appointment;
 
-import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
-import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.repository.DoctorRepository;
-import com.powtorka.vetclinic.repository.PatientRepository;
-import jakarta.persistence.Entity;
+import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,6 +9,9 @@ import java.time.LocalDateTime;
 public class UpdateAppointementCommand {
 
     @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public class CreateAppointmentCommand {
         private Long doctorId;
@@ -33,9 +31,25 @@ public class UpdateAppointementCommand {
         existingDoctor.setPesel(command.getPesel());
         return existingDoctor;
     }
-    public static Appointment toAppointment(UpdateAppointementCommand command, Appointment existingAppointment){
-        existingAppointment.setDoctor(command);
-    }
+
+   public static void toAppointment(UpdateAppointementCommand command, Appointment existingAppointment) {
+       if (command.getDoctorId() != null) {
+           existingAppointment.setDoctorId(command.getDoctorId());
+       }
+       if (command.getPatientId() != null) {
+           existingAppointment.setPatientId(command.getPatientId());
+       }
+       if (command.getDateTime() != null) {
+           existingAppointment.setDateTime(command.getDateTime());
+       }
+       if (command.getPrice() != 0) {
+           existingAppointment.setPrice(command.getPrice());
+       }
+   }
 
     */
+
+
+
+
 }

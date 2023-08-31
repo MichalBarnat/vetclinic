@@ -7,11 +7,8 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
 @Builder
-@Entity
 public class AppointmentDto {
     Long id;
     Long doctorId;
