@@ -7,6 +7,7 @@ import com.powtorka.vetclinic.repository.PatientRepository;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -21,15 +22,18 @@ public class CreateAppointmentCommand {
     private LocalDateTime dateTime;
     private double price;
 
-    public static Appointment toAppointment(CreateAppointmentCommand command, DoctorRepository doctorRepository, PatientRepository patientRepository){
-        Doctor doctor = doctorRepository.findById(command.getDoctorId()).orElse(null);
-        Patient patient = patientRepository.findById(command.getPatientId()).orElse(null);
 
-        return Appointment.builder()
-                .doctor(doctor)
-                .patient(patient)
-                .dateTime(command.getDateTime())
-                .price(command.getPrice())
-                .build();
+    public Appointment toAppointment(DoctorRepository doctorRepository, PatientRepository patientRepository, ModelMapper modelMapper) {
+        Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
+        Patient patient = patientRepository.findById(patientId).orElse(null);
+
+        if (doctor == null || patient == null) {
+            return null;
+        }
+        Appointment appointment = modelMapper.map(this, Appointment.class);
+        appointment.setDoctor(doctor);
+        appointment.setPatient(patient);
+
+        return appointment;
     }
 }
