@@ -59,11 +59,13 @@ public class DoctorControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value("maciekplacek@gmail.com"))
-                .andExpect(jsonPath("$.name").value("Maciej Placek"))
-                .andExpect(jsonPath("$.rate").value(150))
-                .andExpect(jsonPath("$.grade").value(5))
-                .andExpect(jsonPath("$.lessonsCount").value(5));
+                .andExpect(jsonPath("$.name").value("Michal"))
+                .andExpect(jsonPath("$.surname").value("Barnat"))
+                .andExpect(jsonPath("$.speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.animalSpeciality").value("podolog"))
+                .andExpect(jsonPath("$.email").value("michalbarnat@gmail.com"))
+                .andExpect(jsonPath("$.rate").value(99))
+                .andExpect(jsonPath("$.pesel").value("12345678901"));
     }
 
 }
