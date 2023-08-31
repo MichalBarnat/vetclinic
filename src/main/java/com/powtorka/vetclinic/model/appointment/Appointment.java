@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
+@Setter
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +22,4 @@ public class Appointment {
     Patient patient;
     LocalDateTime dateTime;
     double price;
-
-
 }

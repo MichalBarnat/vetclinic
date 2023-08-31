@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.model.appointment;
 
+import com.powtorka.vetclinic.model.doctor.Doctor;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,10 +20,9 @@ public class UpdateAppointementCommand {
     private double price;
 
 
-
-    public static Appointment toAppointment(UpdateAppointementCommand command, Appointment existingAppointment){
-       // existingAppointment.setDoctor(command.getDoctorId());
-       // existingAppointment.setPatient(command.getPatientId());
+    public static Appointment toAppointment(UpdateAppointementCommand command, Appointment existingAppointment) {
+        existingAppointment.getDoctor().setId(command.getDoctorId());
+        existingAppointment.getPatient().setId(command.getPatientId());
         existingAppointment.setDateTime(command.getDateTime());
         existingAppointment.setPrice(command.getPrice());
         return existingAppointment;

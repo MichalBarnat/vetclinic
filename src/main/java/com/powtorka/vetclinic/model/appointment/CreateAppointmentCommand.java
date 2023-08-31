@@ -33,6 +33,9 @@ public class CreateAppointmentCommand {
         Appointment appointment = modelMapper.map(this, Appointment.class);
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
+        appointment.setDateTime(this.getDateTime());
+        appointment.setPrice(this.getPrice());
+
 
         return appointment;
     }
