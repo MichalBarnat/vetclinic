@@ -4,29 +4,32 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 <!--TODO zmienic ponizej na patients/doctors/appointments-->
-    <changeSet author="pawel" id="2">
-        <loadData encoding="UTF-8" file="data/students.csv" quotchar="&quot;" separator="," tableName="student">
+    <changeSet author="krystian" id="2">
+        <loadData encoding="UTF-8" file="data/patients.csv" quotchar="&quot;" separator="," tableName="patient">
             <column header="id" name="id"/>
-            <column header="email" name="email"/>
             <column header="name" name="name"/>
-            <column header="rate" name="rate"/>
-            <column header="registration_date" name="registration_date"/>
-            <column header="active" name="active"/>
+            <column header="species" name="species"/>
+            <column header="breed" name="breed"/>
+            <column header="ownerName" name="ownerName"/>
+            <column header="ownerEmail" name="ownerEmail"/>
+            <column header="age" name="age"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/teachers.csv" quotchar="&quot;" separator="," tableName="teacher">
+        <loadData encoding="UTF-8" file="data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
             <column header="id" name="id"/>
-            <column header="email" name="email"/>
             <column header="name" name="name"/>
+            <column header="surname" name="surname"/>
+            <column header="specialty" name="specialty"/>
+            <column header="animalSpecialty" name="animalSpecialty"/>
+            <column header="email" name="email"/>
             <column header="rate" name="rate"/>
-            <column header="grade" name="grade"/>
-            <column header="active" name="active"/>
+            <column header="pesel" name="pesel"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/lessons.csv" quotchar="&quot;" separator="," tableName="lesson">
+        <loadData encoding="UTF-8" file="data/appointments.csv" quotchar="&quot;" separator="," tableName="appointment">
             <column header="id" name="id"/>
-            <column header="date" name="date"/>
-            <column header="student_id" name="student_id"/>
-            <column header="teacher_id" name="teacher_id"/>
-            <column header="active" name="active"/>
+            <column header="doctor_id" name="doctor_id"/>
+            <column header="patient_id" name="patient_id"/>
+            <column header="dateTime" name="dateTime"/>
+            <column header="price" name="price"/>
         </loadData>
     </changeSet>
 
