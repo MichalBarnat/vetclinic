@@ -1,9 +1,11 @@
 package com.powtorka.vetclinic.model.doctor;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter // czy mozna? (do testowania potrzebny)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class UpdateDoctorCommand {
     private String name;

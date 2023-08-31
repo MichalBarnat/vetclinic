@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.controller;
 
+import com.powtorka.vetclinic.model.patient.EditPatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
 import com.powtorka.vetclinic.model.patient.PatientDto;
@@ -44,5 +45,18 @@ public class PatientController {
         return ResponseEntity.ok("Patient witd ID: " + id + " has been deleted");
     }
 
+    @PutMapping("/{id}")
+    private PatientDto edit(@PathVariable("id") Long id, @RequestBody EditPatientCommand command){
+        Patient patientForEdit = patientService.findById(id);
+        Patient editedPatient = EditPatientCommand.toPatient(command, patientForEdit);
+        Patient savedPatient = patientService.save(editedPatient);
+        return PatientDto.fromPatient(savedPatient);
+    }
+
+    @PatchMapping("/{id}")
+    private PatientDto editPartially(@PathVariable("id") Long id, @RequestBody EditPatientCommand command){
+        Patient editedPatient = patientService.editPartially(id, command);
+        return PatientDto.fromPatient(editedPatient);
+    }
 
 }
