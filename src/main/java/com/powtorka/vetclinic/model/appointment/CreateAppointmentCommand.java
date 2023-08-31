@@ -23,20 +23,22 @@ public class CreateAppointmentCommand {
     private double price;
 
 
-    public Appointment toAppointment(DoctorRepository doctorRepository, PatientRepository patientRepository, ModelMapper modelMapper) {
-        Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
-        Patient patient = patientRepository.findById(patientId).orElse(null);
+    public static Appointment toAppointment(CreateAppointmentCommand command, DoctorRepository doctorRepository, PatientRepository patientRepository, ModelMapper modelMapper) {
+        Doctor doctor = doctorRepository.findById(command.getDoctorId()).orElse(null);
+        Patient patient = patientRepository.findById(command.getPatientId()).orElse(null);
 
         if (doctor == null || patient == null) {
             return null;
         }
-        Appointment appointment = modelMapper.map(this, Appointment.class);
+
+        Appointment appointment = modelMapper.map(command, Appointment.class);
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
-        appointment.setDateTime(this.getDateTime());
-        appointment.setPrice(this.getPrice());
-
+        appointment.setDateTime(command.getDateTime());
+        appointment.setPrice(command.getPrice());
 
         return appointment;
     }
+
+
 }

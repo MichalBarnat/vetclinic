@@ -5,6 +5,7 @@ import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.patient.Patient;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class Appointment {
     Long id;
     Doctor doctor;
     Patient patient;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     LocalDateTime dateTime;
     double price;
 }
