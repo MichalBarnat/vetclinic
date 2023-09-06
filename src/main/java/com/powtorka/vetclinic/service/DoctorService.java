@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.DoctorWithThisIdDoNotExistException;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
 import com.powtorka.vetclinic.repository.DoctorRepository;
@@ -15,7 +16,7 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     public Doctor findById(long id) {
-        return doctorRepository.findById(id).orElseThrow();
+        return doctorRepository.findById(id).orElseThrow(DoctorWithThisIdDoNotExistException::new);
     }
 
     public Doctor save(Doctor doctor) {

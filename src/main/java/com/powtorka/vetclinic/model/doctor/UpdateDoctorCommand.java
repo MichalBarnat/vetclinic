@@ -3,7 +3,7 @@ package com.powtorka.vetclinic.model.doctor;
 import lombok.*;
 
 @Getter
-@Setter // czy mozna? (do testowania potrzebny)
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
