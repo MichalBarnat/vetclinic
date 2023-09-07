@@ -3,22 +3,12 @@ package com.powtorka.vetclinic.controller;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
-import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.DoctorDto;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
-import com.powtorka.vetclinic.repository.DoctorRepository;
-import com.powtorka.vetclinic.repository.PatientRepository;
 import com.powtorka.vetclinic.service.AppointmentService;
-import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,5 +41,21 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment with ID: " + id + "has been deleted");
     }
 
+    /*
+    @PutMapping("/{id}")
+    private AppointmentDto edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+        Appointment appointmentForEdit = appointmentService.findById(id);
+        Appointment editedAppointment = UpdateAppointementCommand.toAppointment(command, appointmentForEdit);
+        Appointment savedAppointment = appointmentService.save(editedAppointment);
+        return AppointmentDto.fromAppointment(savedAppointment);
+    }
+
+    @PatchMapping{"/{id}"}
+    private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+        Appointment editedAppointment = appointmentService.editPartially(id,command);
+        return AppointmentDto.fromAppointment(editedAppointment);
+    }
+
+     */
 
 }

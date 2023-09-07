@@ -1,11 +1,9 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.AppointmentWithThisIdDoNotExistException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
-import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,7 +19,7 @@ public class AppointmentService {
     private final ModelMapper modelMapper;
 
     public Appointment findById(long id) {
-        return appointmentRepository.findById(id).orElseThrow();
+        return appointmentRepository.findById(id).orElseThrow(AppointmentWithThisIdDoNotExistException::new);
     }
 
     public AppointmentDto save(CreateAppointmentCommand command) {
