@@ -4,7 +4,6 @@ import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.repository.PatientRepository;
-import com.powtorka.vetclinic.service.DoctorService;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

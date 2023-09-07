@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.model.appointment;
 
-import com.powtorka.vetclinic.model.doctor.Doctor;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
