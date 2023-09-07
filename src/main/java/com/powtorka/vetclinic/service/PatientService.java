@@ -1,6 +1,7 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.model.patient.EditPatientCommand;
+import com.powtorka.vetclinic.exceptions.PatientWithThisIdDoNotExistException;
+import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,8 @@ import java.util.List;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    public Patient findById(long id) {
-        return patientRepository.findById(id).orElseThrow();
+    public Patient findById(long id){
+        return patientRepository.findById(id).orElseThrow(PatientWithThisIdDoNotExistException::new);
     }
 
     public Patient save(Patient patient) {
@@ -29,7 +30,7 @@ public class PatientService {
         patientRepository.deleteById(id);
     }
 
-    public Patient editPartially(Long id, EditPatientCommand command){
+    public Patient editPartially(Long id, UdpatePatientCommand command){
         Patient patientForEdit = findById(id);
         if (command.getName() != null){
             patientForEdit.setName(command.getName());

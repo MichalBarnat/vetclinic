@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class EditPatientCommand {
+public class UdpatePatientCommand {
     private String name;
     private String species;
     private String breed;
@@ -13,7 +13,7 @@ public class EditPatientCommand {
     private String ownerEmail;
     private int age;
 
-    public static Patient toPatient(EditPatientCommand command, Patient patient){
+    public static Patient toPatient(UdpatePatientCommand command, Patient patient){
         patient.setName(command.getName());
         patient.setSpecies(command.getSpecies());
         patient.setBreed(command.getBreed());
