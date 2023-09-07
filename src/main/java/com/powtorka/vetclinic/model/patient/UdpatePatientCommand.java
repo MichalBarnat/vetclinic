@@ -1,10 +1,12 @@
 package com.powtorka.vetclinic.model.patient;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UdpatePatientCommand {
     private String name;
     private String species;
