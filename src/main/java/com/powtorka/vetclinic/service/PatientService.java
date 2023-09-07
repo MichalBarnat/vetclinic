@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.InvalidPatientAgeException;
 import com.powtorka.vetclinic.exceptions.PatientWithThisIdDoNotExistException;
 import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
@@ -47,6 +48,11 @@ public class PatientService {
         if (command.getAge() > 0){
             patientForEdit.setAge(command.getAge());
         }
+        if (command.getAge() <= 0) {
+            throw new InvalidPatientAgeException("Age must be a positive value");
+        }
+        patientForEdit.setAge(command.getAge());
+
         return save(patientForEdit);
 
 

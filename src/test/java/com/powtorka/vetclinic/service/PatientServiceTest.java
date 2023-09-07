@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.InvalidPatientAgeException;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
 import com.powtorka.vetclinic.repository.PatientRepository;
@@ -78,9 +79,63 @@ public class PatientServiceTest {
 
         verify(patientRepositoryMock, times(1)).findById(patientId);
         verify(patientRepositoryMock, times(1)).save(existingPatient);
-
-
     }
+
+    @Test
+    public void testSave(){
+        Patient patient = new Patient();
+        patient.setName("RYDZYK");
+        when(patientRepositoryMock.save(any(Patient.class))).thenReturn(patient);
+
+        Patient savedPatient = patientServiceMock.save(patient);
+
+        assertEquals("RYDZYK", savedPatient.getName());
+        verify(patientRepositoryMock, times(1)).save(patient);
+    }
+
+    @Test
+    public void testEditPartiallyWithEmptyFields() {
+        Long patientId = 1L;
+        UdpatePatientCommand command = new UdpatePatientCommand();
+
+        Patient existingPatient = new Patient();
+        existingPatient.setId(patientId);
+        existingPatient.setName("Stare imie");
+        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
+        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
+
+        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
+
+        assertEquals("Stare imie", editedPatient.getName());
+        verify(patientRepositoryMock, times(1)).findById(patientId);
+        verify(patientRepositoryMock, times(1)).save(existingPatient);
+    }
+
+    @Test(expected = InvalidPatientAgeException.class)
+    public void testEditPartiallyWithNegativeAge() {
+        Long patientId = 1L;
+        UdpatePatientCommand command = new UdpatePatientCommand();
+        command.setAge(-5);
+
+        Patient existingPatient = new Patient();
+        existingPatient.setId(patientId);
+        existingPatient.setAge(10);
+        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
+
+        patientServiceMock.editPartially(patientId, command);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
