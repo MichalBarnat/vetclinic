@@ -1,11 +1,10 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.DoctorDto;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +16,7 @@ import java.util.List;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
     private DoctorDto findById(@PathVariable("id") Long id) {
@@ -32,8 +32,8 @@ public class DoctorController {
     }
 
     @GetMapping
-    private List<DoctorDto> findAll() {
-        return doctorService.findAll()
+    private List<DoctorDto> findAll(CreateDoctorPageCommand command) {
+        return doctorService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(DoctorDto::fromDoctor)
                 .toList();

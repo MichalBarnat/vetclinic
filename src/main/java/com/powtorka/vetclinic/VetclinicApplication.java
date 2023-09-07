@@ -38,6 +38,15 @@ public class VetclinicApplication {
 
 	// po stworzeniu powyzszego sprobujcie potestowac swoje odpowiednie serwisy
 
+	// TODO 07092023
+	// - wywalic metody toDoctor itp z commandow/dto - wszystkie konwersje maja sie odbywac przez modelmapper
+	// - ogarnac walidacje danych wejsciowych https://www.baeldung.com/java-validation
+	// - posprzatac w serwisach metody do edycji - zadnych 50 ifow, tylko optionale
+	// - paginacja i sortowanie w patient i appointment
+	// - wzorujac sie na TeacherControllerIT porobicie testy z uwzglednieniem paginacji i sortowania. Moze byc konieczne
+	//   rozbudowanie plikow csv z przykladowymi danymi aby testy mialy sens
+
+
 
 
 }

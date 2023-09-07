@@ -1,34 +1,24 @@
 package com.powtorka.vetclinic.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.exceptions.DoctorWithThisIdDoNotExistException;
+import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import jakarta.servlet.ServletException;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.time.LocalDate;
-import java.util.List;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -133,13 +123,21 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldThrowExceptionWhenTryGetDoctorWhoDoNotExist() {
+    public void shouldThrowExceptionWhenTryGetDoctorWhoDoNotExist() throws Exception {
+        postman.perform(get("/doctor/10"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Doctor with id: 10 not found!"))
+                .andExpect(jsonPath("$.uri").value("/doctor/10"))
+                .andExpect(jsonPath("$.method").value("GET"));
 
-        assertThrows(ServletException.class, () -> {
-            postman.perform(get("/doctor/5"))
-                    .andDo(print())
-                    .andExpect(status().isNotFound());
-        });
+//        assertThrows(DoctorNotFoundException.class, () -> {
+//            postman.perform(get("/doctor/10"))
+//                    .andDo(print())
+//                    .andExpect(status().isNotFound());
+//        });
 
         // NIE DZIAŁA :( - wywala ServletException
 //        assertThrows(DoctorWithThisIdDoNotExistException.class, () -> {
@@ -149,4 +147,8 @@ public class DoctorControllerIT {
 //        });
     }
 
+    // shouldSaveDoctor
+    // rozne scenariusze dla edycji czesciowej, np sprawdzic czy edytuje sie tylko imie a reszta zostanie to samo
+    // w innym tescie tylko mail itp
+    // po implementacji walidacji przetestowac, czy test wywali sie np na mailu nie spelniajacym wzorca
 }

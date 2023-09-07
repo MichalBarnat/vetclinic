@@ -7,7 +7,7 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="date_time" type="date"/>
+            <column name="date_time" type="dateTime"/>
             <column name="price" type="DOUBLE"/>
             <column name="patient_id" type="BIGINT">
                 <constraints nullable="false"/>
