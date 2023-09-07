@@ -37,20 +37,4 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
-//    public Appointment editPartially(Long id, UpdateAppointementCommand command) {
-//        Appointment appointmentForEdit = findById(id);
-//        if (command.getDoctorId() != null) {
-//            appointmentForEdit.getDoctor().setId(command.getDoctorId());
-//        }
-//        if (command.getPatientId() != null) {
-//            appointmentForEdit.getPatient().setId(command.getPatientId());
-//        }
-//        if (command.getDateTime() != null) {
-//            appointmentForEdit.setDateTime(command.getDateTime());
-//        }
-//        if (command.getPrice() != 0.0) {
-//            appointmentForEdit.setPrice(command.getPrice());
-//        }
-//        return save(appointmentForEdit);
-//    }
 }
