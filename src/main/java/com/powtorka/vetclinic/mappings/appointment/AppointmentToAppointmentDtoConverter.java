@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.mappings;
+package com.powtorka.vetclinic.mappings.appointment;
 
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.AppointmentDto;

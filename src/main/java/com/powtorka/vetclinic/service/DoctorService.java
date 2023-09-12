@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +40,9 @@ public class DoctorService {
     }
 
     @Transactional
-    public Doctor editTeacher(long id, UpdateDoctorCommand command) {
+    public Doctor editDoctor(long id, UpdateDoctorCommand command) {
         return doctorRepository.findById(id)
                 .map(doctorToEdit -> {
-                    // TODO ponizsze mozna wykorzystac w edit partially, ale na poczatek dawac Optional.ofNullable()
                     doctorToEdit.setName(command.getName());
                     doctorToEdit.setSurname(command.getSurname());
                     doctorToEdit.setSpeciality(command.getSpeciality());
@@ -56,30 +56,16 @@ public class DoctorService {
 
 
     public Doctor editPartially(Long id, UpdateDoctorCommand command) {
-        // TODO optionale!
-        Doctor doctorForEdit = findById(id);
-        if (command.getName() != null) {
-            doctorForEdit.setName(command.getName());
-        }
-        if (command.getSurname() != null) {
-            doctorForEdit.setSurname(command.getSurname());
-        }
-        if (command.getSpeciality() != null) {
-            doctorForEdit.setSpeciality(command.getSpeciality());
-        }
-        if (command.getAnimalSpeciality() != null) {
-            doctorForEdit.setAnimalSpeciality(command.getAnimalSpeciality());
-        }
-        if (command.getEmail() != null) {
-            doctorForEdit.setEmail(command.getEmail());
-        }
-        if (command.getRate() > 0) {
-            doctorForEdit.setRate(command.getRate());
-        }
-        if (command.getPesel() != null) {
-            doctorForEdit.setPesel(command.getPesel());
-        }
-        return save(doctorForEdit);
+        return doctorRepository.findById(id)
+                .map(doctorForEdit -> {
+                    Optional.ofNullable(command.getName()).ifPresent(doctorForEdit::setName);
+                    Optional.ofNullable(command.getSurname()).ifPresent(doctorForEdit::setSurname);
+                    Optional.ofNullable(command.getSpeciality()).ifPresent(doctorForEdit::setSpeciality);
+                    Optional.ofNullable(command.getAnimalSpeciality()).ifPresent(doctorForEdit::setAnimalSpeciality);
+                    Optional.ofNullable(command.getEmail()).ifPresent(doctorForEdit::setEmail);
+                    Optional.ofNullable(command.getPesel()).ifPresent(doctorForEdit::setPesel);
+                    return doctorForEdit;
+                }).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
     }
 
 

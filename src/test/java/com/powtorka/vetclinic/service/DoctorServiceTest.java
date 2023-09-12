@@ -8,8 +8,12 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,15 +50,20 @@ public class DoctorServiceTest {
 
     @Test
     public void testFindAll() {
-        List<Doctor> doctors = new ArrayList<>();
-        doctors.add(new Doctor());
-        doctors.add(new Doctor());
-        when(doctorRepositoryMock.findAll()).thenReturn(doctors);
+        List<Doctor> doctors = Arrays.asList(
+                new Doctor(),
+                new Doctor()
+        );
 
-        List<Doctor> foundDoctors = doctorServiceMock.findAll();
+        Pageable pageable = Pageable.ofSize(10).withPage(1);
+        Page<Doctor> page = new PageImpl<>(doctors, pageable, doctors.size());
 
-        assertEquals(2, foundDoctors.size());
-        verify(doctorRepositoryMock, times(1)).findAll();
+        when(doctorRepositoryMock.findAll(pageable)).thenReturn(page);
+
+        Page<Doctor> result = doctorServiceMock.findAll(pageable);
+
+        assertEquals(page, result);
+        verify(doctorRepositoryMock, times(1)).findAll(pageable);
     }
 
     @Test

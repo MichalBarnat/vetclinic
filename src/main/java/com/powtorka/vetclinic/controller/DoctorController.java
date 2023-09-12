@@ -4,10 +4,10 @@ import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -21,21 +21,24 @@ public class DoctorController {
     @GetMapping("/{id}")
     private DoctorDto findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
-        return DoctorDto.fromDoctor(doctor);
+        return modelMapper.map(doctor, DoctorDto.class);
     }
 
     @PostMapping
     public DoctorDto save(@RequestBody CreateDoctorCommand command) {
-        Doctor toSave = CreateDoctorCommand.toDoctor(command);
+        Doctor toSave = modelMapper.map(command, Doctor.class);
         Doctor savedDoctor = doctorService.save(toSave);
-        return DoctorDto.fromDoctor(savedDoctor);
+        return modelMapper.map(savedDoctor, DoctorDto.class);
     }
 
     @GetMapping
     private List<DoctorDto> findAll(CreateDoctorPageCommand command) {
-        return doctorService.findAll(modelMapper.map(command, Pageable.class))
+        Pageable pageable = modelMapper.map(command, Pageable.class);
+        Page<Doctor> doctorPage = doctorService.findAll(pageable);
+
+        return doctorPage.getContent()
                 .stream()
-                .map(DoctorDto::fromDoctor)
+                .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
                 .toList();
     }
 
@@ -47,16 +50,16 @@ public class DoctorController {
 
     @PutMapping("/{id}")
     private DoctorDto edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
-        Doctor doctorForEdit = doctorService.findById(id);
-        Doctor editedDoctor = UpdateDoctorCommand.toDoctor(command, doctorForEdit);
+        Doctor editedDoctor = doctorService.editDoctor(id, command);
         Doctor savedDoctor = doctorService.save(editedDoctor);
-        return DoctorDto.fromDoctor(savedDoctor);
+        return modelMapper.map(savedDoctor, DoctorDto.class);
     }
 
     @PatchMapping("/{id}")
     private DoctorDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editPartially(id, command);
-        return DoctorDto.fromDoctor(editedDoctor);
+        Doctor savedDoctor = doctorService.save(editedDoctor);
+        return modelMapper.map(savedDoctor, DoctorDto.class);
     }
 
 

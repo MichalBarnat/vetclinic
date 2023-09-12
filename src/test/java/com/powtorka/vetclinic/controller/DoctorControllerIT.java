@@ -61,16 +61,7 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.surname").value("Barnat"))
                 .andExpect(jsonPath("$.speciality").value("Chirurg"))
                 .andExpect(jsonPath("$.animalSpeciality").value("podolog"))
-                //.andExpect(jsonPath("$.email").value("michalbarnat@gmail.com"))
                 .andExpect(jsonPath("$.rate").value(99));
-        //.andExpect(jsonPath("$.pesel").value("12345678901"));
-
-        /*
-        TEST ZWRACA:
-        Content type = application/json
-             Body = {"id":1,"name":"Michal","surname":"Barnat","speciality":"Chirurg","animalSpeciality":"podolog","rate":99}
-            czyli DoctorDTO (bez email oraz pesel)
-         */
     }
 
     @Test
@@ -123,7 +114,7 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldThrowExceptionWhenTryGetDoctorWhoDoNotExist() throws Exception {
+    public void shouldShowNotFoundAsMessageWhenTryToFindDoctorWhoDoesNotExist() throws Exception {
         postman.perform(get("/doctor/10"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -132,19 +123,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.message").value("Doctor with id: 10 not found!"))
                 .andExpect(jsonPath("$.uri").value("/doctor/10"))
                 .andExpect(jsonPath("$.method").value("GET"));
-
-//        assertThrows(DoctorNotFoundException.class, () -> {
-//            postman.perform(get("/doctor/10"))
-//                    .andDo(print())
-//                    .andExpect(status().isNotFound());
-//        });
-
-        // NIE DZIAŁA :( - wywala ServletException
-//        assertThrows(DoctorWithThisIdDoNotExistException.class, () -> {
-//            postman.perform(get("/doctor/5"))
-//                    .andDo(print())
-//                    .andExpect(status().isNotFound());
-//        });
     }
 
     // shouldSaveDoctor
