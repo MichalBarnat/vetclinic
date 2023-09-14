@@ -1,8 +1,11 @@
 package com.powtorka.vetclinic.controller;
 
+import com.powtorka.vetclinic.mappings.appointment.AppointmentToAppointmentDtoConverter;
+
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
+import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,6 +21,7 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final ModelMapper modelMapper;
+    private final AppointmentToAppointmentDtoConverter appointmentToAppointmentDtoConverter;
 
     @GetMapping("/{id}")
     private AppointmentDto findById(@PathVariable("id") Long id) {
@@ -41,24 +45,25 @@ public class AppointmentController {
     @DeleteMapping("/{id}")
     private ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         appointmentService.deleteById(id);
-        return ResponseEntity.ok("Appointment with ID: " + id + "has been deleted");
+        return ResponseEntity.ok("Appointment with ID: " + id + " has been deleted");
     }
 
-    /*
-    @PutMapping("/{id}")
+
+  /*  @PutMapping("/{id}")
     private AppointmentDto edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
-        Appointment appointmentForEdit = appointmentService.findById(id);
-        Appointment editedAppointment = UpdateAppointementCommand.toAppointment(command, appointmentForEdit);
-        Appointment savedAppointment = appointmentService.save(editedAppointment);
-        return AppointmentDto.fromAppointment(savedAppointment);
+        Appointment editedAppointment = appointmentService.editAppointment(id, command);
+        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert(editedAppointment));
+        return modelMapper.map(savedAppointment , AppointmentDto.class);
     }
 
-    @PatchMapping{"/{id}"}
+    @PatchMapping("/{id}")
     private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
-        Appointment editedAppointment = appointmentService.editPartially(id,command);
-        return AppointmentDto.fromAppointment(editedAppointment);
+        Appointment editedAppointment = appointmentService.editAppointment(id, command);
+        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert());
+        return modelMapper.map(savedAppointment , AppointmentDto.class);
     }
 
-     */
+
+   */
 
 }
