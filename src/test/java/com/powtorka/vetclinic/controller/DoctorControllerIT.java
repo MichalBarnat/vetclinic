@@ -181,7 +181,7 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.rate").value("72"));
 
         //TODO Co zrobic jesli w PATCHU, gdy nie jest podawany rate to nie byl zmieniany na 0 ???
-        //updatedDoctor zostal stoworzony z NoArgsContructor dlatego rate = 0 ? Nawet z czystym jsonem..
+        //updatedDoctor zostal stworzony z NoArgsContructor dlatego rate = 0 ? Nawet z czystym jsonem to samo zachowanie...
     }
 
     @Test
@@ -417,4 +417,180 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.uri").value("/doctor"))
                 .andExpect(jsonPath("$.method").value("POST"));
     }
+
+    @Test
+    public void shouldGiveListOfDoctorsAscending() throws Exception {
+        postman.perform(get("/doctor?sortDirection=ASC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Michał"))
+                .andExpect(jsonPath("$.[0].surname").value("Barnat"))
+                .andExpect(jsonPath("$.[0].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.[0].rate").value(99))
+                .andExpect(jsonPath("$.[1].name").value("Tomek"))
+                .andExpect(jsonPath("$.[1].surname").value("Nowak"))
+                .andExpect(jsonPath("$.[1].speciality").value("Ortopeda"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz zwierząt gospodarskich"))
+                .andExpect(jsonPath("$.[1].rate").value(69))
+                .andExpect(jsonPath("$.[2].name").value("Ania"))
+                .andExpect(jsonPath("$.[2].surname").value("Nowicka"))
+                .andExpect(jsonPath("$.[2].speciality").value("Endokrynologia"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[2].rate").value(12))
+                .andExpect(jsonPath("$.[3].name").value("Janina"))
+                .andExpect(jsonPath("$.[3].surname").value("Kaczmarek"))
+                .andExpect(jsonPath("$.[3].speciality").value("Neurolog"))
+                .andExpect(jsonPath("$.[3].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[3].rate").value(55))
+                .andExpect(jsonPath("$.[4].name").value("Kamil"))
+                .andExpect(jsonPath("$.[4].surname").value("Wójcik"))
+                .andExpect(jsonPath("$.[4].speciality").value("Ginekolog"))
+                .andExpect(jsonPath("$.[4].animalSpeciality").value("Weterynarz małych zwierząt"))
+                .andExpect(jsonPath("$.[4].rate").value(78));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsDescending() throws Exception {
+        postman.perform(get("/doctor?sortDirection=DESC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Adam"))
+                .andExpect(jsonPath("$.[0].surname").value("Jankowski"))
+                .andExpect(jsonPath("$.[0].speciality").value("Ortopeda"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz małych zwierząt"))
+                .andExpect(jsonPath("$.[0].rate").value(45))
+                .andExpect(jsonPath("$.[1].name").value("Natalia"))
+                .andExpect(jsonPath("$.[1].surname").value("Woźniak"))
+                .andExpect(jsonPath("$.[1].speciality").value("Gastroenterolog"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz małych zwierząt"))
+                .andExpect(jsonPath("$.[1].rate").value(79))
+                .andExpect(jsonPath("$.[2].name").value("Paweł"))
+                .andExpect(jsonPath("$.[2].surname").value("Górski"))
+                .andExpect(jsonPath("$.[2].speciality").value("Urolog"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz zwierząt gospodarskich"))
+                .andExpect(jsonPath("$.[2].rate").value(61))
+                .andExpect(jsonPath("$.[3].name").value("Katarzyna"))
+                .andExpect(jsonPath("$.[3].surname").value("Szymańska"))
+                .andExpect(jsonPath("$.[3].speciality").value("Radiolog"))
+                .andExpect(jsonPath("$.[3].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[3].rate").value(38))
+                .andExpect(jsonPath("$.[4].name").value("Mateusz"))
+                .andExpect(jsonPath("$.[4].surname").value("Kaczor"))
+                .andExpect(jsonPath("$.[4].speciality").value("Anestezjolog"))
+                .andExpect(jsonPath("$.[4].animalSpeciality").value("Weterynarz małych zwierząt"))
+                .andExpect(jsonPath("$.[4].rate").value(72));
+
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsSortedByName() throws Exception {
+        postman.perform(get("/doctor?sortBy=name"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("VALUE"))
+                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[1].name").value("VALUE"))
+                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[2].name").value("VALUE"))
+                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[3].name").value("VALUE"))
+                .andExpect(jsonPath("$.[3].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[3].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[3].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[3].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[4].name").value("VALUE"))
+                .andExpect(jsonPath("$.[4].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[4].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[4].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[4].rate").value("VALUE"));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsPageSize2SortedBySurname() throws Exception {
+        postman.perform(get("/doctor?pageSize=2&sortBy=surname"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("VALUE"))
+                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[1].name").value("VALUE"))
+                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].rate").value("VALUE"));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsPageSize3SortedBySpeciality() throws Exception {
+        postman.perform(get("/doctor?pageSize=3&sortBy=speciality"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("VALUE"))
+                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[1].name").value("VALUE"))
+                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[2].name").value("VALUE"))
+                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].rate").value("VALUE"));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsPageSize2SortedByAnimalSpeciality() throws Exception {
+        postman.perform(get("/doctor?pageSize=3&sortBy=animalSpeciality"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("VALUE"))
+                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[1].name").value("VALUE"))
+                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[2].name").value("VALUE"))
+                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[2].rate").value("VALUE"));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsPageSize2SortedByRate() throws Exception {
+        postman.perform(get("/doctor?pageSize=2&sortBy=rate"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("VALUE"))
+                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
+                .andExpect(jsonPath("$.[1].name").value("VALUE"))
+                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
+                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
+                .andExpect(jsonPath("$.[1].rate").value("VALUE"));
+    }
+
 }
