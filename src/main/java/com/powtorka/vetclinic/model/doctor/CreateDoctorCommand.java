@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.model.doctor;
 
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @Getter
