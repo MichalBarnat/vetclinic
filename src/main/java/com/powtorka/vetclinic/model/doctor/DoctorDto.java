@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.model.doctor;
 
-import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Value;
 
@@ -13,5 +12,5 @@ public class DoctorDto {
     String surname;
     String speciality;
     String animalSpeciality;
-    int rate;
+    Integer rate;
 }

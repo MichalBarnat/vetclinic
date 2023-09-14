@@ -180,8 +180,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz małych zwierząt"))
                 .andExpect(jsonPath("$.rate").value("72"));
 
-        //TODO Co zrobic jesli w PATCHU, gdy nie jest podawany rate to nie byl zmieniany na 0 ???
-        //updatedDoctor zostal stworzony z NoArgsContructor dlatego rate = 0 ? Nawet z czystym jsonem to samo zachowanie...
     }
 
     @Test
@@ -603,5 +601,7 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.[3].name").value("Monika"))
                 .andExpect(jsonPath("$.[3].rate").value(83));
     }
+
+    //TODO stestuj zapisywanie doktorow
 
 }

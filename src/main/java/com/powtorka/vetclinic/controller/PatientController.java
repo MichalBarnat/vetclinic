@@ -1,23 +1,23 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.exceptions.PatientWithThisIdDoNotExistException;
-import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
-import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
-import com.powtorka.vetclinic.model.patient.PatientDto;
+import com.powtorka.vetclinic.exceptions.PatientNotFoundException;
+import com.powtorka.vetclinic.model.patient.*;
 import com.powtorka.vetclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/patient")
 @RequiredArgsConstructor
 public class PatientController {
     private final PatientService patientService;
+    private final ModelMapper modelMapper;
 
 //    @GetMapping("/{id}")
 //    private PatientDto findById(@PathVariable("id") Long id) {
@@ -31,7 +31,7 @@ public class PatientController {
         try {
             Patient patient = patientService.findById(id);
             return ResponseEntity.ok(PatientDto.fromPatient(patient));
-        } catch (PatientWithThisIdDoNotExistException e) {
+        } catch (PatientNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -39,16 +39,19 @@ public class PatientController {
 
     @PostMapping
     public PatientDto save(@RequestBody CreatePatientCommand command) {
+        // TODO krystian popraw:
         Patient toSave = CreatePatientCommand.toPatient(command);
         Patient savedPatient = patientService.save(toSave);
         return PatientDto.fromPatient(savedPatient);
     }
 
     @GetMapping
-    private List<PatientDto> findAll() {
-        return patientService.findAll()
+    private List<PatientDto> findAll(CreatePatientPageCommand command) {
+        Pageable pageable = modelMapper.map(command, Pageable.class);
+        Page<Patient> patientPage = patientService.findAll(pageable);
+        return patientPage.getContent()
                 .stream()
-                .map(PatientDto::fromPatient)
+                .map(patient -> modelMapper.map(patient, PatientDto.class))
                 .toList();
     }
 

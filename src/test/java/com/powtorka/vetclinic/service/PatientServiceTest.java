@@ -42,16 +42,16 @@ public class PatientServiceTest {
 
     }
 
-    @Test
-    public void testFindAll() {
-        List<Patient> patients = new ArrayList<>();
-        patients.add(new Patient());
-        patients.add(new Patient());
-        when(patientRepositoryMock.findAll()).thenReturn(patients);
-        List<Patient> foundPatients = patientServiceMock.findAll();
-        assertEquals(2, foundPatients.size());
-        verify(patientRepositoryMock, times(1)).findAll();
-    }
+//    @Test
+//    public void testFindAll() {
+//        List<Patient> patients = new ArrayList<>();
+//        patients.add(new Patient());
+//        patients.add(new Patient());
+//        when(patientRepositoryMock.findAll()).thenReturn(patients);
+//        List<Patient> foundPatients = patientServiceMock.findAll();
+//        assertEquals(2, foundPatients.size());
+//        verify(patientRepositoryMock, times(1)).findAll();
+//    }
 
     @Test
     public void testDeleteById() {

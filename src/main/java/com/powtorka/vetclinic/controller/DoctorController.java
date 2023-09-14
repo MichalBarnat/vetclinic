@@ -51,15 +51,15 @@ public class DoctorController {
     @PutMapping("/{id}")
     private DoctorDto edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editDoctor(id, command);
-        Doctor savedDoctor = doctorService.save(editedDoctor);
-        return modelMapper.map(savedDoctor, DoctorDto.class);
+//        Doctor savedDoctor = doctorService.save(editedDoctor);
+        return modelMapper.map(editedDoctor, DoctorDto.class);
     }
 
     @PatchMapping("/{id}")
     private DoctorDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editPartially(id, command);
-        Doctor savedDoctor = doctorService.save(editedDoctor);
-        return modelMapper.map(savedDoctor, DoctorDto.class);
+//        Doctor savedDoctor = doctorService.save(editedDoctor);
+        return modelMapper.map(editedDoctor, DoctorDto.class);
     }
 
     @GetMapping("/top-rated")

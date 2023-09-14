@@ -26,7 +26,7 @@ public class Doctor {
     private String email;
     @Min(value = 0, message = "Rate must be greater or equal to 0!")
     @Max(value = 100, message = "Rate can not be greater than 100!")
-    private int rate;
+    private Integer rate;
     @Pattern(regexp = "\\d{11}", message = "Pesel must have exactly 11 digits!")
     private String pesel;
 }

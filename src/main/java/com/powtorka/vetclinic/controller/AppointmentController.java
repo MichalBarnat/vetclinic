@@ -19,7 +19,7 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final ModelMapper modelMapper;
-    private final AppointmentToAppointmentDtoConverter appointmentToAppointmentDtoConverter;
+
 
     @GetMapping("/{id}")
     private AppointmentDto findById(@PathVariable("id") Long id) {
@@ -47,26 +47,27 @@ public class AppointmentController {
     }
 
 
-  /*  @PutMapping("/{id}")
+    // DOTAD KOM
+
+
+    @PutMapping("/{id}")
     private AppointmentDto edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editAppointment(id, command);
-        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert(editedAppointment));
-        return modelMapper.map(savedAppointment , AppointmentDto.class);
+        return modelMapper.map(editedAppointment, AppointmentDto.class);
     }
+//
+//  @PatchMapping("/{id}")
+//  private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+//      Appointment editedAppointment = appointmentService.editAppointment(id, command);
+//      Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert());
+//      return modelMapper.map(savedAppointment , AppointmentDto.class);
+//  }
 
-    @PatchMapping("/{id}")
-    private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
-        Appointment editedAppointment = appointmentService.editAppointment(id, command);
-        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert());
-        return modelMapper.map(savedAppointment , AppointmentDto.class);
-    }
-   */
-
-    @GetMapping("/the-most-expensive")
-    private ResponseEntity<List<Appointment>>
-    getTheMostExpensive(@RequestParam(name = "minPrice", required = false, defaultValue = "40") int minPrice){
-        List<Appointment> theMostExpensiveAppointments = appointmentService.findAppointmentsMoreExpensiveThan(minPrice);
-        return  ResponseEntity.ok(theMostExpensiveAppointments);
-    }
+//    @GetMapping("/the-most-expensive")
+//    private ResponseEntity<List<Appointment>>
+//    getTheMostExpensive(@RequestParam(name = "minPrice", required = false, defaultValue = "40") int minPrice){
+//        List<Appointment> theMostExpensiveAppointments = appointmentService.findAppointmentsMoreExpensiveThan(minPrice);
+//        return  ResponseEntity.ok(theMostExpensiveAppointments);
+//    }
 
 }

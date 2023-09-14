@@ -15,6 +15,6 @@ public class UpdateDoctorCommand {
     private String speciality;
     private String animalSpeciality;
     private String email;
-    private int rate;
+    private Integer rate;
     private String pesel;
 }

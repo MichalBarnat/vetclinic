@@ -63,7 +63,7 @@ public class DoctorService {
                     Optional.ofNullable(command.getSpeciality()).ifPresent(doctorForEdit::setSpeciality);
                     Optional.ofNullable(command.getAnimalSpeciality()).ifPresent(doctorForEdit::setAnimalSpeciality);
                     Optional.ofNullable(command.getEmail()).ifPresent(doctorForEdit::setEmail);
-                    Optional.of(command.getRate()).ifPresent(doctorForEdit::setRate);
+                    Optional.ofNullable(command.getRate()).ifPresent(doctorForEdit::setRate);
                     Optional.ofNullable(command.getPesel()).ifPresent(doctorForEdit::setPesel);
                     return doctorForEdit;
                 }).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));

@@ -1,11 +1,12 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.exceptions.InvalidPatientAgeException;
-import com.powtorka.vetclinic.exceptions.PatientWithThisIdDoNotExistException;
+import com.powtorka.vetclinic.exceptions.PatientNotFoundException;
 import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,49 +19,24 @@ public class PatientService {
     private final PatientRepository patientRepository;
 
     public Patient findById(long id){
-        return patientRepository.findById(id).orElseThrow(PatientWithThisIdDoNotExistException::new);
+        return patientRepository.findById(id).orElseThrow(PatientNotFoundException::new);
     }
 
     public Patient save(Patient patient) {
         return patientRepository.save(patient);
     }
 
-    public List<Patient> findAll() {
-        return patientRepository.findAll();
+    public Page<Patient> findAll(Pageable pageable) {
+        return patientRepository.findAll(pageable);
     }
 
     public void deleteById(long id){
         if(patientRepository.existsById(id)){
             patientRepository.deleteById(id);
         } else {
-            throw new PatientWithThisIdDoNotExistException(String.format("Patient with id: %s not found!", id));
+            throw new PatientNotFoundException(String.format("Patient with id: %s not found!", id));
         }
     }
-
-//    public Patient editPartially(Long id, UdpatePatientCommand command){
-//        Patient patientForEdit = findById(id);
-//        if (command.getName() != null){
-//            patientForEdit.setName(command.getName());
-//        }
-//        if (command.getBreed() != null){
-//            patientForEdit.setBreed(command.getBreed());
-//        }
-//        if (command.getOwnerName() != null){
-//            patientForEdit.setOwnerName(command.getOwnerName());
-//        }
-//        if (command.getOwnerEmail() != null){
-//            patientForEdit.setOwnerEmail(command.getOwnerEmail());
-//        }
-//        if (command.getAge() > 0){
-//            patientForEdit.setAge(command.getAge());
-//        }
-//        if (command.getAge() <= 0) {
-//            throw new InvalidPatientAgeException("Age must be a positive value");
-//        }
-//        patientForEdit.setAge(command.getAge());
-//
-//        return save(patientForEdit);
-//    }
 
     @Transactional
     public Patient editPatient(long id, UdpatePatientCommand command){
@@ -73,7 +49,7 @@ public class PatientService {
                     patient.setOwnerEmail(command.getOwnerEmail());
                     patient.setAge(command.getAge());
                     return patient;
-                }).orElseThrow(() -> new PatientWithThisIdDoNotExistException(String.format("Patient with id: %s not found", id)));
+                }).orElseThrow(() -> new PatientNotFoundException(String.format("Patient with id: %s not found", id)));
     }
 
     @Transactional
@@ -87,11 +63,11 @@ public class PatientService {
                     Optional.ofNullable(command.getOwnerEmail()).ifPresent(patient::setOwnerEmail);
                     Optional.of(command.getAge()).ifPresent(patient::setAge);
                     return patient;
-                }).orElseThrow(()->new PatientWithThisIdDoNotExistException(String.format("Patient with id: %s not found", id)));
+                }).orElseThrow(()->new PatientNotFoundException(String.format("Patient with id: %s not found", id)));
     }
 
     public List<Patient> findPatientsWithAgeGreaterThan(int age){
-        return patientRepository.findByRateGreaterThan(age);
+        return patientRepository.findByAgeGreaterThan(age);
     }
 
 
