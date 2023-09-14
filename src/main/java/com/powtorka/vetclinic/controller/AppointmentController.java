@@ -5,6 +5,7 @@ import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +15,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/appointment")
 public class AppointmentController {
+
     private final AppointmentService appointmentService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
     private AppointmentDto findById(@PathVariable("id") Long id) {
         Appointment appointment = appointmentService.findById(id);
-        return AppointmentDto.fromAppointment(appointment);
+        return modelMapper.map(appointment, AppointmentDto.class);
     }
 
     @PostMapping
@@ -31,7 +34,7 @@ public class AppointmentController {
     private List<AppointmentDto> findAll() {
         return appointmentService.findAll()
                 .stream()
-                .map(AppointmentDto::fromAppointment)
+                .map(appointment -> modelMapper.map(appointment, AppointmentDto.class))
                 .toList();
     }
 
