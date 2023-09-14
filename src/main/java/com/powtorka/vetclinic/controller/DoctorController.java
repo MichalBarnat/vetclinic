@@ -62,5 +62,11 @@ public class DoctorController {
         return modelMapper.map(savedDoctor, DoctorDto.class);
     }
 
+    @GetMapping("/top-rated")
+    private ResponseEntity<List<Doctor>> getTopRatedDoctors(@RequestParam(name = "minRate", required = false, defaultValue = "60") int minRate) {
+        List<Doctor> topRatedDoctors = doctorService.findDoctorsWithRateGreaterThan(minRate);
+        return ResponseEntity.ok(topRatedDoctors);
+    }
+
 
 }
