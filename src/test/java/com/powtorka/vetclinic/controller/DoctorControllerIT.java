@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.Doc;
+
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -264,6 +266,155 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.[4].speciality").value("Onkolog"))
                 .andExpect(jsonPath("$.[4].animalSpeciality").value("Weterynarz zwierząt gospodarskich"))
                 .andExpect(jsonPath("$.[4].rate").value("91"));
+    }
 
+    @Test
+    public void shouldThrowValidationMessageWhenNameIsLowerThan2Characters() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("M")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnat@gmail.com")
+                .rate(99)
+                .pesel("12345678901")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: name Name must have at least 2 characters!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldThrowValidationMessageWhenEmailIsInvalid() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("Michał")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnatgmail.com")
+                .rate(99)
+                .pesel("12345678901")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: email Wrong email pattern. Check it once again!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldThrowValidationMessageWhenRateIsLessThan0() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("Michał")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnat@gmail.com")
+                .rate(-1)
+                .pesel("12345678901")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: rate Rate must be greater or equal to 0!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldThrowValidationMessageWhenRateIsMoreThan100() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("Michał")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnat@gmail.com")
+                .rate(101)
+                .pesel("12345678901")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: rate Rate can not be greater than 100!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldThrowValidationMessageWhenPeselIsTooLong() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("Michał")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnat@gmail.com")
+                .rate(10)
+                .pesel("123456789019")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: pesel Pesel must have exactly 11 digits!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldThrowValidationMessageWhenPeselIsTooShort() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .name("Michał")
+                .surname("Barnat")
+                .speciality("Chirurg")
+                .animalSpeciality("Podolog")
+                .email("michalbarnat@gmail.com")
+                .rate(10)
+                .pesel("1234567890")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: pesel Pesel must have exactly 11 digits!; "))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
     }
 }
