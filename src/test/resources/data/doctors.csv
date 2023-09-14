@@ -1,4 +1,21 @@
 name,surname,speciality,animal_speciality,email,rate,pesel
-Michal,Barnat,Chirurg,podolog,michalbarnat@gmail.com,99,12345678901
-Tomek,Barnat,Student,podolog,tomekbarnat@gmail.com,69,12345678902
-Ania,Barnat,Lekarz,podolog,aniabarnat@gmail.com,12,12345678903
+Michał,Barnat,Chirurg,Weterynarz chirurgiczny,michalkowalski@gmail.com,99,12345678901
+Tomek,Nowak,Ortopeda,Weterynarz zwierząt gospodarskich,tomeknowak@gmail.com,69,12345678902
+Ania,Nowicka,Endokrynologia,Weterynarz egzotyczny,anianowicka@gmail.com,12,12345678903
+Janina,Kaczmarek,Neurolog,Weterynarz egzotyczny,janinakaczmarek@gmail.com,55,12345678904
+Kamil,Wójcik,Ginekolog,Weterynarz małych zwierząt,kamilwojcik@gmail.com,78,12345678905
+Alicja,Piotrowska,Pediatra,Weterynarz zwierząt gospodarskich,alicjapiotrowska@gmail.com,88,12345678906
+Marek,Warszawski,Hematolog,Weterynarz małych zwierząt,marekwarszawski@gmail.com,64,12345678907
+Ewa,Łukasik,Chirurg,Weterynarz egzotyczny,ewalukasik@gmail.com,49,12345678908
+Piotr,Zając,Reumatolog,Weterynarz małych zwierząt,piotrzajac@gmail.com,76,12345678909
+Joanna,Górka,Onkolog,Weterynarz zwierząt gospodarskich,joannagorka@gmail.com,91,12345678910
+Mariusz,Lis,Psychiatra,Weterynarz egzotyczny,mariuszlis@gmail.com,32,12345678911
+Krzysztof,Wiśniewski,Pulmonolog,Weterynarz małych zwierząt,krzysztofwisniewski@gmail.com,67,12345678912
+Iwona,Michałowska,Dermatolog,Weterynarz zwierząt gospodarskich,iwonamichalowska@gmail.com,54,12345678913
+Rafał,Kwiatkowski,Choroby zakaźne,Weterynarz małych zwierząt,rafalkwiatkowski@gmail.com,47,12345678914
+Monika,Kowalczyk,Okulista,Weterynarz zwierząt gospodarskich,monikakowalczyk@gmail.com,83,12345678915
+Mateusz,Kaczor,Anestezjolog,Weterynarz małych zwierząt,mateuszkaczor@gmail.com,72,12345678916
+Katarzyna,Szymańska,Radiolog,Weterynarz egzotyczny,katarzynaszymanska@gmail.com,38,12345678917
+Paweł,Górski,Urolog,Weterynarz zwierząt gospodarskich,pawelgorski@gmail.com,61,12345678918
+Natalia,Woźniak,Gastroenterolog,Weterynarz małych zwierząt,nataliawozniak@gmail.com,79,12345678919
+Adam,Jankowski,Ortopeda,Weterynarz małych zwierząt,adamjankowski@gmail.com,45,12345678920

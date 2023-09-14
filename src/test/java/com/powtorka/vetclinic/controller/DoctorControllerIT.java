@@ -57,10 +57,10 @@ public class DoctorControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Michal"))
+                .andExpect(jsonPath("$.name").value("Michał"))
                 .andExpect(jsonPath("$.surname").value("Barnat"))
                 .andExpect(jsonPath("$.speciality").value("Chirurg"))
-                .andExpect(jsonPath("$.animalSpeciality").value("podolog"))
+                .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
                 .andExpect(jsonPath("$.rate").value(99));
     }
 
@@ -98,7 +98,7 @@ public class DoctorControllerIT {
                         .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Michal"))
+                .andExpect(jsonPath("$.name").value("Michał"))
                 .andExpect(jsonPath("$.speciality").value("Chirurg"))
                 .andExpect(jsonPath("$.animalSpeciality").value("New Speciality"));
     }
@@ -115,13 +115,13 @@ public class DoctorControllerIT {
 
     @Test
     public void shouldShowNotFoundAsMessageWhenTryToFindDoctorWhoDoesNotExist() throws Exception {
-        postman.perform(get("/doctor/10"))
+        postman.perform(get("/doctor/25"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.status").value("Not Found"))
-                .andExpect(jsonPath("$.message").value("Doctor with id: 10 not found!"))
-                .andExpect(jsonPath("$.uri").value("/doctor/10"))
+                .andExpect(jsonPath("$.message").value("Doctor with id: 25 not found!"))
+                .andExpect(jsonPath("$.uri").value("/doctor/25"))
                 .andExpect(jsonPath("$.method").value("GET"));
     }
 

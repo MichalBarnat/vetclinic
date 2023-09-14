@@ -65,5 +65,16 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.price").value(105.2));
     }
 
+    @Test
+    public void shouldFindAppointment20ById() throws Exception {
+        postman.perform(get("/appointment/20"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.doctorId").value(3))
+                .andExpect(jsonPath("$.patientId").value(20))
+                .andExpect(jsonPath("$.dateTime").value("2023-09-22T09:15:00.23"))
+                .andExpect(jsonPath("$.price").value(50.0));
+    }
+
 
 }

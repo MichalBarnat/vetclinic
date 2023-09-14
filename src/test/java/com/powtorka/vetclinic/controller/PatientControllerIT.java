@@ -48,12 +48,11 @@ public class PatientControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Rex"))
-                .andExpect(jsonPath("$.species").value("Canis lupus familiaris"))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
                 .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
-                .andExpect(jsonPath("$.ownerName").value("Tomas"))
-//                .andExpect(jsonPath("$.ownerEmail").value("tomas@gmail.com")) // BŁĄD "No value at JSON path "$.ownerEmail""
-                .andExpect(jsonPath("$.age").value(5));
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(3));
     }
 
     @Test
@@ -99,9 +98,16 @@ public class PatientControllerIT {
 
     @Test
     void shouldThrowExceptionWhenTryGetPatientWhoDoNotExist() throws Exception {
-        postman.perform(get("/patient/9"))
+        postman.perform(get("/patient/25"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+        //TODO Krystian Bogacz obsluzyc wyjatki zeby zapytanie wywalalo wiecej info jak przy Doctor
+
+//                .andExpect(jsonPath("$.code").value(404))
+//                .andExpect(jsonPath("$.status").value("Not Found"))
+//                .andExpect(jsonPath("$.message").value("Doctor with id: 25 not found!"))
+//                .andExpect(jsonPath("$.uri").value("/doctor/25"))
+//                .andExpect(jsonPath("$.method").value("GET"));
     }
 
 }
