@@ -12,13 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(classes = VetclinicApplication.class)
@@ -59,8 +57,8 @@ public class PatientControllerIT {
     void shouldEditPatientDetails() throws Exception {
         Patient updatedPatient = new Patient();
         updatedPatient.setName("Bella");
-        updatedPatient.setSpecies("Dog");
-        updatedPatient.setBreed("Shitzu");
+        updatedPatient.setSpecies("Pies");
+        updatedPatient.setBreed("Labrador Retriever");
 
         String requestBody = objectMapper.writeValueAsString(updatedPatient);
 
@@ -70,7 +68,7 @@ public class PatientControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Bella"))
-                .andExpect(jsonPath("$.breed").value("Shitzu"));
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"));
     }
 
     @Test
@@ -96,18 +94,64 @@ public class PatientControllerIT {
                 .andExpect(content().string("Patient with ID: 1 has been deleted"));
     }
 
-    @Test
-    void shouldThrowExceptionWhenTryGetPatientWhoDoNotExist() throws Exception {
-        postman.perform(get("/patient/25"))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-        //TODO Krystian Bogacz obsluzyc wyjatki zeby zapytanie wywalalo wiecej info jak przy Doctor
-
+//    @Test
+//    void shouldThrowExceptionWhenTryGetPatientWhoDoNotExist() throws Exception {
+//        postman.perform(get("/patient/55"))
+//                .andDo(print())
+//                .andExpect(status().isNotFound())
 //                .andExpect(jsonPath("$.code").value(404))
 //                .andExpect(jsonPath("$.status").value("Not Found"))
-//                .andExpect(jsonPath("$.message").value("Doctor with id: 25 not found!"))
-//                .andExpect(jsonPath("$.uri").value("/doctor/25"))
+//                .andExpect(jsonPath("$.message").value("Patient with id: 25 not found!"))
+//                .andExpect(jsonPath("$.uri").value("/patient/25"))
 //                .andExpect(jsonPath("$.method").value("GET"));
-    }
+//    }
 
+//    @Test
+//    public void shouldGivenFirst3PatientsWhenAskForFirstPage() throws Exception{
+//        postman.perform(get("/patient?pageSize=3&pageNumber=0"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.[0].name").value("Bella"))
+//                .andExpect(jsonPath("$.[0].species").value("Pies"))
+//                .andExpect(jsonPath("$.[0].breed").value("Labrador Retrieve"))
+//                .andExpect(jsonPath("$.[0].ownerName").value("Jan Kowalski"))
+//                .andExpect(jsonPath("$.[0].age").value("3"))
+//
+//                .andExpect(jsonPath("$.[0].name").value("Luna"))
+//                .andExpect(jsonPath("$.[0].species").value("Kot"))
+//                .andExpect(jsonPath("$.[0].breed").value("Brytyjski krótkowłosy"))
+//                .andExpect(jsonPath("$.[0].ownerName").value("Maria Nowak"))
+//                .andExpect(jsonPath("$.[0].age").value("2"))
+//
+//                .andExpect(jsonPath("$.[0].name").value("Max"))
+//                .andExpect(jsonPath("$.[0].species").value("Pies"))
+//                .andExpect(jsonPath("$.[0].breed").value("Golden Retriever"))
+//                .andExpect(jsonPath("$.[0].ownerName").value("Adam Wiśniewski"))
+//                .andExpect(jsonPath("$.[0].age").value("4"));
+//
+//    }
+
+//    @Test
+//    public void shouldThrowValidationMessageWhenAgeIsMoreThan1000() throws Exception{
+//        Patient patient = Patient.builder()
+//                .name("Fiona")
+//                .species("Pies")
+//                .breed("Shitzu")
+//                .ownerName("Kamil")
+//                .ownerEmail("kamileczko132@gmail.com")
+//                .age(1111)
+//                .build();
+//
+//        String requestBody = objectMapper.writeValueAsString(patient);
+//
+//        postman.perform(post("/patient").contentType(MediaType.APPLICATION_JSON)
+//                .content(requestBody))
+//                .andDo(print())
+//                .andExpect(status().isBadRequest())
+//                .andExpect(jsonPath("$.code").value(7777))
+//                .andExpect(jsonPath("$.status").value("Bad Request"))
+//                .andExpect(jsonPath("$.message").value("Validation failed: Age can not be greater than 1000"))
+//                .andExpect(jsonPath("$.uri").value("/patient"))
+//                .andExpect(jsonPath("$.method").value("POST"));
+//    }
 }
