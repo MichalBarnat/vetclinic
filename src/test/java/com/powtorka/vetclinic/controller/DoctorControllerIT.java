@@ -488,31 +488,23 @@ public class DoctorControllerIT {
         postman.perform(get("/doctor?sortBy=name"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("VALUE"))
-                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[1].name").value("VALUE"))
-                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[2].name").value("VALUE"))
-                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[3].name").value("VALUE"))
-                .andExpect(jsonPath("$.[3].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[3].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[3].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[3].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[4].name").value("VALUE"))
-                .andExpect(jsonPath("$.[4].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[4].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[4].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[4].rate").value("VALUE"));
+                .andExpect(jsonPath("$.[0].name").value("Adam"))
+                .andExpect(jsonPath("$.[1].name").value("Alicja"))
+                .andExpect(jsonPath("$.[2].name").value("Ania"))
+                .andExpect(jsonPath("$.[3].name").value("Ewa"))
+                .andExpect(jsonPath("$.[4].name").value("Iwona"));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsSortedByNameInDescendingOrder() throws Exception {
+        postman.perform(get("/doctor?sortDirection=DESC&sortBy=name"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Tomek"))
+                .andExpect(jsonPath("$.[1].name").value("Rafał"))
+                .andExpect(jsonPath("$.[2].name").value("Piotr"))
+                .andExpect(jsonPath("$.[3].name").value("Paweł"))
+                .andExpect(jsonPath("$.[4].name").value("Natalia"));
     }
 
     @Test
@@ -520,16 +512,16 @@ public class DoctorControllerIT {
         postman.perform(get("/doctor?pageSize=2&sortBy=surname"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("VALUE"))
-                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[1].name").value("VALUE"))
-                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].rate").value("VALUE"));
+                .andExpect(jsonPath("$.[0].name").value("Michał"))
+                .andExpect(jsonPath("$.[0].surname").value("Barnat"))
+                .andExpect(jsonPath("$.[0].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.[0].rate").value(99))
+                .andExpect(jsonPath("$.[1].name").value("Joanna"))
+                .andExpect(jsonPath("$.[1].surname").value("Górka"))
+                .andExpect(jsonPath("$.[1].speciality").value("Onkolog"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz zwierząt gospodarskich"))
+                .andExpect(jsonPath("$.[1].rate").value(91));
     }
 
     @Test
@@ -537,21 +529,21 @@ public class DoctorControllerIT {
         postman.perform(get("/doctor?pageSize=3&sortBy=speciality"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("VALUE"))
-                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[1].name").value("VALUE"))
-                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[2].name").value("VALUE"))
-                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].rate").value("VALUE"));
+                .andExpect(jsonPath("$.[0].name").value("Mateusz"))
+                .andExpect(jsonPath("$.[0].surname").value("Kaczor"))
+                .andExpect(jsonPath("$.[0].speciality").value("Anestezjolog"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz małych zwierząt"))
+                .andExpect(jsonPath("$.[0].rate").value(72))
+                .andExpect(jsonPath("$.[1].name").value("Michał"))
+                .andExpect(jsonPath("$.[1].surname").value("Barnat"))
+                .andExpect(jsonPath("$.[1].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.[1].rate").value(99))
+                .andExpect(jsonPath("$.[2].name").value("Ewa"))
+                .andExpect(jsonPath("$.[2].surname").value("Łukasik"))
+                .andExpect(jsonPath("$.[2].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[2].rate").value(49));
     }
 
     @Test
@@ -559,38 +551,57 @@ public class DoctorControllerIT {
         postman.perform(get("/doctor?pageSize=3&sortBy=animalSpeciality"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("VALUE"))
-                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[1].name").value("VALUE"))
-                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[2].name").value("VALUE"))
-                .andExpect(jsonPath("$.[2].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[2].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[2].rate").value("VALUE"));
+                .andExpect(jsonPath("$.[0].name").value("Michał"))
+                .andExpect(jsonPath("$.[0].surname").value("Barnat"))
+                .andExpect(jsonPath("$.[0].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.[0].rate").value(99))
+                .andExpect(jsonPath("$.[1].name").value("Ewa"))
+                .andExpect(jsonPath("$.[1].surname").value("Łukasik"))
+                .andExpect(jsonPath("$.[1].speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[1].rate").value(49))
+                .andExpect(jsonPath("$.[2].name").value("Katarzyna"))
+                .andExpect(jsonPath("$.[2].surname").value("Szymańska"))
+                .andExpect(jsonPath("$.[2].speciality").value("Radiolog"))
+                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz egzotyczny"))
+                .andExpect(jsonPath("$.[2].rate").value(38));
+
+        //TODO dlaczego?? czy jesli WIELE ma takie samo pole to leci losowo?
+        // czasami tak:
+        // {"id":1,"name":"Michał","surname":"Barnat","speciality":"Chirurg","animalSpeciality":"Weterynarz chirurgiczny","rate":99},
+        // {"id":11,"name":"Mariusz","surname":"Lis","speciality":"Psychiatra","animalSpeciality":"Weterynarz egzotyczny","rate":32},
+        // {"id":8,"name":"Ewa","surname":"Łukasik","speciality":"Chirurg","animalSpeciality":"Weterynarz egzotyczny","rate":49}
     }
 
     @Test
-    public void shouldGiveListOfDoctorsPageSize2SortedByRate() throws Exception {
-        postman.perform(get("/doctor?pageSize=2&sortBy=rate"))
+    public void shouldGiveListOfDoctorsPageSize4SortedByRate() throws Exception {
+        postman.perform(get("/doctor?pageSize=4&sortBy=rate"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("VALUE"))
-                .andExpect(jsonPath("$.[0].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[0].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[0].rate").value("VALUE"))
-                .andExpect(jsonPath("$.[1].name").value("VALUE"))
-                .andExpect(jsonPath("$.[1].surname").value("VALUE"))
-                .andExpect(jsonPath("$.[1].speciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("VALUE"))
-                .andExpect(jsonPath("$.[1].rate").value("VALUE"));
+                .andExpect(jsonPath("$.[0].name").value("Ania"))
+                .andExpect(jsonPath("$.[0].rate").value(12))
+                .andExpect(jsonPath("$.[1].name").value("Mariusz"))
+                .andExpect(jsonPath("$.[1].rate").value(32))
+                .andExpect(jsonPath("$.[2].name").value("Katarzyna"))
+                .andExpect(jsonPath("$.[2].rate").value(38))
+                .andExpect(jsonPath("$.[3].name").value("Adam"))
+                .andExpect(jsonPath("$.[3].rate").value(45));
+    }
+
+    @Test
+    public void shouldGiveListOfDoctorsPageSize4SortedByRateAndDescending() throws Exception {
+        postman.perform(get("/doctor?pageSize=4&sortBy=rate&sortDirection=DESC"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Michał"))
+                .andExpect(jsonPath("$.[0].rate").value(99))
+                .andExpect(jsonPath("$.[1].name").value("Joanna"))
+                .andExpect(jsonPath("$.[1].rate").value(91))
+                .andExpect(jsonPath("$.[2].name").value("Alicja"))
+                .andExpect(jsonPath("$.[2].rate").value(88))
+                .andExpect(jsonPath("$.[3].name").value("Monika"))
+                .andExpect(jsonPath("$.[3].rate").value(83));
     }
 
 }
