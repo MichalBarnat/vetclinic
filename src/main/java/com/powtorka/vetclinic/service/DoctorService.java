@@ -69,5 +69,9 @@ public class DoctorService {
                 }).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
     }
 
+    public List<Doctor> findDoctorsWithRateGreaterThan(int rate) {
+        return doctorRepository.findByRateGreaterThan(rate);
+    }
+
 
 }
