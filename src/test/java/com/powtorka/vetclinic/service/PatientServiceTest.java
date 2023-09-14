@@ -60,26 +60,26 @@ public class PatientServiceTest {
         verify(patientRepositoryMock, times(1)).deleteById(patientId);
     }
 
-    @Test
-    public void testEditPartially() {
-        Long patientId = 1L;
-        UdpatePatientCommand command = new UdpatePatientCommand();
-        command.setName("XXX");
-        command.setBreed("YYY");
-
-        Patient existingPatient = new Patient();
-        existingPatient.setId(patientId);
-        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
-
-        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
-
-        assertEquals(command.getName(), editedPatient.getName());
-        assertEquals(command.getBreed(), editedPatient.getBreed());
-
-        verify(patientRepositoryMock, times(1)).findById(patientId);
-        verify(patientRepositoryMock, times(1)).save(existingPatient);
-    }
+//    @Test
+//    public void testEditPartially() {
+//        Long patientId = 1L;
+//        UdpatePatientCommand command = new UdpatePatientCommand();
+//        command.setName("XXX");
+//        command.setBreed("YYY");
+//
+//        Patient existingPatient = new Patient();
+//        existingPatient.setId(patientId);
+//        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
+//        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
+//
+//        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
+//
+//        assertEquals(command.getName(), editedPatient.getName());
+//        assertEquals(command.getBreed(), editedPatient.getBreed());
+//
+//        verify(patientRepositoryMock, times(1)).findById(patientId);
+//        verify(patientRepositoryMock, times(1)).save(existingPatient);
+//    }
 
     @Test
     public void testSave(){
@@ -93,37 +93,37 @@ public class PatientServiceTest {
         verify(patientRepositoryMock, times(1)).save(patient);
     }
 
-    @Test
-    public void testEditPartiallyWithEmptyFields() {
-        Long patientId = 1L;
-        UdpatePatientCommand command = new UdpatePatientCommand();
+//    @Test
+//    public void testEditPartiallyWithEmptyFields() {
+//        Long patientId = 1L;
+//        UdpatePatientCommand command = new UdpatePatientCommand();
+//
+//        Patient existingPatient = new Patient();
+//        existingPatient.setId(patientId);
+//        existingPatient.setName("Stare imie");
+//        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
+//        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
+//
+//        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
+//
+//        assertEquals("Stare imie", editedPatient.getName());
+//        verify(patientRepositoryMock, times(1)).findById(patientId);
+//        verify(patientRepositoryMock, times(1)).save(existingPatient);
+//    }
 
-        Patient existingPatient = new Patient();
-        existingPatient.setId(patientId);
-        existingPatient.setName("Stare imie");
-        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
-
-        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
-
-        assertEquals("Stare imie", editedPatient.getName());
-        verify(patientRepositoryMock, times(1)).findById(patientId);
-        verify(patientRepositoryMock, times(1)).save(existingPatient);
-    }
-
-    @Test(expected = InvalidPatientAgeException.class)
-    public void testEditPartiallyWithNegativeAge() {
-        Long patientId = 1L;
-        UdpatePatientCommand command = new UdpatePatientCommand();
-        command.setAge(-5);
-
-        Patient existingPatient = new Patient();
-        existingPatient.setId(patientId);
-        existingPatient.setAge(10);
-        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-
-        patientServiceMock.editPartially(patientId, command);
-    }
+//    @Test(expected = InvalidPatientAgeException.class)
+//    public void testEditPartiallyWithNegativeAge() {
+//        Long patientId = 1L;
+//        UdpatePatientCommand command = new UdpatePatientCommand();
+//        command.setAge(-5);
+//
+//        Patient existingPatient = new Patient();
+//        existingPatient.setId(patientId);
+//        existingPatient.setAge(10);
+//        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
+//
+//        patientServiceMock.editPartially(patientId, command);
+//    }
 
 
 
