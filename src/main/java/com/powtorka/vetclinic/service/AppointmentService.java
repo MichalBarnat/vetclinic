@@ -9,6 +9,8 @@ import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +37,8 @@ public class AppointmentService {
     }
 
 
-    public List<Appointment> findAll() {
-        return appointmentRepository.findAll();
+    public Page<Appointment> findAll(Pageable pageable) {
+        return appointmentRepository.findAll(pageable);
     }
 
     public void deleteById(long id) {
@@ -65,6 +67,10 @@ public class AppointmentService {
                     return appointmentForEdit;
                 })
                 .orElseThrow(() -> new AppointmentWithThisIdDoNotExistException("Appointment with this id not found!"));
+    }
+
+    public List<Appointment> findAppointmentsMoreExpensiveThan(int price) {
+        return appointmentRepository.findByPriceMoreExpensiveThan(price);
     }
 
 }

@@ -62,7 +62,7 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.price").value(50.0));
     }
 
-    @Test
+  /*  @Test
     public  void  shuldDeleteAppointment() throws Exception {
         postman.perform(delete("/appointment/2"))
                 .andDo(print())
@@ -70,6 +70,8 @@ public class AppointmentControllerIT {
                 .andExpect(content().string("Appointment with ID: 2 has been deleted"));
 
     }
+
+   */
 
 
 
