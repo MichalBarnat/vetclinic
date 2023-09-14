@@ -2,13 +2,11 @@ package com.powtorka.vetclinic.controller;
 
 import com.powtorka.vetclinic.mappings.appointment.AppointmentToAppointmentDtoConverter;
 
-import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
-import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.appointment.*;
 import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +33,8 @@ public class AppointmentController {
     }
 
     @GetMapping
-    private List<AppointmentDto> findAll() {
-        return appointmentService.findAll()
+    private List<AppointmentDto> findAll(CreateAppointmentPageCommand command) {
+        return appointmentService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(appointment -> modelMapper.map(appointment, AppointmentDto.class))
                 .toList();
