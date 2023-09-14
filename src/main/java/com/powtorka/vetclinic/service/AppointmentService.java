@@ -69,4 +69,8 @@ public class AppointmentService {
                 .orElseThrow(() -> new AppointmentWithThisIdDoNotExistException("Appointment with this id not found!"));
     }
 
+    public List<Appointment> findAppointmentsMoreExpensiveThan(int price) {
+        return appointmentRepository.findByPriceMoreExpensiveThan(price);
+    }
+
 }

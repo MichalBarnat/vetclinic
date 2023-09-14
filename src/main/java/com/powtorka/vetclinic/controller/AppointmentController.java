@@ -60,8 +60,13 @@ public class AppointmentController {
         Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert());
         return modelMapper.map(savedAppointment , AppointmentDto.class);
     }
-
-
    */
+
+    @GetMapping("/the-most-expensive")
+    private ResponseEntity<List<Appointment>>
+    getTheMostExpensive(@RequestParam(name = "minPrice", required = false, defaultValue = "40") int minPrice){
+        List<Appointment> theMostExpensiveAppointments = appointmentService.findAppointmentsMoreExpensiveThan(minPrice);
+        return  ResponseEntity.ok(theMostExpensiveAppointments);
+    }
 
 }
