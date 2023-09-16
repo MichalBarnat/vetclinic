@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
@@ -45,5 +46,17 @@ public class GlobalExceptionHandler {
                 .uri(request.getRequestURI())
                 .method(request.getMethod())
                 .build(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AppointmentIsNotAvailableException.class)
+    public ResponseEntity<ErrorMessage> appointmentNotAvailableException(AppointmentIsNotAvailableException ex, HttpServletRequest request) {
+        return new ResponseEntity<>(ErrorMessage.builder()
+                .dateTime(LocalDateTime.now())
+                .code(BAD_REQUEST.value())
+                .status(BAD_REQUEST.getReasonPhrase())
+                .message("Appointment is not available on this time! Try to change date :)")
+                .uri(request.getRequestURI())
+                .method(request.getMethod())
+                .build(), BAD_REQUEST);
     }
 }

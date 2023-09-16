@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.AppointmentIsNotAvailableException;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.AppointmentDto;
@@ -31,9 +32,13 @@ public class AppointmentService {
     }
 
     public AppointmentDto save(CreateAppointmentCommand command) {
-        Appointment appointment = modelMapper.map(command, Appointment.class);
-        Appointment savedAppointment = appointmentRepository.save(appointment);
-        return modelMapper.map(savedAppointment, AppointmentDto.class);
+        if (appointmentIsAvailable(command)) {
+            Appointment appointment = modelMapper.map(command, Appointment.class);
+            Appointment savedAppointment = appointmentRepository.save(appointment);
+            return modelMapper.map(savedAppointment, AppointmentDto.class);
+        } else {
+            throw new AppointmentIsNotAvailableException("Appointment is not available at: " + command.getDateTime());
+        }
     }
 
 
@@ -70,15 +75,27 @@ public class AppointmentService {
     }
 
     private boolean appointmentIsAvailable(CreateAppointmentCommand command) {
-        boolean doctorTimeValidation = appointmentRepository.findAllByDoctorId(command.getDoctorId())
-                .stream()
-                .anyMatch(appointment -> appointment.getDateTime().minusMinutes(15).isAfter(command.getDateTime()));
+        LocalDateTime proposedDateTime = command.getDateTime();
+        LocalDateTime proposedEndDateTime = proposedDateTime.plusMinutes(15);
 
-        boolean patientTimeValidation = appointmentRepository.findAllByPatientId(command.getPatientId())
-                .stream()
-                .anyMatch(appointment -> appointment.getDateTime().minusMinutes(15).isAfter(command.getDateTime()));
+        List<Appointment> doctorAppointments = appointmentRepository.findAllByDoctorId(command.getDoctorId());
+        List<Appointment> patientAppointments = appointmentRepository.findAllByPatientId(command.getPatientId());
 
-        return doctorTimeValidation && patientTimeValidation;
+        boolean doctorTimeValidation = doctorAppointments.stream()
+                .anyMatch(appointment -> {
+                    LocalDateTime appointmentStart = appointment.getDateTime();
+                    LocalDateTime appointmentEnd = appointmentStart.plusMinutes(15);
+                    return (proposedDateTime.isBefore(appointmentEnd) && proposedEndDateTime.isAfter(appointmentStart));
+                });
+
+        boolean patientTimeValidation = patientAppointments.stream()
+                .anyMatch(appointment -> {
+                    LocalDateTime appointmentStart = appointment.getDateTime();
+                    LocalDateTime appointmentEnd = appointmentStart.plusMinutes(15); // Czas końcowy istniejącego spotkania
+                    return (proposedDateTime.isBefore(appointmentEnd) && proposedEndDateTime.isAfter(appointmentStart));
+                });
+
+        return !doctorTimeValidation && !patientTimeValidation;
 
     }
 
