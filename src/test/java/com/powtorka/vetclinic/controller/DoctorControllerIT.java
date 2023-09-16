@@ -1,28 +1,34 @@
 package com.powtorka.vetclinic.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
+import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import jakarta.servlet.ServletException;
+import com.powtorka.vetclinic.model.doctor.DoctorDto;
+import com.powtorka.vetclinic.repository.DoctorRepository;
+import com.powtorka.vetclinic.service.DoctorService;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.ui.ModelMap;
 
-import javax.print.Doc;
+import java.util.Optional;
 
 import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -39,6 +45,18 @@ public class DoctorControllerIT {
     private final MockMvc postman;
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
+    private final ModelMapper modelMapper;
+
+    @Mock
+    private DoctorRepository doctorRepository;
+    @Mock
+    DoctorController doctorController;
+    @InjectMocks
+    private DoctorService doctorService;
+
+    @Captor
+    private ArgumentCaptor<Doctor> doctorCaptor;
+
 
     @AfterEach
     void tearDown() throws LiquibaseException {
@@ -46,10 +64,12 @@ public class DoctorControllerIT {
     }
 
     @Autowired
-    public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner) {
+    public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
+        this.modelMapper = modelMapper;
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -66,6 +86,43 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.speciality").value("Chirurg"))
                 .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
                 .andExpect(jsonPath("$.rate").value(99));
+    }
+
+
+    @Test
+    public void testSaveDoctor() throws Exception {
+        Doctor doctor = Doctor.builder()
+                .id(21L)
+                .name("Doctor")
+                .surname("a")
+                .speciality("a")
+                .animalSpeciality("a")
+                .email("sssss@o2.pl")
+                .rate(20)
+                .pesel("12312312312")
+                .build();
+
+        DoctorDto doctorDto = modelMapper.map(doctor, DoctorDto.class);
+
+        String requestBody = objectMapper.writeValueAsString(doctor);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        MvcResult result = postman.perform(get("/doctor/21"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        Doctor doctorFromResponse = objectMapper.readValue(content, Doctor.class);
+
+        DoctorDto doctorFromResponseDto = modelMapper.map(doctorFromResponse, DoctorDto.class);
+
+        assertEquals(doctorDto, doctorFromResponseDto);
     }
 
     @Test
@@ -129,11 +186,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.method").value("GET"));
     }
 
-    // shouldSaveDoctor
-    // rozne scenariusze dla edycji czesciowej, np sprawdzic czy edytuje sie tylko imie a reszta zostanie to samo
-    // w innym tescie tylko mail itp
-    // po implementacji walidacji przetestowac, czy test wywali sie np na mailu nie spelniajacym wzorca
-
     @Test
     public void shouldEditPartiallyOnlySpecialityAndRate() throws Exception {
         Doctor updatedDoctor = new Doctor();
@@ -157,17 +209,11 @@ public class DoctorControllerIT {
 
     @Test
     public void shouldEditPartiallyOnlySurnameAndSpeciality() throws Exception {
-//        Doctor updatedDoctor = new Doctor();
-//        updatedDoctor.setSurname("New Surname");
-//        updatedDoctor.setSpeciality("New Speciality");
-//        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+        Doctor updatedDoctor = new Doctor();
+        updatedDoctor.setSurname("New Surname");
+        updatedDoctor.setSpeciality("New Speciality");
 
-        String requestBody = """
-                {
-                    "surname" : "New Surname",
-                    "speciality" : "New Speciality"
-                }
-                """;
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
 
         postman.perform(patch("/doctor/16")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -545,34 +591,6 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfDoctorsPageSize2SortedByAnimalSpeciality() throws Exception {
-        postman.perform(get("/doctor?pageSize=3&sortBy=animalSpeciality"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("Michał"))
-                .andExpect(jsonPath("$.[0].surname").value("Barnat"))
-                .andExpect(jsonPath("$.[0].speciality").value("Chirurg"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz chirurgiczny"))
-                .andExpect(jsonPath("$.[0].rate").value(99))
-                .andExpect(jsonPath("$.[1].name").value("Ewa"))
-                .andExpect(jsonPath("$.[1].surname").value("Łukasik"))
-                .andExpect(jsonPath("$.[1].speciality").value("Chirurg"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz egzotyczny"))
-                .andExpect(jsonPath("$.[1].rate").value(49))
-                .andExpect(jsonPath("$.[2].name").value("Katarzyna"))
-                .andExpect(jsonPath("$.[2].surname").value("Szymańska"))
-                .andExpect(jsonPath("$.[2].speciality").value("Radiolog"))
-                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz egzotyczny"))
-                .andExpect(jsonPath("$.[2].rate").value(38));
-
-        //TODO dlaczego?? czy jesli WIELE ma takie samo pole to leci losowo?
-        // czasami tak:
-        // {"id":1,"name":"Michał","surname":"Barnat","speciality":"Chirurg","animalSpeciality":"Weterynarz chirurgiczny","rate":99},
-        // {"id":11,"name":"Mariusz","surname":"Lis","speciality":"Psychiatra","animalSpeciality":"Weterynarz egzotyczny","rate":32},
-        // {"id":8,"name":"Ewa","surname":"Łukasik","speciality":"Chirurg","animalSpeciality":"Weterynarz egzotyczny","rate":49}
-    }
-
-    @Test
     public void shouldGiveListOfDoctorsPageSize4SortedByRate() throws Exception {
         postman.perform(get("/doctor?pageSize=4&sortBy=rate"))
                 .andDo(print())
@@ -602,6 +620,19 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.[3].rate").value(83));
     }
 
-    //TODO stestuj zapisywanie doktorow
+    @Test
+    public void shouldGetTopRatedDoctors() throws Exception {
+        postman.perform(get("/doctor/top-rated"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Michał"))
+                .andExpect(jsonPath("$.[0].rate").value(99))
+                .andExpect(jsonPath("$.[1].name").value("Alicja"))
+                .andExpect(jsonPath("$.[1].rate").value(88))
+                .andExpect(jsonPath("$.[2].name").value("Joanna"))
+                .andExpect(jsonPath("$.[2].rate").value(91))
+                .andExpect(jsonPath("$.[3].name").value("Monika"))
+                .andExpect(jsonPath("$.[3].rate").value(83));
+    }
 
 }

@@ -51,19 +51,17 @@ public class DoctorController {
     @PutMapping("/{id}")
     private DoctorDto edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editDoctor(id, command);
-//        Doctor savedDoctor = doctorService.save(editedDoctor);
         return modelMapper.map(editedDoctor, DoctorDto.class);
     }
 
     @PatchMapping("/{id}")
     private DoctorDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editPartially(id, command);
-//        Doctor savedDoctor = doctorService.save(editedDoctor);
         return modelMapper.map(editedDoctor, DoctorDto.class);
     }
 
     @GetMapping("/top-rated")
-    private ResponseEntity<List<Doctor>> getTopRatedDoctors(@RequestParam(name = "minRate", required = false, defaultValue = "60") int minRate) {
+    private ResponseEntity<List<Doctor>> getTopRatedDoctors(@RequestParam(name = "minRate", required = false, defaultValue = "80") int minRate) {
         List<Doctor> topRatedDoctors = doctorService.findDoctorsWithRateGreaterThan(minRate);
         return ResponseEntity.ok(topRatedDoctors);
     }
