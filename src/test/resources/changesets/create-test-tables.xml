@@ -17,7 +17,6 @@
             </column>
         </createTable>
     </changeSet>
-<!--    TODO popodmieniac dane nizej-->
     <changeSet author="Michal" id="1642024192330-2">
         <createTable tableName="doctor">
             <column autoIncrement="true" name="id" type="BIGINT">

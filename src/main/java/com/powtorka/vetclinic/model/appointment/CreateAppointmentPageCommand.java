@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 @Getter
 @Setter
 public class CreateAppointmentPageCommand {
-
     @Min(value = 0, message =  "PAGE_NOT_NEGATIVE")
     private int pageNumber = 0;
     @Min(value =  1, message = "PAGE_SIZE_NOT_LESS_THAN_ONE")

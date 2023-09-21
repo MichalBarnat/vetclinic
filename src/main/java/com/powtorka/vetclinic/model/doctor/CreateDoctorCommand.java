@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.model.doctor;
 
-import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @NoArgsConstructor
@@ -9,7 +8,6 @@ import lombok.*;
 @Setter
 @Builder
 public class CreateDoctorCommand {
-
     private String name;
     private String surname;
     private String speciality;

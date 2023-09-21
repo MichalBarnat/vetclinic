@@ -3,8 +3,8 @@ package com.powtorka.vetclinic.service;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import com.powtorka.vetclinic.repository.DoctorRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +27,7 @@ public class AppointmentServiceTest {
     @InjectMocks
     private  AppointmentService appointmentServiceMock;
 
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
     }

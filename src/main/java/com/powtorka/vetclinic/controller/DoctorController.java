@@ -4,7 +4,6 @@ import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +32,7 @@ public class DoctorController {
 
     @GetMapping
     private List<DoctorDto> findAll(CreateDoctorPageCommand command) {
-        Pageable pageable = modelMapper.map(command, Pageable.class);
-        Page<Doctor> doctorPage = doctorService.findAll(pageable);
-
-        return doctorPage.getContent()
+        return doctorService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
                 .toList();

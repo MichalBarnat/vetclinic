@@ -50,7 +50,7 @@ public class DoctorControllerIT {
     @Mock
     private DoctorRepository doctorRepository;
     @Mock
-    DoctorController doctorController;
+    private DoctorController doctorController;
     @InjectMocks
     private DoctorService doctorService;
 

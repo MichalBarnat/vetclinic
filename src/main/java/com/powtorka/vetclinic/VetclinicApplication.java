@@ -38,7 +38,7 @@ public class VetclinicApplication {
 
 	// po stworzeniu powyzszego sprobujcie potestowac swoje odpowiednie serwisy
 
-	// TODO 07092023
+	// 07092023 DONE
 	// - wywalic metody toDoctor itp z commandow/dto - wszystkie konwersje maja sie odbywac przez modelmapper
 	// - ogarnac walidacje danych wejsciowych https://www.baeldung.com/java-validation
 	// - posprzatac w serwisach metody do edycji - zadnych 50 ifow, tylko optionale
@@ -46,8 +46,8 @@ public class VetclinicApplication {
 	// - wzorujac sie na TeacherControllerIT porobicie testy z uwzglednieniem paginacji i sortowania. Moze byc konieczne
 	//   rozbudowanie plikow csv z przykladowymi danymi aby testy mialy sens
 
-	// TODO 14092023
-	// 1) sprobowac przeniesc walidacje do commandow - zamiast w entity
+	// 14092023 DONE
+	// 1) sprobowac przeniesc walidacje do commandow - zamiast w entity (TYLKO W ENTITY DZIALA)
 	// 2) stworzyc logike weryfikacji, czy dany pacjent i lekarz nie probuja ustawic sobie wiecej niz jednej wizyty
 	// 		w tym samym czasie. Zalozmy, ze jedna wizyta trwa 15 minut. To znaczy, ze jesli probujemy stworzyc nowa wizyte,
 	// 		musimy sprawdzic, czy ani lekarz, ani pacjent nie maja juz w tym samym czasie wizyty,

@@ -66,35 +66,35 @@ public class AppointmentControllerIT {
 
     }
 
-/*
-    @Test
-    public void shouldGiven5AppointmentsWhenAskForFirstPage() throws Exception {
-        postman.perform(get("/appointment?pageSize=5&pageNumber=0"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].doctorID").value(1))
-                .andExpect(jsonPath("$.[0].patientID").value(1))
-                .andExpect(jsonPath("$.[0].dateTime").value("2023-08-31T20:26:03.93"))
-                .andExpect(jsonPath("$.[0].price").value(105.2))
-                .andExpect(jsonPath("$.[1].doctorID").value(1))
-                .andExpect(jsonPath("$.[1].patientID").value(2))
-                .andExpect(jsonPath("$.[1].dateTime").value("2023-08-31T20:26:03.934080200"))
-                .andExpect(jsonPath("$.[1].price").value(12.2))
-                .andExpect(jsonPath("$.[2].doctorID").value(2))
-                .andExpect(jsonPath("$.[2].patientID").value(3))
-                .andExpect(jsonPath("$.[2].dateTime").value("2023-08-31T20:26:03.934080200"))
-                .andExpect(jsonPath("$.[2].price").value(80.2))
-                .andExpect(jsonPath("$.[3].doctorID").value(3))
-                .andExpect(jsonPath("$.[3].patientID").value(4))
-                .andExpect(jsonPath("$.[3].dateTime").value("2023-09-14T10:15:00.05"))
-                .andExpect(jsonPath("$.[3].price").value(60.0))
-                .andExpect(jsonPath("$.[4].doctorID").value(4))
-                .andExpect(jsonPath("$.[4].patientID").value(5))
-                .andExpect(jsonPath("$.[4].dateTime").value("2023-09-14T14:30:00"))
-                .andExpect(jsonPath("$.[4].price").value(45.5));
-    }
 
- */
+//    @Test
+//    public void shouldGiven5AppointmentsWhenAskForFirstPage() throws Exception {
+//        postman.perform(get("/appointment?pageSize=5&pageNumber=0"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.[0].doctorId").value(1))
+//                .andExpect(jsonPath("$.[0].patientId").value(1))
+//                .andExpect(jsonPath("$.[0].dateTime").value("2023-08-31T20:26:03.93"))
+//                .andExpect(jsonPath("$.[0].price").value(105.2))
+//                .andExpect(jsonPath("$.[1].doctorId").value(1))
+//                .andExpect(jsonPath("$.[1].patientId").value(2))
+//                .andExpect(jsonPath("$.[1].dateTime").value("2023-08-31T20:26:03.934080200"))
+//                .andExpect(jsonPath("$.[1].price").value(12.2))
+//                .andExpect(jsonPath("$.[2].doctorId").value(2))
+//                .andExpect(jsonPath("$.[2].patientId").value(3))
+//                .andExpect(jsonPath("$.[2].dateTime").value("2023-08-31T20:26:03.934080200"))
+//                .andExpect(jsonPath("$.[2].price").value(80.2))
+//                .andExpect(jsonPath("$.[3].doctorId").value(3))
+//                .andExpect(jsonPath("$.[3].patientId").value(4))
+//                .andExpect(jsonPath("$.[3].dateTime").value("2023-09-14T10:15:00.05"))
+//                .andExpect(jsonPath("$.[3].price").value(60.0))
+//                .andExpect(jsonPath("$.[4].doctorId").value(4))
+//                .andExpect(jsonPath("$.[4].patientId").value(5))
+//                .andExpect(jsonPath("$.[4].dateTime").value("2023-09-14T14:30:00"))
+//                .andExpect(jsonPath("$.[4].price").value(45.5));
+//    }
+
+
 
 
 

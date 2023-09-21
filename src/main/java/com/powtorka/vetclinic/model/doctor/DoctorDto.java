@@ -8,6 +8,7 @@ import lombok.Value;
 public class DoctorDto {
 
     Long id;
+
     String name;
     String surname;
     String speciality;

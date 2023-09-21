@@ -34,6 +34,8 @@ public class AppointmentController {
 
     @GetMapping
     private List<AppointmentDto> findAll(CreateAppointmentPageCommand command) {
+        System.out.println("TEST");
+        System.out.println(appointmentService.findAll(modelMapper.map(command, Pageable.class)));
         return appointmentService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(appointment -> modelMapper.map(appointment, AppointmentDto.class))
@@ -47,20 +49,17 @@ public class AppointmentController {
     }
 
 
-  /*  @PutMapping("/{id}")
+    @PutMapping("/{id}")
     private AppointmentDto edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editAppointment(id, command);
-        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert(editedAppointment));
-        return modelMapper.map(savedAppointment , AppointmentDto.class);
+        return modelMapper.map(editedAppointment, AppointmentDto.class);
     }
 
     @PatchMapping("/{id}")
     private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
-        Appointment editedAppointment = appointmentService.editAppointment(id, command);
-        Appointment savedAppointment = appointmentService.save(appointmentToAppointmentDtoConverter.convert());
-        return modelMapper.map(savedAppointment , AppointmentDto.class);
+        Appointment editedAppointment = appointmentService.editPartially(id, command);
+        return modelMapper.map(editedAppointment, AppointmentDto.class);
     }
-   */
 
 
 

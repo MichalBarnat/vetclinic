@@ -62,7 +62,7 @@ public class AppointmentService {
                 }).orElseThrow(() -> new AppointmentNotFoundException(String.format("Appointment with this id not found!")));
     }
 
-    public Appointment editPartielly(Long id, UpdateAppointementCommand command) {
+    public Appointment editPartially(Long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentForEdit -> {
                     Optional.ofNullable(doctorService.findById(command.getDoctorId())).ifPresent(appointmentForEdit::setDoctor);
