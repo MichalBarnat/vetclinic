@@ -99,8 +99,4 @@ public class AppointmentService {
 
     }
 
-//    public List<Appointment> findAppointmentsMoreExpensiveThan(int price) {
-//        return appointmentRepository.findByPriceMoreExpensiveThan(price);
-//    }
-
 }

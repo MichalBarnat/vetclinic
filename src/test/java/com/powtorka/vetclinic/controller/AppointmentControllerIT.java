@@ -1,7 +1,6 @@
 package com.powtorka.vetclinic.controller;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
@@ -11,18 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-import java.time.LocalDate;
-import java.util.List;
-
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -62,8 +55,10 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.price").value(50.0));
     }
 
-  /*  @Test
-    public  void  shuldDeleteAppointment() throws Exception {
+
+
+    @Test
+    public  void shouldDeleteAppointment() throws Exception {
         postman.perform(delete("/appointment/2"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -71,7 +66,36 @@ public class AppointmentControllerIT {
 
     }
 
-   */
+/*
+    @Test
+    public void shouldGiven5AppointmentsWhenAskForFirstPage() throws Exception {
+        postman.perform(get("/appointment?pageSize=5&pageNumber=0"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].doctorID").value(1))
+                .andExpect(jsonPath("$.[0].patientID").value(1))
+                .andExpect(jsonPath("$.[0].dateTime").value("2023-08-31T20:26:03.93"))
+                .andExpect(jsonPath("$.[0].price").value(105.2))
+                .andExpect(jsonPath("$.[1].doctorID").value(1))
+                .andExpect(jsonPath("$.[1].patientID").value(2))
+                .andExpect(jsonPath("$.[1].dateTime").value("2023-08-31T20:26:03.934080200"))
+                .andExpect(jsonPath("$.[1].price").value(12.2))
+                .andExpect(jsonPath("$.[2].doctorID").value(2))
+                .andExpect(jsonPath("$.[2].patientID").value(3))
+                .andExpect(jsonPath("$.[2].dateTime").value("2023-08-31T20:26:03.934080200"))
+                .andExpect(jsonPath("$.[2].price").value(80.2))
+                .andExpect(jsonPath("$.[3].doctorID").value(3))
+                .andExpect(jsonPath("$.[3].patientID").value(4))
+                .andExpect(jsonPath("$.[3].dateTime").value("2023-09-14T10:15:00.05"))
+                .andExpect(jsonPath("$.[3].price").value(60.0))
+                .andExpect(jsonPath("$.[4].doctorID").value(4))
+                .andExpect(jsonPath("$.[4].patientID").value(5))
+                .andExpect(jsonPath("$.[4].dateTime").value("2023-09-14T14:30:00"))
+                .andExpect(jsonPath("$.[4].price").value(45.5));
+    }
+
+ */
+
 
 
 
