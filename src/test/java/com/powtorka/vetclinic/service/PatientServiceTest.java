@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -31,15 +34,15 @@ public class PatientServiceTest {
 
     @Mock
     private PatientRepository patientRepositoryMock;
-    @InjectMocks
+//    @InjectMocks
     private PatientService patientServiceMock;
-
 
     private final DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+        patientServiceMock = new PatientService(patientRepositoryMock);
     }
 
     @Autowired
@@ -71,14 +74,15 @@ public class PatientServiceTest {
 //        patients.add(new Patient());
 //        patients.add(new Patient());
 //        when(patientRepositoryMock.findAll()).thenReturn(patients);
-//        List<Patient> foundPatients = patientServiceMock.findAll();
+//        List<Patient> foundPatients = (List<Patient>) patientServiceMock.findAll();
 //        assertEquals(2, foundPatients.size());
 //        verify(patientRepositoryMock, times(1)).findAll();
 //    }
 
     @Test
-    public void testDeleteById() {
+    public void testDeleteById(){
         Long patientId = 1L;
+        when(patientRepositoryMock.existsById(patientId)).thenReturn(true);
         patientServiceMock.deleteById(patientId);
         verify(patientRepositoryMock, times(1)).deleteById(patientId);
     }
