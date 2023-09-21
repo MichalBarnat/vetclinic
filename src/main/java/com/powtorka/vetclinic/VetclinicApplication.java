@@ -47,11 +47,11 @@ public class VetclinicApplication {
 	//   rozbudowanie plikow csv z przykladowymi danymi aby testy mialy sens
 
 	// TODO 14092023
-	// sprobowac przeniesc walidacje do commandow - zamiast w entity
-	// stworzyc logike weryfikacji, czy dany pacjent i lekarz nie probuja ustawic sobie wiecej niz jednej wizyty
-	// w tym samym czasie. Zalozmy, ze jedna wizyta trwa 15 minut. To znaczy, ze jesli probujemy stworzyc nowa wizyte,
-	// musimy sprawdzic, czy ani lekarz, ani pacjent nie maja juz w tym samym czasie wizyty,
-	// ktora zaczynalaby sie do 15 minut przed tworzoną wizyta
+	// 1) sprobowac przeniesc walidacje do commandow - zamiast w entity
+	// 2) stworzyc logike weryfikacji, czy dany pacjent i lekarz nie probuja ustawic sobie wiecej niz jednej wizyty
+	// 		w tym samym czasie. Zalozmy, ze jedna wizyta trwa 15 minut. To znaczy, ze jesli probujemy stworzyc nowa wizyte,
+	// 		musimy sprawdzic, czy ani lekarz, ani pacjent nie maja juz w tym samym czasie wizyty,
+	// 		ktora zaczynalaby sie do 15 minut przed tworzoną wizyta
 
 
 }

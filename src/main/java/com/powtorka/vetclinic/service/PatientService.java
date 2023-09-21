@@ -18,8 +18,8 @@ import java.util.Optional;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    public Patient findById(long id){
-        return patientRepository.findById(id).orElseThrow(PatientNotFoundException::new);
+    public Patient findById(long id) {
+        return patientRepository.findById(id).orElseThrow(() -> new PatientNotFoundException(String.format("Patient with id: %s not found!", id)));
     }
 
     public Patient save(Patient patient) {
@@ -30,8 +30,8 @@ public class PatientService {
         return patientRepository.findAll(pageable);
     }
 
-    public void deleteById(long id){
-        if(patientRepository.existsById(id)){
+    public void deleteById(long id) {
+        if (patientRepository.existsById(id)) {
             patientRepository.deleteById(id);
         } else {
             throw new PatientNotFoundException(String.format("Patient with id: %s not found!", id));
@@ -39,37 +39,36 @@ public class PatientService {
     }
 
     @Transactional
-    public Patient editPatient(long id, UdpatePatientCommand command){
+    public Patient editPatient(long id, UdpatePatientCommand command) {
         return patientRepository.findById(id)
-                .map(patient -> {
-                    patient.setName(command.getName());
-                    patient.setSpecies(command.getSpecies());
-                    patient.setBreed(command.getBreed());
-                    patient.setOwnerName(command.getOwnerName());
-                    patient.setOwnerEmail(command.getOwnerEmail());
-                    patient.setAge(command.getAge());
-                    return patient;
+                .map(patientToEdit -> {
+                    patientToEdit.setName(command.getName());
+                    patientToEdit.setSpecies(command.getSpecies());
+                    patientToEdit.setBreed(command.getBreed());
+                    patientToEdit.setOwnerName(command.getOwnerName());
+                    patientToEdit.setOwnerEmail(command.getOwnerEmail());
+                    patientToEdit.setAge(command.getAge());
+                    return patientToEdit;
                 }).orElseThrow(() -> new PatientNotFoundException(String.format("Patient with id: %s not found", id)));
     }
 
     @Transactional
-    public Patient editPartially(Long id, UdpatePatientCommand command){
+    public Patient editPartially(Long id, UdpatePatientCommand command) {
         return patientRepository.findById(id)
-                .map(patient -> {
-                    Optional.ofNullable(command.getName()).ifPresent(patient::setName);
-                    Optional.ofNullable(command.getSpecies()).ifPresent(patient::setSpecies);
-                    Optional.ofNullable(command.getBreed()).ifPresent(patient::setBreed);
-                    Optional.ofNullable(command.getOwnerName()).ifPresent(patient::setOwnerName);
-                    Optional.ofNullable(command.getOwnerEmail()).ifPresent(patient::setOwnerEmail);
-                    Optional.of(command.getAge()).ifPresent(patient::setAge);
-                    return patient;
-                }).orElseThrow(()->new PatientNotFoundException(String.format("Patient with id: %s not found", id)));
+                .map(patientToEdit -> {
+                    Optional.ofNullable(command.getName()).ifPresent(patientToEdit::setName);
+                    Optional.ofNullable(command.getSpecies()).ifPresent(patientToEdit::setSpecies);
+                    Optional.ofNullable(command.getBreed()).ifPresent(patientToEdit::setBreed);
+                    Optional.ofNullable(command.getOwnerName()).ifPresent(patientToEdit::setOwnerName);
+                    Optional.ofNullable(command.getOwnerEmail()).ifPresent(patientToEdit::setOwnerEmail);
+                    Optional.ofNullable(command.getAge()).ifPresent(patientToEdit::setAge);
+                    return patientToEdit;
+                }).orElseThrow(() -> new PatientNotFoundException(String.format("Patient with id: %s not found", id)));
     }
 
-    public List<Patient> findPatientsWithAgeGreaterThan(int age){
+    public List<Patient> findPatientsWithAgeGreaterThan(int age) {
         return patientRepository.findByAgeGreaterThan(age);
     }
-
 
 
 }

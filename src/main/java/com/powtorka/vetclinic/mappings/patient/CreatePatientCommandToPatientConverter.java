@@ -1,9 +1,12 @@
 package com.powtorka.vetclinic.mappings.patient;
+
 import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CreatePatientCommandToPatientConverter implements Converter<CreatePatientCommand, Patient> {
 
     @Override
@@ -19,4 +22,5 @@ public class CreatePatientCommandToPatientConverter implements Converter<CreateP
                 .age(command.getAge())
                 .build();
     }
+
 }

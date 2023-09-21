@@ -19,30 +19,18 @@ public class PatientController {
     private final PatientService patientService;
     private final ModelMapper modelMapper;
 
-//    @GetMapping("/{id}")
-//    private PatientDto findById(@PathVariable("id") Long id) {
-//        Patient patient = patientService.findById(id);
-//        return PatientDto.fromPatient(patient);
-//
-//    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<PatientDto> findById(@PathVariable("id") Long id) {
-        try {
-            Patient patient = patientService.findById(id);
-            return ResponseEntity.ok(PatientDto.fromPatient(patient));
-        } catch (PatientNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    private PatientDto findById(@PathVariable("id") Long id) {
+        Patient patient = patientService.findById(id);
+        return modelMapper.map(patient, PatientDto.class);
+
     }
 
-
     @PostMapping
-    public PatientDto save(@RequestBody CreatePatientCommand command) {
-        // TODO krystian popraw:
-        Patient toSave = CreatePatientCommand.toPatient(command);
+    PatientDto save(@RequestBody CreatePatientCommand command) {
+        Patient toSave = modelMapper.map(command, Patient.class);
         Patient savedPatient = patientService.save(toSave);
-        return PatientDto.fromPatient(savedPatient);
+        return modelMapper.map(savedPatient, PatientDto.class);
     }
 
     @GetMapping
@@ -61,20 +49,22 @@ public class PatientController {
         return ResponseEntity.ok("Patient with ID: " + id + " has been deleted");
     }
 
-    @PutMapping("/{id}")
-    private PatientDto edit(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command){
-        Patient patientForEdit = patientService.findById(id);
-        Patient editedPatient = UdpatePatientCommand.toPatient(command, patientForEdit);
-        Patient savedPatient = patientService.save(editedPatient);
-        return PatientDto.fromPatient(savedPatient);
+    @PutMapping
+    private PatientDto edit(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command) {
+        Patient editedPatient = patientService.editPatient(id, command);
+        return modelMapper.map(editedPatient, PatientDto.class);
     }
 
     @PatchMapping("/{id}")
-    private PatientDto editPartially(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command){
+    private PatientDto editPartially(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command) {
         Patient editedPatient = patientService.editPartially(id, command);
-        return PatientDto.fromPatient(editedPatient);
+        return modelMapper.map(editedPatient, PatientDto.class);
     }
 
-
+    @GetMapping("/the-oldest")
+    private ResponseEntity<List<Patient>> getTheOldestPatients(@RequestParam(name = "minAge", required = false, defaultValue = "14") int minAge) {
+        List<Patient> theOldestPatients = patientService.findPatientsWithAgeGreaterThan(minAge);
+        return ResponseEntity.ok(theOldestPatients);
+    }
 
 }

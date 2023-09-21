@@ -32,5 +32,5 @@ public class Patient {
     private String ownerEmail;
     @Min(value = 0, message = "Age must be greater or equal to 0")
     @Max(value = 1000, message = "Age can not be greater than 1000")
-    private int age;
+    private Integer age;
 }

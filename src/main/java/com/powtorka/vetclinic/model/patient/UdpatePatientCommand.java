@@ -13,7 +13,7 @@ public class UdpatePatientCommand {
     private String breed;
     private String ownerName;
     private String ownerEmail;
-    private int age;
+    private Integer age;
 
     public static Patient toPatient(UdpatePatientCommand command, Patient patient){
         patient.setName(command.getName());

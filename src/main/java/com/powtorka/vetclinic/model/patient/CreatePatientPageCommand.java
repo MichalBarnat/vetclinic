@@ -17,6 +17,6 @@ public class CreatePatientPageCommand {
     private int pageSize = 5;
     @ValueOfEnum(enumClass = Sort.Direction.class, message = "INVALID_SORT_DIRECTION")
     private String sortDirection = "ASC";
-    @Pattern(regexp = "id|name|species|breed|ownerName|age")
+    @Pattern(regexp = "id|name|species|breed|ownerName|age", message = "INVALID_SORT_BY_VALUE")
     private String sortBy = "id";
 }
