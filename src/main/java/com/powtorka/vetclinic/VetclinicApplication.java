@@ -53,5 +53,11 @@ public class VetclinicApplication {
 	// 		musimy sprawdzic, czy ani lekarz, ani pacjent nie maja juz w tym samym czasie wizyty,
 	// 		ktora zaczynalaby sie do 15 minut przed tworzoną wizyta
 
+	// TODO 21092023
+	// liquibase dodac do glownej aplikacji dane testowe
+	// testy Service Mockowanie!! when itp
+	// dokonczyc Appointment
+	//
+
 
 }

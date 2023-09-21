@@ -47,16 +47,6 @@ public class DoctorControllerIT {
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
 
-    @Mock
-    private DoctorRepository doctorRepository;
-    @Mock
-    private DoctorController doctorController;
-    @InjectMocks
-    private DoctorService doctorService;
-
-    @Captor
-    private ArgumentCaptor<Doctor> doctorCaptor;
-
 
     @AfterEach
     void tearDown() throws LiquibaseException {
@@ -87,6 +77,11 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
                 .andExpect(jsonPath("$.rate").value(99));
     }
+
+//    @Test
+//    public void testMe() {
+//        assertEquals(doctorRepository.findById(1L).get().getId(), 1L);
+//    }
 
 
     @Test

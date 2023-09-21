@@ -17,8 +17,8 @@
             <column header="id" name="id"/>
             <column header="name" name="name"/>
             <column header="surname" name="surname"/>
-            <column header="specialty" name="specialty"/>
-            <column header="animal_specialty" name="animal_specialty"/>
+            <column header="speciality" name="speciality"/>
+            <column header="animal_speciality" name="animal_speciality"/>
             <column header="email" name="email"/>
             <column header="rate" name="rate"/>
             <column header="pesel" name="pesel"/>

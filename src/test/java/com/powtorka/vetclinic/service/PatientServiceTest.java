@@ -27,32 +27,17 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = VetclinicApplication.class)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 public class PatientServiceTest {
 
     @Mock
     private PatientRepository patientRepositoryMock;
-//    @InjectMocks
-    private PatientService patientServiceMock;
 
-    private final DatabaseCleaner databaseCleaner;
+    @InjectMocks
+    private PatientService patientServiceMock;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
-        patientServiceMock = new PatientService(patientRepositoryMock);
-    }
-
-    @Autowired
-    public PatientServiceTest(DatabaseCleaner databaseCleaner) {
-        this.databaseCleaner = databaseCleaner;
-    }
-
-    @AfterEach
-    void tearDown() throws LiquibaseException {
-        databaseCleaner.cleanUp();
     }
 
     @Test
@@ -80,7 +65,7 @@ public class PatientServiceTest {
 //    }
 
     @Test
-    public void testDeleteById(){
+    public void testDeleteById() {
         Long patientId = 1L;
         when(patientRepositoryMock.existsById(patientId)).thenReturn(true);
         patientServiceMock.deleteById(patientId);
@@ -109,7 +94,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void testSave(){
+    public void testSave() {
         Patient patient = new Patient();
         patient.setName("RYDZYK");
         when(patientRepositoryMock.save(any(Patient.class))).thenReturn(patient);
@@ -151,18 +136,6 @@ public class PatientServiceTest {
 //
 //        patientServiceMock.editPartially(patientId, command);
 //    }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
