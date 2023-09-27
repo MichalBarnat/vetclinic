@@ -3,11 +3,8 @@ package com.powtorka.vetclinic.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.DoctorDto;
-import com.powtorka.vetclinic.repository.DoctorRepository;
-import com.powtorka.vetclinic.service.DoctorService;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -16,19 +13,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.ui.ModelMap;
-
-import java.util.Optional;
-
-import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -77,11 +66,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
                 .andExpect(jsonPath("$.rate").value(99));
     }
-
-//    @Test
-//    public void testMe() {
-//        assertEquals(doctorRepository.findById(1L).get().getId(), 1L);
-//    }
 
 
     @Test

@@ -1,27 +1,13 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.DatabaseCleaner;
-import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.exceptions.InvalidPatientAgeException;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
 import com.powtorka.vetclinic.repository.PatientRepository;
-import liquibase.exception.LiquibaseException;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -122,20 +108,6 @@ public class PatientServiceTest {
         verify(patientRepositoryMock, times(1)).findById(patientId);
         verify(patientRepositoryMock, times(1)).save(existingPatient);
     }
-
-//    @Test(expected = InvalidPatientAgeException.class)
-//    public void testEditPartiallyWithNegativeAge() {
-//        Long patientId = 1L;
-//        UdpatePatientCommand command = new UdpatePatientCommand();
-//        command.setAge(-5);
-//
-//        Patient existingPatient = new Patient();
-//        existingPatient.setId(patientId);
-//        existingPatient.setAge(10);
-//        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-//
-//        patientServiceMock.editPartially(patientId, command);
-//    }
 
 
 }

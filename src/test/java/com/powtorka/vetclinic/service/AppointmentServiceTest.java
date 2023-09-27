@@ -1,9 +1,7 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,12 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
