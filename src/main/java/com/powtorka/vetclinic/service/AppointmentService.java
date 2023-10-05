@@ -54,7 +54,7 @@ public class AppointmentService {
     public Appointment editAppointment(long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentToEdit -> {
-                    appointmentToEdit.setDoctor(doctorService.findById(command.getPatientId()));
+                    appointmentToEdit.setDoctor(doctorService.findById(command.getDoctorId()));
                     appointmentToEdit.setPatient(patientService.findById(command.getPatientId()));
                     appointmentToEdit.setDateTime(command.getDateTime());
                     appointmentToEdit.setPrice(command.getPrice());
