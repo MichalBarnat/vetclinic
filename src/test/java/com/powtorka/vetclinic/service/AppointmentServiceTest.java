@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,19 +82,20 @@ public class AppointmentServiceTest {
 
     @Test
     public void testFindAll(){
-        List<Appointment> appointments = new ArrayList<>();
-        appointments.add(new Appointment());
-        appointments.add(new Appointment());
+        List<Appointment> appointments = Arrays.asList(
+            new Appointment(),
+            new Appointment()
+        );
 
         Pageable pageable = Pageable.ofSize(10).withPage(1);
         Page<Appointment> page = new PageImpl<>(appointments, pageable, appointments.size());
 
-        when(appointmentRepositoryMock.findAll()).thenReturn(appointments);
+        when(appointmentRepositoryMock.findAll(pageable)).thenReturn(page);
 
         Page<Appointment> result = appointmentService.findAll(pageable);
 
         assertEquals(page, result);
-        verify(appointmentRepositoryMock,times(1)).findAll();
+        verify(appointmentRepositoryMock,times(1)).findAll(pageable);
     }
 
     @Test
