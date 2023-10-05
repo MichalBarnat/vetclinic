@@ -31,11 +31,10 @@ public class AppointmentService {
         return appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
     }
 
-    public AppointmentDto save(CreateAppointmentCommand command) {
+    public Appointment save(CreateAppointmentCommand command) {
         if (appointmentIsAvailable(command)) {
             Appointment appointment = modelMapper.map(command, Appointment.class);
-            Appointment savedAppointment = appointmentRepository.save(appointment);
-            return modelMapper.map(savedAppointment, AppointmentDto.class);
+            return appointmentRepository.save(appointment);
         } else {
             throw new AppointmentIsNotAvailableException("Appointment is not available at: " + command.getDateTime());
         }
