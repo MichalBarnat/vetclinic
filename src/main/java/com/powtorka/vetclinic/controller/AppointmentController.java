@@ -29,7 +29,8 @@ public class AppointmentController {
 
     @PostMapping
     public AppointmentDto save(@RequestBody CreateAppointmentCommand command) {
-        return appointmentService.save(command);
+        Appointment appointment = appointmentService.save(command);
+        return modelMapper.map(appointment, AppointmentDto.class);
     }
 
     @GetMapping
