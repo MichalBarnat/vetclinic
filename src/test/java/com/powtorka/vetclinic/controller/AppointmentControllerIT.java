@@ -1,21 +1,46 @@
 package com.powtorka.vetclinic.controller;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
+import com.powtorka.vetclinic.mappings.appointment.AppointmentToAppointmentDtoConverter;
+import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.appointment.AppointmentDto;
+import com.powtorka.vetclinic.model.doctor.Doctor;
+import com.powtorka.vetclinic.model.doctor.DoctorDto;
+import com.powtorka.vetclinic.model.patient.Patient;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-
+import org.springframework.test.web.servlet.MvcResult;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,9 +48,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class AppointmentControllerIT {
+
     private final MockMvc postman;
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
+    private final ModelMapper modelMapper;
 
     @AfterEach
     void tearDown() throws LiquibaseException {
@@ -33,21 +60,23 @@ public class AppointmentControllerIT {
     }
 
     @Autowired
-    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner) {
+    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
+        this.modelMapper = modelMapper;
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void shouldFindAppointment20ById() throws Exception {
-        postman.perform(get("/appointment/20"))
+    void shouldFindAppointment19ById() throws Exception {
+        postman.perform(get("/appointment/19"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.doctorId").value(3))
-                .andExpect(jsonPath("$.patientId").value(20))
-                .andExpect(jsonPath("$.dateTime").value("2023-09-22T09:15:00.23"))
-                .andExpect(jsonPath("$.price").value(50.0));
+                .andExpect(jsonPath("$.doctorId").value(2))
+                .andExpect(jsonPath("$.patientId").value(19))
+                .andExpect(jsonPath("$.dateTime").value("2023-09-21T14:30:00"))
+                .andExpect(jsonPath("$.price").value(36.5));
     }
 
 
@@ -60,8 +89,63 @@ public class AppointmentControllerIT {
                 .andExpect(content().string("Appointment with ID: 2 has been deleted"));
 
     }
+/*
+    @Test
+    public void testSaveDoctor() throws Exception {
+        Doctor doctor = new Doctor();
+        doctor.setId(22L);
+        Patient patient = new Patient();
+        patient.setId(22L);
+        Appointment appointment = Appointment.builder()
+                .id(22L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2023-09-29T20:26:03.93"))
+                .price(23.5)
+                .build();
 
+        Appointment appointmentDto = modelMapper.map((Object) appointment, (Type) AppointmentDto.class);
 
+        String requestBody = objectMapper.writeValueAsString(appointment);
+
+        postman.perform(post("/appointment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        MvcResult result = postman.perform(get("appointment/21"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        Appointment appointmentFromResponse = objectMapper.readValue(content, Appointment.class);
+
+        AppointmentDto appointmentFromResponseDto = modelMapper.map(appointmentFromResponse, AppointmentDto.class);
+
+        assertEquals(appointmentDto, appointmentFromResponseDto);
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyPriceAndDateTime() throws Exception {
+        Appointment updatedAppointment = new Appointment();
+        updatedAppointment.setPrice(20);
+        updatedAppointment.setDateTime(LocalDateTime.parse("2023-09-18T11:30:00"));
+
+        String requestBody = objectMapper.writeValueAsString(updatedAppointment);
+
+        postman.perform(patch("/appointment/15")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.doctor").value(2))
+                .andExpect(jsonPath("$.patient").value(15))
+                .andExpect(jsonPath("$.dateTime").value("2023-09-19T11:15:00"))
+                .andExpect(jsonPath("$.pice").value(32.5));
+    }
 //    @Test
 //    public void shouldGiven5AppointmentsWhenAskForFirstPage() throws Exception {
 //        postman.perform(get("/appointment?pageSize=5&pageNumber=0"))
@@ -91,6 +175,8 @@ public class AppointmentControllerIT {
 
 
 
+
+ */
 
 
 

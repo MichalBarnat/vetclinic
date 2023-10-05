@@ -2,6 +2,7 @@ package com.powtorka.vetclinic.service;
 
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ public class AppointmentServiceTest {
     private AppointmentService appointmentService;
 
     @Mock
-    private AppointmentRepository appointmentRepository;
+    private AppointmentRepository appointmentRepositoryMock;
 
     @BeforeEach
     public void init() throws LiquibaseException {
@@ -39,28 +40,28 @@ public class AppointmentServiceTest {
         Appointment appointment = new Appointment();
         appointment.setId(appointmentId);
 
-        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(appointment));
 
         Appointment foundAppointment = appointmentService.findById(appointmentId);
 
         assertNotNull(foundAppointment);
         assertEquals(appointmentId, foundAppointment.getId());
 
-        verify(appointmentRepository, times(1)).findById(appointmentId);
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
     @Test
     public void testFindById_AppointmentDoesNotExist() {
         Long appointmentId = 1L;
 
-        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.empty());
 
         // Expect an exception to be thrown
         assertThrows(AppointmentNotFoundException.class, () -> {
             appointmentService.findById(appointmentId);
         });
 
-        verify(appointmentRepository, times(1)).findById(appointmentId);
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
 
@@ -70,38 +71,53 @@ public class AppointmentServiceTest {
         Appointment appointment = new Appointment();
         appointment.setId(appointmentId);
 
-        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(appointment));
         Appointment foundAppointment = appointmentService.findById(appointmentId);
         assertNotNull(foundAppointment);
         assertEquals(appointmentId, foundAppointment.getId());
 
-        verify(appointmentRepository, times(1)).findById(appointmentId);
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
-//    @Test
-//    public void testFindAll(){
-//        List<Appointment> appointments = new ArrayList<>();
-//        appointments.add(new Appointment());
-//        appointments.add(new Appointment());
-//
-//        Pageable pageable = Pageable.ofSize(10).withPage(1);
-//        Page<Appointment> page = new PageImpl<>(appointments, pageable, appointments.size());
-//
-//        when(appointmentRepository.findAll()).thenReturn(appointments);
-//
-//        Page<Appointment> result = appointmentService.findAll(pageable);
-//
-//        assertEquals(page, result);
-//        verify(appointmentRepository,times(1)).findAll();
-//    }
+    @Test
+    public void testFindAll(){
+        List<Appointment> appointments = new ArrayList<>();
+        appointments.add(new Appointment());
+        appointments.add(new Appointment());
+
+        Pageable pageable = Pageable.ofSize(10).withPage(1);
+        Page<Appointment> page = new PageImpl<>(appointments, pageable, appointments.size());
+
+        when(appointmentRepositoryMock.findAll()).thenReturn(appointments);
+
+        Page<Appointment> result = appointmentService.findAll(pageable);
+
+        assertEquals(page, result);
+        verify(appointmentRepositoryMock,times(1)).findAll();
+    }
 
     @Test
     public void testDeleteById(){
         Long appointmentId = 1L;
         appointmentService.deleteById(appointmentId);
 
-        verify(appointmentRepository, times(1)).deleteById(appointmentId);
+        verify(appointmentRepositoryMock, times(1)).deleteById(appointmentId);
     }
+/*
+    @Test
+    public void testSave(){
+        Appointment appointment = new Appointment();
+        appointment.setPrice(66.5);
+
+        when(appointmentRepositoryMock.save(any(Appointment.class))).thenReturn(appointment);
+
+        Appointment savedAppointment = appointmentService.save(appointment);
+
+        assertEquals(66.5, savedAppointment.getPrice());
+        verify(appointmentRepositoryMock).save(appointment);
+    }
+
+ */
 
 
 
