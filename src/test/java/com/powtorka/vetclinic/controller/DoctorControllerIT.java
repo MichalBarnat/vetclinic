@@ -8,7 +8,6 @@ import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,7 +47,6 @@ public class DoctorControllerIT {
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
