@@ -66,6 +66,7 @@ public class AppointmentService {
                 }).orElseThrow(() -> new AppointmentNotFoundException(String.format("Appointment with this id not found!")));
     }
 
+    @Transactional
     public Appointment editPartially(Long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentForEdit -> {
