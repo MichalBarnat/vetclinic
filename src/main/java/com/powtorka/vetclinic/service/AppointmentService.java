@@ -69,10 +69,14 @@ public class AppointmentService {
     public Appointment editPartially(Long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentForEdit -> {
-                    Optional.ofNullable(doctorService.findById(command.getDoctorId())).ifPresent(appointmentForEdit::setDoctor);
-                    Optional.ofNullable(patientService.findById(command.getPatientId())).ifPresent(appointmentForEdit::setPatient);
+                    if(command.getDoctorId() != null) {
+                        Optional.ofNullable(doctorService.findById(command.getDoctorId())).ifPresent(appointmentForEdit::setDoctor);
+                    }
+                    if(command.getPatientId() != null) {
+                        Optional.ofNullable(patientService.findById(command.getPatientId())).ifPresent(appointmentForEdit::setPatient);
+                    }
                     Optional.ofNullable(command.getDateTime()).ifPresent(appointmentForEdit::setDateTime);
-                    Optional.ofNullable(command.getPrice()).ifPresent(appointmentForEdit::setPrice);
+                    Optional.of(command.getPrice()).ifPresent(appointmentForEdit::setPrice);
                     return appointmentForEdit;
                 })
                 .orElseThrow(() -> new AppointmentNotFoundException("Appointment with this id not found!"));
