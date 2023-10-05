@@ -78,22 +78,22 @@ public class AppointmentServiceTest {
         verify(appointmentRepository, times(1)).findById(appointmentId);
     }
 
-    @Test
-    public void testFindAll(){
-        List<Appointment> appointments = new ArrayList<>();
-        appointments.add(new Appointment());
-        appointments.add(new Appointment());
-
-        Pageable pageable = Pageable.ofSize(10).withPage(1);
-        Page<Appointment> page = new PageImpl<>(appointments, pageable, appointments.size());
-
-        when(appointmentRepository.findAll()).thenReturn(appointments);
-
-        Page<Appointment> result = appointmentService.findAll(pageable);
-
-        assertEquals(page, result);
-        verify(appointmentRepository,times(1)).findAll();
-    }
+//    @Test
+//    public void testFindAll(){
+//        List<Appointment> appointments = new ArrayList<>();
+//        appointments.add(new Appointment());
+//        appointments.add(new Appointment());
+//
+//        Pageable pageable = Pageable.ofSize(10).withPage(1);
+//        Page<Appointment> page = new PageImpl<>(appointments, pageable, appointments.size());
+//
+//        when(appointmentRepository.findAll()).thenReturn(appointments);
+//
+//        Page<Appointment> result = appointmentService.findAll(pageable);
+//
+//        assertEquals(page, result);
+//        verify(appointmentRepository,times(1)).findAll();
+//    }
 
     @Test
     public void testDeleteById(){

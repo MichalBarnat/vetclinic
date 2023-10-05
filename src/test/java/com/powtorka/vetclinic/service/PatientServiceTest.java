@@ -8,6 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -31,24 +38,34 @@ public class PatientServiceTest {
         Long patientId = 1L;
         Patient patient = new Patient();
         patient.setId(patientId);
+
         when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(patient));
+
         Patient foundPatient = patientServiceMock.findById(patientId);
+
         assertEquals(foundPatient.getId(), patient.getId());
         assertEquals(foundPatient.getAge(), patient.getAge());
-        verify(patientRepositoryMock, times(1)).findById(patientId);
 
+        verify(patientRepositoryMock, times(1)).findById(patientId);
     }
 
-//    @Test
-//    public void testFindAll() {
-//        List<Patient> patients = new ArrayList<>();
-//        patients.add(new Patient());
-//        patients.add(new Patient());
-//        when(patientRepositoryMock.findAll()).thenReturn(patients);
-//        List<Patient> foundPatients = (List<Patient>) patientServiceMock.findAll();
-//        assertEquals(2, foundPatients.size());
-//        verify(patientRepositoryMock, times(1)).findAll();
-//    }
+    @Test
+    public void testFindAll() {
+        List<Patient> patients = Arrays.asList(
+                new Patient(),
+                new Patient()
+        );
+
+        Pageable pageable = Pageable.ofSize(10).withPage(1);
+        Page<Patient> page = new PageImpl<>(patients, pageable, patients.size());
+
+        when(patientRepositoryMock.findAll(pageable)).thenReturn(page);
+
+        Page<Patient> result = patientServiceMock.findAll(pageable);
+
+        assertEquals(page, result);
+        verify(patientRepositoryMock, times(1)).findAll(pageable);
+    }
 
     @Test
     public void testDeleteById() {
@@ -61,22 +78,20 @@ public class PatientServiceTest {
     @Test
     public void testEditPartially() {
         Long patientId = 1L;
-        UdpatePatientCommand command = new UdpatePatientCommand();
-        command.setName("XXX");
-        command.setBreed("YYY");
+        Patient oldPatient = new Patient();
+        oldPatient.setName("OLD NAME");
+        oldPatient.setBreed("OLD BREED");
 
-        Patient existingPatient = new Patient();
-        existingPatient.setId(patientId);
-        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
+        UdpatePatientCommand udpatePatientCommand = new UdpatePatientCommand();
+        udpatePatientCommand.setName("new name");
 
-        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
+        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(oldPatient));
 
-        assertEquals(command.getName(), editedPatient.getName());
-        assertEquals(command.getBreed(), editedPatient.getBreed());
+        Patient editedPatient = patientServiceMock.editPartially(patientId, udpatePatientCommand);
 
+        assertEquals("new name", editedPatient.getName());
+        assertEquals("OLD BREED", editedPatient.getBreed());
         verify(patientRepositoryMock, times(1)).findById(patientId);
-        verify(patientRepositoryMock, times(1)).save(existingPatient);
     }
 
     @Test
@@ -94,19 +109,18 @@ public class PatientServiceTest {
     @Test
     public void testEditPartiallyWithEmptyFields() {
         Long patientId = 1L;
-        UdpatePatientCommand command = new UdpatePatientCommand();
+        Patient oldPatient = new Patient();
+        oldPatient.setId(patientId);
+        oldPatient.setName("OLD NAME");
 
-        Patient existingPatient = new Patient();
-        existingPatient.setId(patientId);
-        existingPatient.setName("Stare imie");
-        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(existingPatient));
-        when(patientRepositoryMock.save(existingPatient)).thenReturn(existingPatient);
+        UdpatePatientCommand udpatePatientCommand = new UdpatePatientCommand();
 
-        Patient editedPatient = patientServiceMock.editPartially(patientId, command);
+        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.of(oldPatient));
 
-        assertEquals("Stare imie", editedPatient.getName());
+        Patient editedPatient = patientServiceMock.editPartially(patientId, udpatePatientCommand);
+
+        assertEquals("OLD NAME", editedPatient.getName());
         verify(patientRepositoryMock, times(1)).findById(patientId);
-        verify(patientRepositoryMock, times(1)).save(existingPatient);
     }
 
 

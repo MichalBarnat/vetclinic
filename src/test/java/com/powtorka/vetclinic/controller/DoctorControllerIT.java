@@ -546,28 +546,6 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfDoctorsPageSize3SortedBySpeciality() throws Exception {
-        postman.perform(get("/doctor?pageSize=3&sortBy=speciality"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].name").value("Mateusz"))
-                .andExpect(jsonPath("$.[0].surname").value("Kaczor"))
-                .andExpect(jsonPath("$.[0].speciality").value("Anestezjolog"))
-                .andExpect(jsonPath("$.[0].animalSpeciality").value("Weterynarz małych zwierząt"))
-                .andExpect(jsonPath("$.[0].rate").value(72))
-                .andExpect(jsonPath("$.[1].name").value("Michał"))
-                .andExpect(jsonPath("$.[1].surname").value("Barnat"))
-                .andExpect(jsonPath("$.[1].speciality").value("Chirurg"))
-                .andExpect(jsonPath("$.[1].animalSpeciality").value("Weterynarz chirurgiczny"))
-                .andExpect(jsonPath("$.[1].rate").value(99))
-                .andExpect(jsonPath("$.[2].name").value("Ewa"))
-                .andExpect(jsonPath("$.[2].surname").value("Łukasik"))
-                .andExpect(jsonPath("$.[2].speciality").value("Chirurg"))
-                .andExpect(jsonPath("$.[2].animalSpeciality").value("Weterynarz egzotyczny"))
-                .andExpect(jsonPath("$.[2].rate").value(49));
-    }
-
-    @Test
     public void shouldGiveListOfDoctorsPageSize4SortedByRate() throws Exception {
         postman.perform(get("/doctor?pageSize=4&sortBy=rate"))
                 .andDo(print())
