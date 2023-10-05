@@ -2,7 +2,6 @@ package com.powtorka.vetclinic.service;
 
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.BeforeEach;
