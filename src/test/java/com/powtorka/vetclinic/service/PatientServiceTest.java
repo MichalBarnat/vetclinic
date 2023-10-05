@@ -123,5 +123,4 @@ public class PatientServiceTest {
         verify(patientRepositoryMock, times(1)).findById(patientId);
     }
 
-
 }

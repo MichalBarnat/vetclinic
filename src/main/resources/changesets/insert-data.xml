@@ -4,7 +4,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet author="krystian" id="2">
-        <loadData encoding="UTF-8" file="data/patients.csv" quotchar="&quot;" separator="," tableName="patient">
+        <loadData encoding="UTF-8" file="changesets/data/patients.csv" quotchar="&quot;" separator="," tableName="patient">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
             <column header="species" name="species"/>
@@ -13,7 +13,7 @@
             <column header="owner_email" name="owner_email"/>
             <column header="age" name="age"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
+        <loadData encoding="UTF-8" file="changesets/data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
             <column header="surname" name="surname"/>
@@ -23,7 +23,7 @@
             <column header="rate" name="rate"/>
             <column header="pesel" name="pesel"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/appointments.csv" quotchar="&quot;" separator="," tableName="appointment">
+        <loadData encoding="UTF-8" file="changesets/data/appointments.csv" quotchar="&quot;" separator="," tableName="appointment">
             <column header="id" name="id"/>
             <column header="doctor_id" name="doctor_id"/>
             <column header="patient_id" name="patient_id"/>

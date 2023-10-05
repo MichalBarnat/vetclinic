@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/doctor")
@@ -24,10 +27,10 @@ public class DoctorController {
     }
 
     @PostMapping
-    public DoctorDto save(@RequestBody CreateDoctorCommand command) {
+    public ResponseEntity<DoctorDto> save(@RequestBody CreateDoctorCommand command) {
         Doctor toSave = modelMapper.map(command, Doctor.class);
         Doctor savedDoctor = doctorService.save(toSave);
-        return modelMapper.map(savedDoctor, DoctorDto.class);
+        return new ResponseEntity<>(modelMapper.map(savedDoctor, DoctorDto.class), CREATED);
     }
 
     @GetMapping
@@ -39,9 +42,9 @@ public class DoctorController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+    private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
-        return ResponseEntity.ok("Doctor with ID: " + id + " has been deleted");
+        return new ResponseEntity<>(NO_CONTENT);
     }
 
     @PutMapping("/{id}")

@@ -48,15 +48,15 @@ public class GlobalExceptionHandler {
                 .build(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AppointmentIsNotAvailableException.class)
-    public ResponseEntity<ErrorMessage> appointmentNotAvailableException(AppointmentIsNotAvailableException ex, HttpServletRequest request) {
+    @ExceptionHandler(AppointmentNotFoundException.class)
+    public ResponseEntity<ErrorMessage> appointmentNotAvailableException(AppointmentNotFoundException ex, HttpServletRequest request) {
         return new ResponseEntity<>(ErrorMessage.builder()
                 .dateTime(LocalDateTime.now())
-                .code(BAD_REQUEST.value())
-                .status(BAD_REQUEST.getReasonPhrase())
-                .message("Appointment is not available on this time! Try to change date :)")
+                .code(NOT_FOUND.value())
+                .status(NOT_FOUND.getReasonPhrase())
+                .message(ex.getMessage())
                 .uri(request.getRequestURI())
                 .method(request.getMethod())
-                .build(), BAD_REQUEST);
+                .build(), NOT_FOUND);
     }
 }

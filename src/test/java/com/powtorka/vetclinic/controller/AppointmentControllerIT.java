@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.doctor.Doctor;
+import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.service.DoctorService;
 import com.powtorka.vetclinic.service.PatientService;
 import liquibase.exception.LiquibaseException;
@@ -19,16 +22,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDateTime;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(classes = VetclinicApplication.class)
@@ -40,7 +40,6 @@ public class AppointmentControllerIT {
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
-    private final MockMvc mockMvc;
     private final DoctorService doctorService;
     private final PatientService patientService;
 
@@ -50,15 +49,13 @@ public class AppointmentControllerIT {
     }
 
     @Autowired
-    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper, MockMvc mockMvc, DoctorService doctorService, PatientService patientService) {
+    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper, DoctorService doctorService, PatientService patientService) {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
-        this.mockMvc = mockMvc;
         this.doctorService = doctorService;
         this.patientService = patientService;
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -73,9 +70,8 @@ public class AppointmentControllerIT {
     }
 
 
-
     @Test
-    public  void shouldDeleteAppointment() throws Exception {
+    public void shouldDeleteAppointment() throws Exception {
         postman.perform(delete("/appointment/2"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -83,43 +79,34 @@ public class AppointmentControllerIT {
 
     }
 
- /*   @Test
+    @Test
     public void shouldSaveAppointment() throws Exception {
 
-        Doctor doctor = new Doctor();
-        doctor.setId(22L);
-        Patient patient = new Patient();
-        patient.setId(22L);
-
-        Appointment appointment = Appointment.builder()
-                .id(22L)
-                .doctor(doctor)
-                .patient(patient)
+        CreateAppointmentCommand command = CreateAppointmentCommand.builder()
+                .doctorId(2L)
+                .patientId(1L)
                 .dateTime(LocalDateTime.parse("2023-09-29T20:26:03.93"))
                 .price(23.5)
                 .build();
 
-        String requestBody = objectMapper.writeValueAsString(appointment);
+        String requestBody = objectMapper.writeValueAsString(command);
 
 
-        mockMvc.perform(post("/appointment")
+        postman.perform(post("/appointment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        MvcResult result = mockMvc.perform(get("/appointment/22")) // Use the correct path and appointment ID
-                .andExpect(status().isOk())
+        MvcResult result = postman.perform(get("/appointment/2")) // Use the correct path and appointment ID
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
         Appointment appointmentFromResponse = objectMapper.readValue(content, Appointment.class);
 
-        assertEquals(appointment, appointmentFromResponse);
     }
-
-  */
 
 
     @Test
@@ -137,16 +124,17 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.price").value(20));
     }
-/*
+
     @Test
     public void shouldEditPartiallyOnlyDoctor() throws Exception {
 
-        Appointment updatedAppointment = new Appointment();
-        updatedAppointment.setDoctor(doctorService.findById(6L));
+        UpdateAppointementCommand command = UpdateAppointementCommand.builder()
+                .doctorId(6L)
+                .build();
 
-        String requestBody = objectMapper.writeValueAsString(updatedAppointment);
+        String requestBody = objectMapper.writeValueAsString(command);
 
-        mockMvc.perform(patch("/appointment/1")
+        postman.perform(patch("/appointment/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
@@ -158,13 +146,13 @@ public class AppointmentControllerIT {
     @Test
     public void shouldEditPartiallyDoctorAndPatient() throws Exception {
 
-        Appointment updatedAppointment = new Appointment();
-        updatedAppointment.setDoctor(doctorService.findById(6L));
-        updatedAppointment.setPatient(patientService.findById(6L));
+        UpdateAppointementCommand command = UpdateAppointementCommand.builder()
+                .doctorId(6L)
+                .patientId(6L)
+                .build();
+        String requestBody = objectMapper.writeValueAsString(command);
 
-        String requestBody = objectMapper.writeValueAsString(updatedAppointment);
-
-        mockMvc.perform(patch("/appointment/1")
+        postman.perform(patch("/appointment/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
@@ -173,8 +161,6 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.doctorId").value(6L))
                 .andExpect(jsonPath("$.patientId").value(6L));
     }
-
- */
 
 
     @Test
@@ -231,24 +217,19 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.[4].price").value(110));
     }
 
-/*
     @Test
-   public void shouldShowNotFoundAsMessageWhenTryToFindAppointmentWhoDoesNotExist() throws Exception {
+    public void shouldShowNotFoundAsMessageWhenTryToFindAppointmentWhoDoesNotExist() throws Exception {
 
-        Long nonExistentAppointmentId = 32L;
-
-        mockMvc.perform(get("/appointment/32"))
+        postman.perform(get("/appointment/32"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.status").value("Not Found"))
-                .andExpect(jsonPath("$.message").value("Appointment with this id not found!"))
-                .andExpect(jsonPath("$.uri").value("/appointment/" + nonExistentAppointmentId))
+                .andExpect(jsonPath("$.message").value("Appointment with id 32 not found!"))
+                .andExpect(jsonPath("$.uri").value("/appointment/32"))
                 .andExpect(jsonPath("$.method").value("GET"));
     }
 
-
- */
 
     @Test
     public void shouldGiveListOfAppointmentsSortetByPrice() throws Exception {

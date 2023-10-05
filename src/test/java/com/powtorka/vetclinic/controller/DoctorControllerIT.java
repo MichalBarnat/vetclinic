@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -83,11 +84,20 @@ public class DoctorControllerIT {
 
         String requestBody = objectMapper.writeValueAsString(doctor);
 
+        postman.perform(get("/doctor/21"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Doctor with id: 21 not found!"))
+                .andExpect(jsonPath("$.uri").value("/doctor/21"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         MvcResult result = postman.perform(get("/doctor/21"))
                 .andDo(print())
@@ -146,8 +156,7 @@ public class DoctorControllerIT {
 
         postman.perform(delete("/doctor/1"))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("Doctor with ID: 1 has been deleted"));
+                .andExpect(status().isNoContent());
 
     }
 

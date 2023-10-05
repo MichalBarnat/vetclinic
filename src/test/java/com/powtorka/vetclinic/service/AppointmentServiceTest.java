@@ -30,7 +30,7 @@ public class AppointmentServiceTest {
     private AppointmentRepository appointmentRepositoryMock;
 
     @BeforeEach
-    public void init() throws LiquibaseException {
+    public void init()  {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -104,21 +104,21 @@ public class AppointmentServiceTest {
 
         verify(appointmentRepositoryMock, times(1)).deleteById(appointmentId);
     }
-/*
-    @Test
-    public void testSave(){
-        Appointment appointment = new Appointment();
-        appointment.setPrice(66.5);
+//
+//    @Test
+//    public void testSave(){
+//        // TODO
+//        Appointment appointment = new Appointment();
+//        appointment.setPrice(66.5);
+//
+//        when(appointmentRepositoryMock.save(any(Appointment.class))).thenReturn(appointment);
+//
+//        Appointment savedAppointment = appointmentService.save(appointment);
+//
+//        assertEquals(66.5, savedAppointment.getPrice());
+//        verify(appointmentRepositoryMock).save(appointment);
+//    }
 
-        when(appointmentRepositoryMock.save(any(Appointment.class))).thenReturn(appointment);
-
-        Appointment savedAppointment = appointmentService.save(appointment);
-
-        assertEquals(66.5, savedAppointment.getPrice());
-        verify(appointmentRepositoryMock).save(appointment);
-    }
-
- */
 
 
 

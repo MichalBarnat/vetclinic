@@ -53,11 +53,21 @@ public class VetclinicApplication {
 	// 		musimy sprawdzic, czy ani lekarz, ani pacjent nie maja juz w tym samym czasie wizyty,
 	// 		ktora zaczynalaby sie do 15 minut przed tworzoną wizyta
 
-	// TODO 21092023
+	// 21092023
 	// liquibase dodac do glownej aplikacji dane testowe
 	// testy Service Mockowanie!! when itp
 	// dokonczyc Appointment
 	//
+
+	//TODO 05.10.2023
+	//testy saved poprawic wedlug doctora
+	//zmienic metody na requesty z poprawnymi kodami
+	// todo: JACOCO - oczekuje pokrycia kodu testami minimum 80% - zarowno instructions, jak i branches
+
+	// kazdy: zainstalowac Docker Desktop
+	// postawic baze na dockerze, niech to bedzie PostgreSQL wg instrukcji: https://www.youtube.com/watch?v=aHbE3pTyG-Q
+
+	// bonus jakbyscie sie nudzili: zaimplementowac Swagger
 
 
 }

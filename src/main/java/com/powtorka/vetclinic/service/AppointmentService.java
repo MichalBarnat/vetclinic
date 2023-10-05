@@ -1,9 +1,7 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.exceptions.AppointmentIsNotAvailableException;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
@@ -28,7 +26,7 @@ public class AppointmentService {
     private final PatientService patientService;
 
     public Appointment findById(long id) {
-        return appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
+        return appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(String.format("Appointment with id %d not found!", id)));
     }
 
     public Appointment save(CreateAppointmentCommand command) {
@@ -36,7 +34,7 @@ public class AppointmentService {
             Appointment appointment = modelMapper.map(command, Appointment.class);
             return appointmentRepository.save(appointment);
         } else {
-            throw new AppointmentIsNotAvailableException("Appointment is not available at: " + command.getDateTime());
+            throw new AppointmentNotFoundException("Appointment is not available at: " + command.getDateTime());
         }
     }
 

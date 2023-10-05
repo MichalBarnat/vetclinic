@@ -36,10 +36,14 @@ public class DoctorServiceTest {
 
     @Test
     public void testSave() {
+        Doctor doctorToSave = new Doctor();
+        doctorToSave.setName("John");
+
         Doctor doctor = new Doctor();
         doctor.setName("John");
 
-        when(doctorRepositoryMock.save(any(Doctor.class))).thenReturn(doctor);
+        // TODO
+        when(doctorRepositoryMock.save(eq(doctorToSave))).thenReturn(doctor);
 
         Doctor savedDoctor = doctorServiceMock.save(doctor);
 
