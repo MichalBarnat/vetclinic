@@ -9,8 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,9 +20,9 @@ public class DoctorController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    private DoctorDto findById(@PathVariable("id") Long id) {
+    private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
-        return modelMapper.map(doctor, DoctorDto.class);
+        return new ResponseEntity<>(modelMapper.map(doctor, DoctorDto.class), OK);
     }
 
     @PostMapping
@@ -34,29 +33,30 @@ public class DoctorController {
     }
 
     @GetMapping
-    private List<DoctorDto> findAll(CreateDoctorPageCommand command) {
-        return doctorService.findAll(modelMapper.map(command, Pageable.class))
+    private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
+        List<DoctorDto> list = doctorService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
                 .toList();
+        return ResponseEntity.ok(list);
     }
 
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
-        return new ResponseEntity<>(NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    private DoctorDto edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
+    private ResponseEntity<DoctorDto> edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editDoctor(id, command);
-        return modelMapper.map(editedDoctor, DoctorDto.class);
+        return ResponseEntity.ok(modelMapper.map(editedDoctor, DoctorDto.class));
     }
 
     @PatchMapping("/{id}")
-    private DoctorDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
+    private ResponseEntity<DoctorDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editPartially(id, command);
-        return modelMapper.map(editedDoctor, DoctorDto.class);
+        return ResponseEntity.ok(modelMapper.map(editedDoctor, DoctorDto.class));
     }
 
     @GetMapping("/top-rated")

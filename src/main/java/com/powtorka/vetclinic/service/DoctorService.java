@@ -32,7 +32,7 @@ public class DoctorService {
     }
 
     public void deleteById(long id) {
-        if(doctorRepository.existsById(id)) {
+        if (doctorRepository.existsById(id)) {
             doctorRepository.deleteById(id);
         } else {
             throw new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id));

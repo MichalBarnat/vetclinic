@@ -3,8 +3,8 @@ package com.powtorka.vetclinic.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
+import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -52,9 +50,6 @@ public class DoctorControllerIT {
 
     @Test
     void shouldFindDoctorById() throws Exception {
-        // Given
-        // When
-        // Then
         postman.perform(get("/doctor/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -69,21 +64,20 @@ public class DoctorControllerIT {
 
     @Test
     public void testSaveDoctor() throws Exception {
-        Doctor doctor = Doctor.builder()
-                .id(21L)
-                .name("Doctor")
-                .surname("a")
-                .speciality("a")
-                .animalSpeciality("a")
-                .email("sssss@o2.pl")
-                .rate(20)
+        // Given
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
                 .pesel("12312312312")
                 .build();
 
-        DoctorDto doctorDto = modelMapper.map(doctor, DoctorDto.class);
+        String requestBody = objectMapper.writeValueAsString(command);
 
-        String requestBody = objectMapper.writeValueAsString(doctor);
-
+        // When
         postman.perform(get("/doctor/21"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -97,19 +91,22 @@ public class DoctorControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.surname").value(command.getSurname()))
+                .andExpect(jsonPath("$.speciality").value(command.getSpeciality()))
+                .andExpect(jsonPath("$.animalSpeciality").value(command.getAnimalSpeciality()))
+                .andExpect(jsonPath("$.rate").value(command.getRate()));
 
-        MvcResult result = postman.perform(get("/doctor/21"))
+        // Then
+        postman.perform(get("/doctor/21"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Doctor doctorFromResponse = objectMapper.readValue(content, Doctor.class);
-
-        DoctorDto doctorFromResponseDto = modelMapper.map(doctorFromResponse, DoctorDto.class);
-
-        assertEquals(doctorDto, doctorFromResponseDto);
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.surname").value(command.getSurname()))
+                .andExpect(jsonPath("$.speciality").value(command.getSpeciality()))
+                .andExpect(jsonPath("$.animalSpeciality").value(command.getAnimalSpeciality()))
+                .andExpect(jsonPath("$.rate").value(command.getRate()));
     }
 
     @Test

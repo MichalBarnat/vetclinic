@@ -3,7 +3,6 @@ package com.powtorka.vetclinic.service;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
-import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +28,7 @@ public class AppointmentServiceTest {
     private AppointmentRepository appointmentRepositoryMock;
 
     @BeforeEach
-    public void init()  {
+    public void init() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -80,10 +78,10 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void testFindAll(){
+    public void testFindAll() {
         List<Appointment> appointments = Arrays.asList(
-            new Appointment(),
-            new Appointment()
+                new Appointment(),
+                new Appointment()
         );
 
         Pageable pageable = Pageable.ofSize(10).withPage(1);
@@ -94,11 +92,11 @@ public class AppointmentServiceTest {
         Page<Appointment> result = appointmentService.findAll(pageable);
 
         assertEquals(page, result);
-        verify(appointmentRepositoryMock,times(1)).findAll(pageable);
+        verify(appointmentRepositoryMock, times(1)).findAll(pageable);
     }
 
     @Test
-    public void testDeleteById(){
+    public void testDeleteById() {
         Long appointmentId = 1L;
         appointmentService.deleteById(appointmentId);
 
@@ -118,8 +116,6 @@ public class AppointmentServiceTest {
 //        assertEquals(66.5, savedAppointment.getPrice());
 //        verify(appointmentRepositoryMock).save(appointment);
 //    }
-
-
 
 
 }

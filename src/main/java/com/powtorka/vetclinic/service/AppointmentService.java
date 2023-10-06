@@ -51,10 +51,10 @@ public class AppointmentService {
     public Appointment editAppointment(long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentToEdit -> {
-                    if(command.getDoctorId() != null) {
+                    if (command.getDoctorId() != null) {
                         appointmentToEdit.setDoctor(doctorService.findById(command.getDoctorId()));
                     }
-                    if(command.getPatientId() != null) {
+                    if (command.getPatientId() != null) {
                         appointmentToEdit.setPatient(patientService.findById(command.getPatientId()));
                     }
                     appointmentToEdit.setDateTime(command.getDateTime());
@@ -67,10 +67,10 @@ public class AppointmentService {
     public Appointment editPartially(Long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)
                 .map(appointmentForEdit -> {
-                    if(command.getDoctorId() != null) {
+                    if (command.getDoctorId() != null) {
                         Optional.ofNullable(doctorService.findById(command.getDoctorId())).ifPresent(appointmentForEdit::setDoctor);
                     }
-                    if(command.getPatientId() != null) {
+                    if (command.getPatientId() != null) {
                         Optional.ofNullable(patientService.findById(command.getPatientId())).ifPresent(appointmentForEdit::setPatient);
                     }
                     Optional.ofNullable(command.getDateTime()).ifPresent(appointmentForEdit::setDateTime);

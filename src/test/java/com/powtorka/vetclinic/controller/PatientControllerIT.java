@@ -46,7 +46,6 @@ public class PatientControllerIT {
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test

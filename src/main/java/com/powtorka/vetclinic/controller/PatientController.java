@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.exceptions.PatientNotFoundException;
 import com.powtorka.vetclinic.model.patient.*;
 import com.powtorka.vetclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
