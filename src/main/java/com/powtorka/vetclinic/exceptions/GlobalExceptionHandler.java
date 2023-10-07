@@ -3,6 +3,7 @@ package com.powtorka.vetclinic.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,8 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -71,4 +71,20 @@ public class GlobalExceptionHandler {
                 .method(request.getMethod())
                 .build(), UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorMessage> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
+
+        String message = "Data integrity violation: " + ex.getMostSpecificCause().getMessage();
+
+        return new ResponseEntity<>(ErrorMessage.builder()
+                .dateTime(LocalDateTime.now())
+                .code(CONFLICT.value())
+                .status(CONFLICT.getReasonPhrase())
+                .message(message)
+                .uri(request.getRequestURI())
+                .method(request.getMethod())
+                .build(), CONFLICT);
+    }
+
 }
