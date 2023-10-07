@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.print.Doc;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -209,6 +211,46 @@ public class DoctorServiceTest {
 
         assertEquals("Old Name", editedDoctor.getName());
         verify(doctorRepositoryMock, times(1)).findById(doctorId);
+    }
+
+    @Test
+    public void testEditDoctor_NonExistingDoctor() {
+        long doctorId = 1L;
+        UpdateDoctorCommand command = new UpdateDoctorCommand();
+        command.setName("New Name");
+        command.setSurname("New Surname");
+
+        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
+            doctorService.editDoctor(doctorId, command);
+        });
+
+        String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(doctorRepositoryMock, times(1)).findById(doctorId);
+    }
+
+    @Test
+    public void testFindDoctorsWithRateGreaterThan() {
+        int rate = 90;
+        Doctor doctor1 = new Doctor();
+        doctor1.setRate(91);
+        Doctor doctor2 = new Doctor();
+        doctor2.setRate(2);
+        Doctor doctor3 = new Doctor();
+        doctor3.setRate(93);
+
+        List<Doctor> expectedDoctors = new ArrayList<>(Arrays.asList(doctor1, doctor3));
+
+        when(doctorRepositoryMock.findByRateGreaterThan(rate)).thenReturn(expectedDoctors);
+
+        List<Doctor> resultDoctors = doctorService.findDoctorsWithRateGreaterThan(rate);
+
+        assertEquals(expectedDoctors, resultDoctors);
+        verify(doctorRepositoryMock, times(1)).findByRateGreaterThan(rate);
     }
 
 }
