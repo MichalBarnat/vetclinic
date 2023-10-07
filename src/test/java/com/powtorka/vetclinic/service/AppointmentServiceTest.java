@@ -1,7 +1,10 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.AppointmentIsNotAvailableExpcetion;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.doctor.Doctor;
+import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,24 +15,93 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AppointmentServiceTest {
 
-    @InjectMocks
-    private AppointmentService appointmentService;
-
     @Mock
     private AppointmentRepository appointmentRepositoryMock;
+
+    @InjectMocks
+    private AppointmentService appointmentService;
 
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testSave_AppointmentIsSaved() {
+        Appointment appointment = Appointment.builder()
+                .dateTime(LocalDateTime.now())
+                .doctor(new Doctor())
+                .patient(new Patient())
+                .price(500)
+                .build();
+
+        when(appointmentRepositoryMock.save(appointment)).thenReturn(appointment);
+
+        assertDoesNotThrow(() -> appointmentService.save(appointment));
+        verify(appointmentRepositoryMock).save(appointment);
+    }
+
+    @Test
+    public void testSave_AppointmentIsNotSaved() {
+        AppointmentService appointmentServiceSpy = spy(appointmentService);
+
+        Doctor doctor = Doctor.builder()
+                .id(1L)
+                .name("John")
+                .surname("Rambo")
+                .speciality("s")
+                .animalSpeciality("as")
+                .email("test@gmail.com")
+                .rate(100)
+                .pesel("12312312312")
+                .build();
+
+        Patient patient = Patient.builder()
+                .id(1L)
+                .name("Robert")
+                .species("s")
+                .breed("b")
+                .ownerName("John")
+                .ownerEmail("test@gmail.com")
+                .age(5)
+                .build();
+
+        Appointment appointment = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.now())
+                .price(500)
+                .build();
+
+        appointmentServiceSpy.save(appointment);
+
+        verify(appointmentRepositoryMock).save(appointment);
+
+        Appointment unreachableAppointment = Appointment.builder()
+                .id(2L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.now())
+                .price(300)
+                .build();
+
+        doReturn(false).when(appointmentServiceSpy).appointmentIsAvailable(unreachableAppointment);
+
+        assertThrows(AppointmentIsNotAvailableExpcetion.class, () -> appointmentServiceSpy.save(unreachableAppointment));
+
+        verify(appointmentRepositoryMock, never()).save(unreachableAppointment);
+
     }
 
     @Test
@@ -54,7 +126,6 @@ public class AppointmentServiceTest {
 
         when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.empty());
 
-        // Expect an exception to be thrown
         assertThrows(AppointmentNotFoundException.class, () -> {
             appointmentService.findById(appointmentId);
         });
@@ -97,25 +168,10 @@ public class AppointmentServiceTest {
 
     @Test
     public void testDeleteById() {
-        Long appointmentId = 1L;
+        long appointmentId = 1L;
         appointmentService.deleteById(appointmentId);
 
         verify(appointmentRepositoryMock, times(1)).deleteById(appointmentId);
     }
-//
-//    @Test
-//    public void testSave(){
-//        // TODO
-//        Appointment appointment = new Appointment();
-//        appointment.setPrice(66.5);
-//
-//        when(appointmentRepositoryMock.save(any(Appointment.class))).thenReturn(appointment);
-//
-//        Appointment savedAppointment = appointmentService.save(appointment);
-//
-//        assertEquals(66.5, savedAppointment.getPrice());
-//        verify(appointmentRepositoryMock).save(appointment);
-//    }
-
 
 }

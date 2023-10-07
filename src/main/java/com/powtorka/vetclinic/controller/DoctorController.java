@@ -22,7 +22,7 @@ public class DoctorController {
     @GetMapping("/{id}")
     private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
-        return new ResponseEntity<>(modelMapper.map(doctor, DoctorDto.class), OK);
+        return ResponseEntity.ok(modelMapper.map(doctor, DoctorDto.class));
     }
 
     @PostMapping

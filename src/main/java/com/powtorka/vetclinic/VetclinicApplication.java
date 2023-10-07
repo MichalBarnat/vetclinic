@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic;
 
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -68,6 +67,5 @@ public class VetclinicApplication {
 	// postawic baze na dockerze, niech to bedzie PostgreSQL wg instrukcji: https://www.youtube.com/watch?v=aHbE3pTyG-Q
 
 	// bonus jakbyscie sie nudzili: zaimplementowac Swagger
-
 
 }

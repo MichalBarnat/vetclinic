@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AppointmentNotFoundException.class)
-    public ResponseEntity<ErrorMessage> appointmentNotAvailableException(AppointmentNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> appointmentNotFoundException(AppointmentNotFoundException ex, HttpServletRequest request) {
         return new ResponseEntity<>(ErrorMessage.builder()
                 .dateTime(LocalDateTime.now())
                 .code(NOT_FOUND.value())
@@ -57,5 +58,17 @@ public class GlobalExceptionHandler {
                 .uri(request.getRequestURI())
                 .method(request.getMethod())
                 .build(), NOT_FOUND);
+    }
+
+    @ExceptionHandler(AppointmentIsNotAvailableExpcetion.class)
+    public ResponseEntity<ErrorMessage> appointmentNotAvailableException(AppointmentIsNotAvailableExpcetion ex, HttpServletRequest request) {
+        return new ResponseEntity<>(ErrorMessage.builder()
+                .dateTime(LocalDateTime.now())
+                .code(UNPROCESSABLE_ENTITY.value())
+                .status(UNPROCESSABLE_ENTITY.getReasonPhrase())
+                .message(ex.getMessage())
+                .uri(request.getRequestURI())
+                .method(request.getMethod())
+                .build(), UNPROCESSABLE_ENTITY);
     }
 }

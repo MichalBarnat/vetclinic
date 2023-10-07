@@ -27,7 +27,7 @@ public class DoctorServiceTest {
     private DoctorRepository doctorRepositoryMock;
 
     @InjectMocks
-    private DoctorService doctorServiceMock;
+    private DoctorService doctorService;
 
     @BeforeEach
     public void init() {
@@ -39,27 +39,28 @@ public class DoctorServiceTest {
         Doctor doctorToSave = new Doctor();
         doctorToSave.setName("John");
 
-        Doctor doctor = new Doctor();
-        doctor.setName("John");
+        Doctor savedDoctorMock = new Doctor();
+        savedDoctorMock.setName("John");
+        savedDoctorMock.setId(1L);
 
-        // TODO
-        when(doctorRepositoryMock.save(eq(doctorToSave))).thenReturn(doctor);
+        when(doctorRepositoryMock.save(eq(doctorToSave))).thenReturn(savedDoctorMock);
 
-        Doctor savedDoctor = doctorServiceMock.save(doctor);
+        Doctor savedDoctor = doctorService.save(doctorToSave);
 
         assertEquals("John", savedDoctor.getName());
-        verify(doctorRepositoryMock).save(doctor);
+        assertEquals(1L, savedDoctor.getId());
+        verify(doctorRepositoryMock).save(doctorToSave);
     }
 
     @Test
     public void testFindById() {
-        Long doctorId = 1L;
+        long doctorId = 1L;
         Doctor doctor = new Doctor();
         doctor.setId(doctorId);
 
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.of(doctor));
 
-        Doctor foundDoctor = doctorServiceMock.findById(doctorId);
+        Doctor foundDoctor = doctorService.findById(doctorId);
 
         assertEquals(foundDoctor.getId(), doctor.getId());
         assertEquals(foundDoctor.getRate(), doctor.getRate());
@@ -78,7 +79,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findAll(pageable)).thenReturn(page);
 
-        Page<Doctor> result = doctorServiceMock.findAll(pageable);
+        Page<Doctor> result = doctorService.findAll(pageable);
 
         assertEquals(page, result);
         verify(doctorRepositoryMock, times(1)).findAll(pageable);
@@ -95,7 +96,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findAll(pageable)).thenReturn(doctorPage);
 
-        Page<Doctor> retrievedDoctors = doctorServiceMock.findAll(pageable);
+        Page<Doctor> retrievedDoctors = doctorService.findAll(pageable);
 
         assertEquals(2, retrievedDoctors.getTotalElements());
         verify(doctorRepositoryMock).findAll(pageable);
@@ -109,8 +110,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.existsById(doctorId)).thenReturn(true);
 
-        doctorServiceMock.deleteById(doctorId);
-
+        doctorService.deleteById(doctorId);
 
         verify(doctorRepositoryMock, times(1)).deleteById(doctorId);
     }
@@ -120,7 +120,7 @@ public class DoctorServiceTest {
         Long doctorId = 1L;
         when(doctorRepositoryMock.existsById(doctorId)).thenReturn(true);
 
-        doctorServiceMock.deleteById(doctorId);
+        doctorService.deleteById(doctorId);
 
         verify(doctorRepositoryMock).deleteById(doctorId);
     }
@@ -130,7 +130,7 @@ public class DoctorServiceTest {
         Long doctorId = 2L;
         when(doctorRepositoryMock.existsById(doctorId)).thenReturn(false);
 
-        assertThrows(DoctorNotFoundException.class, () -> doctorServiceMock.deleteById(doctorId));
+        assertThrows(DoctorNotFoundException.class, () -> doctorService.deleteById(doctorId));
 
         verify(doctorRepositoryMock, never()).deleteById(doctorId);
     }
@@ -147,7 +147,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.of(originalDoctor));
 
-        Doctor editedDoctor = doctorServiceMock.editDoctor(doctorId, command);
+        Doctor editedDoctor = doctorService.editDoctor(doctorId, command);
 
         assertEquals("New Name", editedDoctor.getName());
         verify(doctorRepositoryMock, times(1)).findById(doctorId);
@@ -166,7 +166,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.of(originalDoctor));
 
-        Doctor editedDoctor = doctorServiceMock.editPartially(doctorId, command);
+        Doctor editedDoctor = doctorService.editPartially(doctorId, command);
 
         assertEquals("New Name", editedDoctor.getName());
         assertEquals("Old Surname", editedDoctor.getSurname());
@@ -187,7 +187,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.of(originalDoctor));
 
-        Doctor editedDoctor = doctorServiceMock.editPartially(doctorId, command);
+        Doctor editedDoctor = doctorService.editPartially(doctorId, command);
 
         assertEquals("New Name", editedDoctor.getName());
         assertEquals("New Surname", editedDoctor.getSurname());
@@ -205,7 +205,7 @@ public class DoctorServiceTest {
 
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.of(originalDoctor));
 
-        Doctor editedDoctor = doctorServiceMock.editPartially(doctorId, command);
+        Doctor editedDoctor = doctorService.editPartially(doctorId, command);
 
         assertEquals("Old Name", editedDoctor.getName());
         verify(doctorRepositoryMock, times(1)).findById(doctorId);

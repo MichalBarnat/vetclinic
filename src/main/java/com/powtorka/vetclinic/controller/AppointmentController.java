@@ -1,7 +1,5 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.mappings.appointment.AppointmentToAppointmentDtoConverter;
-
 import com.powtorka.vetclinic.model.appointment.*;
 import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/appointment")
@@ -19,49 +19,45 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final ModelMapper modelMapper;
-    private final AppointmentToAppointmentDtoConverter appointmentToAppointmentDtoConverter;
 
     @GetMapping("/{id}")
-    private AppointmentDto findById(@PathVariable("id") Long id) {
+    private ResponseEntity<AppointmentDto> findById(@PathVariable("id") Long id) {
         Appointment appointment = appointmentService.findById(id);
-        return modelMapper.map(appointment, AppointmentDto.class);
+        return ResponseEntity.ok(modelMapper.map(appointment, AppointmentDto.class));
     }
 
     @PostMapping
-    public AppointmentDto save(@RequestBody CreateAppointmentCommand command) {
-        Appointment appointment = appointmentService.save(command);
-        return modelMapper.map(appointment, AppointmentDto.class);
+    public ResponseEntity<AppointmentDto> save(@RequestBody CreateAppointmentCommand command) {
+        Appointment toSave = modelMapper.map(command, Appointment.class);
+        Appointment savedAppointment = appointmentService.save(toSave);
+        return new ResponseEntity<>(modelMapper.map(savedAppointment, AppointmentDto.class), CREATED);
     }
 
     @GetMapping
-    private List<AppointmentDto> findAll(CreateAppointmentPageCommand command) {
-        System.out.println("TEST");
-        System.out.println(appointmentService.findAll(modelMapper.map(command, Pageable.class)));
-        return appointmentService.findAll(modelMapper.map(command, Pageable.class))
+    private ResponseEntity<List<AppointmentDto>> findAll(CreateAppointmentPageCommand command) {
+        List<AppointmentDto> list = appointmentService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(appointment -> modelMapper.map(appointment, AppointmentDto.class))
                 .toList();
+        return ResponseEntity.ok(list);
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
+    private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         appointmentService.deleteById(id);
-        return ResponseEntity.ok("Appointment with ID: " + id + " has been deleted");
+        return ResponseEntity.noContent().build();
     }
 
-
     @PutMapping("/{id}")
-    private AppointmentDto edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+    private ResponseEntity<AppointmentDto> edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editAppointment(id, command);
-        return modelMapper.map(editedAppointment, AppointmentDto.class);
+        return ResponseEntity.ok(modelMapper.map(editedAppointment, AppointmentDto.class));
     }
 
     @PatchMapping("/{id}")
-    private AppointmentDto editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+    private ResponseEntity<AppointmentDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editPartially(id, command);
-        return modelMapper.map(editedAppointment, AppointmentDto.class);
+        return ResponseEntity.ok(modelMapper.map(editedAppointment, AppointmentDto.class));
     }
-
-
 
 }
