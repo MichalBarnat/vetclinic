@@ -86,6 +86,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -119,11 +120,11 @@
 								<rule>
 									<element>PACKAGE</element>
 									<limits>
-<!--										<limit>-->
-<!--											<counter>LINE</counter>-->
-<!--											<value>COVEREDRATIO</value>-->
-<!--											<minimum>0.80</minimum>-->
-<!--										</limit>-->
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
 										<limit>
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
@@ -134,11 +135,11 @@
 											<value>COVEREDRATIO</value>
 											<minimum>0.80</minimum>
 										</limit>
-<!--										<limit>-->
-<!--											<counter>CLASS</counter>-->
-<!--											<value>COVEREDRATIO</value>-->
-<!--											<minimum>0.00</minimum>-->
-<!--										</limit>-->
+										<limit>
+											<counter>CLASS</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.00</minimum>
+										</limit>
 									</limits>
 								</rule>
 							</rules>

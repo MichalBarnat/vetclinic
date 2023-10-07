@@ -12,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@Generated
 public class Doctor {
 
     @Id

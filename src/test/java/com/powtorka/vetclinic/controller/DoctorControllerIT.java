@@ -34,7 +34,6 @@ public class DoctorControllerIT {
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
 
-
     @AfterEach
     void tearDown() throws LiquibaseException {
         databaseCleaner.cleanUp();

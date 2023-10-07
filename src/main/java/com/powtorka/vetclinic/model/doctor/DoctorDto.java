@@ -1,10 +1,13 @@
 package com.powtorka.vetclinic.model.doctor;
 
 import lombok.Builder;
+import lombok.Generated;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 @Value
 @Builder
+@Generated
 public class DoctorDto {
 
     Long id;

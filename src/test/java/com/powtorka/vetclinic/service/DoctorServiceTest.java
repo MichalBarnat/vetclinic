@@ -156,6 +156,76 @@ public class DoctorServiceTest {
     }
 
     @Test
+    public void testEditDoctor_NonExistingDoctor() {
+        long doctorId = 1L;
+        UpdateDoctorCommand command = new UpdateDoctorCommand();
+        command.setName("New Name");
+        command.setSurname("New Surname");
+
+        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
+            doctorService.editDoctor(doctorId, command);
+        });
+
+        String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(doctorRepositoryMock, times(1)).findById(doctorId);
+    }
+
+    @Test
+    public void testEditPartially_NonExistingDoctor() {
+        long doctorId = 1L;
+        UpdateDoctorCommand command = new UpdateDoctorCommand();
+        command.setName("New Name");
+        command.setSurname("New Surname");
+
+        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
+            doctorService.editPartially(doctorId, command);
+        });
+
+        String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(doctorRepositoryMock, times(1)).findById(doctorId);
+    }
+
+    @Test
+    public void testFindById_NonExistingDoctor() {
+
+//        //PROSTA WERSJA:
+//        long doctorId = 1L;
+//
+//        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+//
+//        assertThrows(DoctorNotFoundException.class, () -> {
+//            doctorService.findById(doctorId);
+//        });
+//
+//        verify(doctorRepositoryMock, times(1)).findById(doctorId);
+
+
+        long doctorId = 1L;
+
+        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
+            doctorService.findById(doctorId);
+        });
+
+        String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
+        verify(doctorRepositoryMock, times(1)).findById(doctorId);
+    }
+
+    @Test
     public void testEditPartially_OneField() {
         Long doctorId = 1L;
         Doctor originalDoctor = new Doctor();
@@ -213,25 +283,7 @@ public class DoctorServiceTest {
         verify(doctorRepositoryMock, times(1)).findById(doctorId);
     }
 
-    @Test
-    public void testEditDoctor_NonExistingDoctor() {
-        long doctorId = 1L;
-        UpdateDoctorCommand command = new UpdateDoctorCommand();
-        command.setName("New Name");
-        command.setSurname("New Surname");
 
-        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
-            doctorService.editDoctor(doctorId, command);
-        });
-
-        String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-
-        verify(doctorRepositoryMock, times(1)).findById(doctorId);
-    }
 
     @Test
     public void testFindDoctorsWithRateGreaterThan() {
