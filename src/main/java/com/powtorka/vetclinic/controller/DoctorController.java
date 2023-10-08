@@ -4,9 +4,12 @@ import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
@@ -34,11 +37,16 @@ public class DoctorController {
 
     @GetMapping
     private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
-        List<DoctorDto> list = doctorService.findAll(modelMapper.map(command, Pageable.class))
-                .stream()
-                .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
-                .toList();
-        return ResponseEntity.ok(list);
+        Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
+
+        if (page != null) {
+            List<DoctorDto> list = page.stream()
+                    .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
+                    .toList();
+            return ResponseEntity.ok(list);
+        } else {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
     }
 
     @DeleteMapping("/{id}")
