@@ -1,5 +1,6 @@
-package com.powtorka.vetclinic.model.doctor;
+package com.powtorka.vetclinic.model.doctor.doctor;
 
+import com.powtorka.vetclinic.model.doctor.Doctor;
 import org.junit.Test;
 
 import javax.print.Doc;

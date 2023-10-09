@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.service;
 
-import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.exceptions.PatientNotFoundException;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -56,7 +54,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void testFindById() {
+    public void testFindById_ExistingPatient() {
         long patientId = 1L;
         Patient patient = new Patient();
         patient.setId(patientId);
@@ -67,6 +65,15 @@ public class PatientServiceTest {
 
         assertEquals(foundPatient.getId(), patient.getId());
         assertEquals(foundPatient.getAge(), patient.getAge());
+        verify(patientRepositoryMock, times(1)).findById(patientId);
+    }
+
+    @Test
+    public void testFindById_NonExistingPatient(){
+        Long patientId = 2L;
+        when(patientRepositoryMock.findById(patientId)).thenReturn(Optional.empty());
+
+        assertThrows(PatientNotFoundException.class, () -> patientService.findById(patientId));
         verify(patientRepositoryMock, times(1)).findById(patientId);
     }
 
