@@ -1,6 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.service.DoctorService;
@@ -48,6 +49,9 @@ public class DoctorControllerWebMvcTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private DoctorRepository doctorRepository;
 
     private Doctor doctor;
     private Doctor savedDoctor;
@@ -414,6 +418,14 @@ public class DoctorControllerWebMvcTest {
                 .andExpect(jsonPath("$[0].rate").value(100));
 
         verify(doctorService).findDoctorsWithRateGreaterThan(90);
+    }
+
+    @Test
+    public void doctorNotFoundExceptionHandler_ShouldReturnStatusNotFound() throws Exception {
+
+        postman.perform(get("/api/doctor/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
 }

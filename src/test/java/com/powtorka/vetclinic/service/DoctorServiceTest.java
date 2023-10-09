@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 
 import javax.print.Doc;
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DoctorServiceTest {
 
@@ -119,6 +123,13 @@ public class DoctorServiceTest {
     }
 
     @Test
+    public void testDeleteAll() {
+        doctorService.deleteAll();
+
+        verify(doctorRepositoryMock, times(1)).deleteAll();
+    }
+
+    @Test
     public void testDeleteById_ExistingDoctor() {
         Long doctorId = 1L;
         when(doctorRepositoryMock.existsById(doctorId)).thenReturn(true);
@@ -137,6 +148,7 @@ public class DoctorServiceTest {
 
         verify(doctorRepositoryMock, never()).deleteById(doctorId);
     }
+
 
     @Test
     public void testEditDoctor() {
@@ -284,7 +296,6 @@ public class DoctorServiceTest {
         assertEquals("Old Name", editedDoctor.getName());
         verify(doctorRepositoryMock, times(1)).findById(doctorId);
     }
-
 
 
     @Test
