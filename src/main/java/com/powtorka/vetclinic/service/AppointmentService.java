@@ -44,6 +44,10 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
+    public void deleteAll() {
+        appointmentRepository.deleteAll();
+    }
+
     @Transactional
     public Appointment editAppointment(long id, UpdateAppointementCommand command) {
         return appointmentRepository.findById(id)

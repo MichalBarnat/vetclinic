@@ -48,6 +48,12 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/deleteAll")
+    private ResponseEntity<Void> deleteAll() {
+        appointmentService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}")
     private ResponseEntity<AppointmentDto> edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editAppointment(id, command);

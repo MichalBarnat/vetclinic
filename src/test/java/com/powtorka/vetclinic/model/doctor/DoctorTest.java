@@ -2,7 +2,10 @@ package com.powtorka.vetclinic.model.doctor;
 
 import org.junit.Test;
 
+import javax.print.Doc;
+
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DoctorTest {
 
@@ -76,6 +79,26 @@ public class DoctorTest {
 
         String expected = "Doctor(id=1, name=John, surname=surname, speciality=speciality, animalSpeciality=animalS, email=o@o2.pl, rate=20, pesel=12345678901)";
         assertEquals(expected, doctor.toString());
+    }
+
+    @Test
+    public void testToStringFromBuilder() {
+        Doctor doctor = Doctor.builder()
+                .id(1L)
+                .name("michal")
+                .surname("barnat")
+                .speciality("s")
+                .animalSpeciality("as")
+                .email("michalbarnat@gmail.com")
+                .rate(100)
+                .pesel("12312312312")
+                .build();
+
+        String expectedString = "Doctor(id=1, name=michal, surname=barnat, speciality=s, animalSpeciality=as, email=michalbarnat@gmail.com, rate=100, pesel=12312312312)";
+        String actualToString = doctor.toString();
+
+        assertEquals(expectedString, actualToString);
+
     }
 
 }

@@ -38,6 +38,10 @@ public class PatientService {
         }
     }
 
+    public void deleteAll() {
+        patientRepository.deleteAll();
+    }
+
     @Transactional
     public Patient editPatient(long id, UdpatePatientCommand command) {
         return patientRepository.findById(id)

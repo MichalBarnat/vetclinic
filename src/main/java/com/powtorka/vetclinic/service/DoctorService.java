@@ -4,6 +4,7 @@ import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
 import com.powtorka.vetclinic.repository.DoctorRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,11 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     public Doctor findById(long id) {
-        return doctorRepository.findById(id).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
+        if (doctorRepository.existsById(id)) {
+            return doctorRepository.findById(id).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
+        } else {
+            throw new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id));
+        }
     }
 
     public Doctor save(Doctor doctor) {
@@ -37,6 +42,10 @@ public class DoctorService {
         } else {
             throw new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id));
         }
+    }
+
+    public void deleteAll() {
+        doctorRepository.deleteAll();
     }
 
     @Transactional

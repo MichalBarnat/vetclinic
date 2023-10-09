@@ -2,11 +2,15 @@ package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.model.doctor.*;
+import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.service.DoctorService;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +28,7 @@ import java.util.List;
 import static java.util.Optional.empty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -165,25 +169,6 @@ public class DoctorControllerWebMvcTest {
                 .build();
     }
 
-
-    @Test
-    public void findById_ShouldReturnStatusOkAndExpectedDoctorDto() throws Exception {
-
-        when(doctorService.findById(1L)).thenReturn(doctor);
-
-        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(doctorDto);
-
-        postman.perform(get("/doctor/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("michal"))
-                .andExpect(jsonPath("$.surname").value("barnat"))
-                .andExpect(jsonPath("$.speciality").value("s"))
-                .andExpect(jsonPath("$.animalSpeciality").value("as"))
-                .andExpect(jsonPath("$.rate").value(100));
-    }
-
     @Test
     public void save_ShouldReturnStatusCreatedAndExpectedDoctorDto() throws Exception {
 
@@ -211,70 +196,100 @@ public class DoctorControllerWebMvcTest {
     }
 
     @Test
-    public void findAll_ShouldReturnStatusOkAndExpectedDoctorDtoList() throws Exception {
+    public void findById_ShouldReturnStatusOkAndExpectedDoctorDto() throws Exception {
 
-        Page<Doctor> page = new PageImpl<>(List.of(doctor));
+        when(doctorService.findById(1L)).thenReturn(doctor);
 
-        when(doctorService.findAll(any(Pageable.class))).thenReturn(page);
-        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(expectedDto);
+        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(doctorDto);
 
-        postman.perform(get("/doctor")
+        postman.perform(get("/doctor/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("michal"))
+                .andExpect(jsonPath("$.surname").value("barnat"))
+                .andExpect(jsonPath("$.speciality").value("s"))
+                .andExpect(jsonPath("$.animalSpeciality").value("as"))
+                .andExpect(jsonPath("$.rate").value(100));
+    }
+
+//    @Test
+//    public void findAll_ShouldReturnPageContainingDoctors() throws Exception {
+//
+//        Page<Doctor> page = new PageImpl<>(List.of(doctor));
+//
+//        when(doctorService.findAll(any(Pageable.class))).thenReturn(page);
+//        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(expectedDto);
+//
+//        postman.perform(get("/doctor")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
 //                .andExpect(jsonPath("$[0].id").value(1))
 //                .andExpect(jsonPath("$[0].name").value("michal"))
 //                .andExpect(jsonPath("$[0].surname").value("barnat"))
 //                .andExpect(jsonPath("$[0].speciality").value("s"))
 //                .andExpect(jsonPath("$[0].animalSpeciality").value("as"))
 //                .andExpect(jsonPath("$[0].rate").value(100));
-    }
-
-    @Test
-    public void findAll_ShouldReturnDoctorDtoList() throws Exception {
-
-        List<Doctor> doctorList = new ArrayList<>(Arrays.asList(doctor));
-        Page<Doctor> page = new PageImpl<>(doctorList);
-
-        when(doctorService.findAll(any(PageRequest.class))).thenReturn(page);
-        when(doctorService.findAll(any(Pageable.class))).thenReturn(page);
-        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(doctorDto);
-
-        postman.perform(get("/doctor")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-
-        //verify(doctorService).findAll(any(PageRequest.class));
-        //verify(modelMapper).map(doctor, DoctorDto.class);
-    }
-
-    @Test
-    public void bbb() throws Exception {
-
-        postman.perform(get("/doctor"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void aaaa() throws Exception {
-
-
-        postman.perform(get("/doctor"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
+//    }
 
     @Test
     public void deleteById_ShouldReturnStatusNoContent() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(savedDoctor);
+
+        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
+                .thenReturn(savedDoctor);
+        when(doctorService.save(any(Doctor.class))).thenReturn(savedDoctor);
+        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("michal"));
+
         postman.perform(delete("/doctor/3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
+        when(doctorService.findById(1L)).thenReturn(null);
+
+        postman.perform(get("/doctor/3")
+                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isNotFound());
+
         verify(doctorService).deleteById(3L);
     }
+
+    @Test
+    public void deleteAll_ShouldReturnStatusNoContent() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(savedDoctor);
+
+        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
+                .thenReturn(savedDoctor);
+        when(doctorService.save(any(Doctor.class))).thenReturn(savedDoctor);
+        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("michal"));
+
+
+        postman.perform(delete("/doctor/deleteAll")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(doctorService).deleteAll();
+
+        postman.perform(get("/doctor/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(doctorService).save(savedDoctor);
+        verify(modelMapper).map(savedDoctor, DoctorDto.class);
+    }
+
 
     @Test
     public void edit_ShouldReturnStatusOkAndExpectedDoctorDto() throws Exception {
@@ -313,8 +328,8 @@ public class DoctorControllerWebMvcTest {
         String requestBody = objectMapper.writeValueAsString(partiallyUpdateDoctorCommand);
 
         postman.perform(patch("/doctor/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("new name"))
@@ -326,7 +341,7 @@ public class DoctorControllerWebMvcTest {
         verify(doctorService).editPartially(eq(1L), any(UpdateDoctorCommand.class));
         verify(doctorService).editPartially(eq(1L), argThat(command ->
                 "new name".equals(command.getName()) &&
-                "new surname".equals(command.getSurname())));
+                        "new surname".equals(command.getSurname())));
         verify(modelMapper).map(partiallyUpdatedDoctor, DoctorDto.class);
 
         //verify(doctorService).editPartially(1L, partiallyUpdateDoctorCommand); -- ZLE

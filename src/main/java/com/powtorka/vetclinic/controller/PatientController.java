@@ -50,6 +50,12 @@ public class PatientController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/deleteAll")
+    private ResponseEntity<Void> deleteAll() {
+        patientService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping
     private ResponseEntity<PatientDto> edit(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command) {
         Patient editedPatient = patientService.editPatient(id, command);

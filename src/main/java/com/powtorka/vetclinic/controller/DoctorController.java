@@ -25,6 +25,9 @@ public class DoctorController {
     @GetMapping("/{id}")
     private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
+        if(doctor == null) {
+            return ResponseEntity.status(NOT_FOUND).body(null);
+        }
         return ResponseEntity.ok(modelMapper.map(doctor, DoctorDto.class));
     }
 
@@ -37,21 +40,35 @@ public class DoctorController {
 
     @GetMapping
     private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
+        // PO TYM dzialaja testy ktore zwracaja puste strony:
+//        Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
+//
+//        if (page != null && page.getContent() != null) {
+//            List<DoctorDto> list = page.stream()
+//                    .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
+//                    .toList();
+//            return ResponseEntity.ok(list);
+//        } else {
+//            return ResponseEntity.ok(Collections.emptyList());
+//        }
+
         Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
 
-        if (page != null) {
-            List<DoctorDto> list = page.stream()
-                    .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
-                    .toList();
-            return ResponseEntity.ok(list);
-        } else {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
+        List<DoctorDto> list = page.stream()
+                .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
+                .toList();
+        return ResponseEntity.ok(list);
     }
 
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/deleteAll")
+    private ResponseEntity<Void> deleteAll() {
+        doctorService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
