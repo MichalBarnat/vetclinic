@@ -216,7 +216,8 @@ public class PatientControllerWebMvcTest {
     }
 
     @Test
-    public void findAll_ShouldReturnPageContainingPatients() throws Exception {Page<Patient> page = new PageImpl<>(List.of(patient));
+    public void findAll_ShouldReturnPageContainingPatients() throws Exception {
+        Page<Patient> page = new PageImpl<>(List.of(patient));
         Pageable mockedPageable = PageRequest.of(0, 10);
 
         when(patientService.findAll(eq(mockedPageable))).thenReturn(page);
@@ -232,6 +233,27 @@ public class PatientControllerWebMvcTest {
                 .andExpect(jsonPath("$[0].breed").value("Breed"))
                 .andExpect(jsonPath("$[0].ownerName").value("Krystian"))
                 .andExpect(jsonPath("$[0].age").value(5));
+    }
+
+    @Test
+    public void findAll_ShouldReturnEmptyListWhenServiceReturnsNull() throws Exception {
+        when(patientService.findAll(any())).thenReturn(null);
+        postman.perform(get("/patient")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", IsEmptyCollection.empty()));
+    }
+
+    @Test
+    public void findAll_ShouldReturnEmptyListWhenServiceReturnsPageWithNullContent() throws Exception {
+        Page<Patient> mockPage = mock(Page.class);
+        when(mockPage.getContent()).thenReturn(null);
+        when(patientService.findAll(any())).thenReturn(mockPage);
+
+        postman.perform(get("/patient")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", IsEmptyCollection.empty()));
     }
 
     @Test
@@ -341,43 +363,47 @@ public class PatientControllerWebMvcTest {
         verify(modelMapper).map(partiallyUdpatedPatient, PatientDto.class);
     }
 
-//    @Test
-//    public void getTopAge_ShouldReturnStatusOkAndExpectedPatientDtoList() throws Exception {
-//
-//        Patient qualifiedPatient = Patient.builder()
-//                .id(3L)
-//                .name("Tyson3")
-//                .species("Species3")
-//                .breed("Breed3")
-//                .ownerName("Krystian3")
-//                .ownerEmail("krystian3@gmail.com")
-//                .age(5)
-//                .build();
-//
-//        List<Patient> theOldestPatients = List.of(patient, qualifiedPatient);
-//
-//        when(patientService.findPatientsWithAgeGreaterThan(5)).thenReturn(theOldestPatients);
-//        when(modelMapper.map(patient, PatientDto.class)).thenReturn(expectedDto);
-//
-//        postman.perform(get("/patient/the-oldest")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id").value(1))
-//                .andExpect(jsonPath("$[0].name").value("Tyson"))
-//                .andExpect(jsonPath("$[0].species").value("Species"))
-//                .andExpect(jsonPath("$[0].breed").value("Breed"))
-//                .andExpect(jsonPath("$[0].ownerName").value("Krystian"))
-//                .andExpect(jsonPath("$[0].age").value(7))
-//
-//                .andExpect(jsonPath("$[1].id").value(3))
-//                .andExpect(jsonPath("$[1].name").value("Tyson3"))
-//                .andExpect(jsonPath("$[1].species").value("Species3"))
-//                .andExpect(jsonPath("$[1].breed").value("Breed3"))
-//                .andExpect(jsonPath("$[1].ownerName").value("Krystian3"))
-//                .andExpect(jsonPath("$[1].age").value(5));
-//
-//        verify(patientService).findPatientsWithAgeGreaterThan(5);
-//    }
+    @Test
+    public void getTopAge_ShouldReturnStatusOkAndExpectedPatientDtoList() throws Exception {
+
+        Patient qualifiedPatient = Patient.builder()
+                .id(3L)
+                .name("Tyson3")
+                .species("Species3")
+                .breed("Breed3")
+                .ownerName("Krystian3")
+                .ownerEmail("krystian3@gmail.com")
+                .age(15)
+                .build();
+
+        List<Patient> theOldestPatients = List.of(patient, qualifiedPatient);
+
+        when(patientService.findPatientsWithAgeGreaterThan(14)).thenReturn(theOldestPatients);
+
+        when(modelMapper.map(patient, PatientDto.class)).thenReturn(expectedDto);
+
+        postman.perform(get("/patient/the-oldest")
+                        .param("minAge", "14")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Tyson"))
+                .andExpect(jsonPath("$[0].species").value("Species"))
+                .andExpect(jsonPath("$[0].breed").value("Breed"))
+                .andExpect(jsonPath("$[0].ownerName").value("Krystian"))
+                .andExpect(jsonPath("$[0].age").value(5))
+
+                .andExpect(jsonPath("$[1].id").value(3))
+                .andExpect(jsonPath("$[1].name").value("Tyson3"))
+                .andExpect(jsonPath("$[1].species").value("Species3"))
+                .andExpect(jsonPath("$[1].breed").value("Breed3"))
+                .andExpect(jsonPath("$[1].ownerName").value("Krystian3"))
+                .andExpect(jsonPath("$[1].age").value(15));
+
+        verify(patientService).findPatientsWithAgeGreaterThan(14);
+    }
 
 
 }
