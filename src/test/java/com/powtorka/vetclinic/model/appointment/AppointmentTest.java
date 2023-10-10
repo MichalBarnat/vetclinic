@@ -1,9 +1,6 @@
 package com.powtorka.vetclinic.model.appointment;
 
-import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.service.DoctorService;
-import com.powtorka.vetclinic.service.PatientService;
+
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -12,13 +9,6 @@ import static org.junit.Assert.*;
 
 public class AppointmentTest {
 
-    private final DoctorService doctorService;
-    private final PatientService patientService;
-
-    public AppointmentTest(DoctorService doctorService, PatientService patientService) {
-        this.doctorService = doctorService;
-        this.patientService = patientService;
-    }
 
 
     @Test
