@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Generated
+@Builder
 public class CreateAppointmentCommand {
 
     private Long doctorId;

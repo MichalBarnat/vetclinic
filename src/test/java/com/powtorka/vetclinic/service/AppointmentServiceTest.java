@@ -3,6 +3,7 @@ package com.powtorka.vetclinic.service;
 import com.powtorka.vetclinic.exceptions.AppointmentIsNotAvailableExpcetion;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
@@ -172,6 +173,72 @@ public class AppointmentServiceTest {
         appointmentService.deleteById(appointmentId);
 
         verify(appointmentRepositoryMock, times(1)).deleteById(appointmentId);
+    }
+
+    @Test
+    public void testDeleteAll(){
+        appointmentService.deleteAll();
+
+        verify(appointmentRepositoryMock, times(1)).deleteAll();
+    }
+
+    @Test
+    public void testEditAppointment(){
+        Long appointmentId = 1L;
+        Appointment orginalAppointment = new Appointment();
+        orginalAppointment.setId(appointmentId);
+        orginalAppointment.setPrice(20);
+
+        UpdateAppointementCommand command = new UpdateAppointementCommand();
+        command.setPrice(21);
+
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(orginalAppointment));
+
+        Appointment editedAppointment = appointmentService.editAppointment(appointmentId,command);
+
+        assertEquals(21,editedAppointment.getPrice(),0);
+        verify(appointmentRepositoryMock,times(1)).findById(appointmentId);
+    }
+
+    @Test
+    public void testEditAppointment_NonExistingAppointment() {
+        long appointmentId = 1L;
+        UpdateAppointementCommand command = new UpdateAppointementCommand();
+        command.setPrice(20);
+        command.setDateTime(LocalDateTime.parse("2023-09-21T14:30:00"));
+
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(AppointmentNotFoundException.class, () -> {
+            appointmentService.editAppointment(appointmentId,command);
+        });
+
+        String expectedMessage = String.format("Appointment with id %d not found!", appointmentId);
+        String actualMessage = exception.getMessage();
+        assertFalse(actualMessage.contains(expectedMessage));
+
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
+
+
+    }
+
+    @Test
+    public void testEditPartially_ExistingPatient() {
+        Long appointmentId = 1L;
+        Appointment oldAppointmemt = new Appointment();
+        oldAppointmemt.setPrice(20);
+        oldAppointmemt.setDateTime(LocalDateTime.parse("2023-09-21T14:30:00"));
+
+        UpdateAppointementCommand updateAppointementCommand = new UpdateAppointementCommand();
+        updateAppointementCommand.setPrice(10);
+
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(oldAppointmemt));
+
+        Appointment editedAppointment = appointmentService.editPartially(appointmentId, updateAppointementCommand);
+
+        assertEquals(10, editedAppointment.getPrice());
+        assertEquals(LocalDateTime.parse("2023-09-21T14:30:00"), editedAppointment.getDateTime());
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
 }

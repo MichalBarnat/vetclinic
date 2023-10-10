@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.model.appointment.Appointment;
+import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.doctor.Doctor;
+import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.service.DoctorService;
 import com.powtorka.vetclinic.service.PatientService;
 import liquibase.exception.LiquibaseException;
@@ -21,6 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +45,6 @@ public class AppointmentControllerIT {
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
-    private final MockMvc mockMvc;
     private final DoctorService doctorService;
     private final PatientService patientService;
 
@@ -55,14 +59,13 @@ public class AppointmentControllerIT {
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
-        this.mockMvc = mockMvc;
         this.doctorService = doctorService;
         this.patientService = patientService;
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void shouldFindAppointment19ById() throws Exception {
+    void shouldFindAppointmentById() throws Exception {
         postman.perform(get("/appointment/19"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -78,48 +81,53 @@ public class AppointmentControllerIT {
     public  void shouldDeleteAppointment() throws Exception {
         postman.perform(delete("/appointment/2"))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("Appointment with ID: 2 has been deleted"));
-
+                .andExpect(status().isNoContent());
     }
 
- /*   @Test
-    public void shouldSaveAppointment() throws Exception {
+//   @Test
+//    public void shouldSaveAppointment() throws Exception {
+//
+//        CreateAppointmentCommand command = CreateAppointmentCommand.builder()
+//                .doctorId(22L)
+//                .patientId(22L)
+//                .dateTime(LocalDateTime.parse("2023-09-29T20:26:03.93"))
+//                .price(23.5)
+//                .build();
+//
+//        String requestBody = objectMapper.writeValueAsString(command);
+//
+//
+//        postman.perform(get("/appointment/23"))
+//                .andDo(print())
+//                .andExpect(status().isNotFound())
+//                .andExpect(jsonPath("$.code").value(404))
+//                .andExpect(jsonPath("$.status").value("Not Found"))
+//                .andExpect(jsonPath("$.message").value("Appointment with id 23 not found!"))
+//                .andExpect(jsonPath("$.uri").value("appointment/23"))
+//                .andExpect(jsonPath("$.method").value("GET"));
+//
+//
+//        postman.perform(post("/appointment")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(requestBody))
+//                .andDo(print())
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.doctorId").value(command.getDoctorId()))
+//                .andExpect(jsonPath("$.patientId").value(command.getPatientId()))
+//                .andExpect(jsonPath("$.dateTime").value(command.getDateTime()))
+//                .andExpect(jsonPath("$.price").value(command.getPrice()));
+//
+//        postman.perform(get("/appointment/23"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.doctorId").value(command.getDoctorId()))
+//                .andExpect(jsonPath("$.patientId").value(command.getPatientId()))
+//                .andExpect(jsonPath("$.dateTime").value(command.getDateTime()))
+//                .andExpect(jsonPath("$.price").value(command.getPrice()));
+//
+//    }
 
-        Doctor doctor = new Doctor();
-        doctor.setId(22L);
-        Patient patient = new Patient();
-        patient.setId(22L);
 
-        Appointment appointment = Appointment.builder()
-                .id(22L)
-                .doctor(doctor)
-                .patient(patient)
-                .dateTime(LocalDateTime.parse("2023-09-29T20:26:03.93"))
-                .price(23.5)
-                .build();
-
-        String requestBody = objectMapper.writeValueAsString(appointment);
-
-
-        mockMvc.perform(post("/appointment")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-        MvcResult result = mockMvc.perform(get("/appointment/22")) // Use the correct path and appointment ID
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Appointment appointmentFromResponse = objectMapper.readValue(content, Appointment.class);
-
-        assertEquals(appointment, appointmentFromResponse);
-    }
-
-  */
 
 
     @Test
