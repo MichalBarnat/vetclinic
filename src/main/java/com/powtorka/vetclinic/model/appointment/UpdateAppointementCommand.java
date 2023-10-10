@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Generated
 public class UpdateAppointementCommand {
 
     private Long doctorId;

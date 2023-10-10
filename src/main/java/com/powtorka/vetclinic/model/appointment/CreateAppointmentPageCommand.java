@@ -3,12 +3,14 @@ package com.powtorka.vetclinic.model.appointment;
 import com.powtorka.vetclinic.validators.ValueOfEnum;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
+@Generated
 public class CreateAppointmentPageCommand {
     @Min(value = 0, message =  "PAGE_NOT_NEGATIVE")
     private int pageNumber = 0;

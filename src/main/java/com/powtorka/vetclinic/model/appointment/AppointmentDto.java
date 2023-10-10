@@ -7,8 +7,7 @@ import java.time.LocalDateTime;
 
 @Value
 @Builder
-@AllArgsConstructor
-@Setter
+@Generated
 public class AppointmentDto {
     Long id;
     Long doctorId;
