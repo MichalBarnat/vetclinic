@@ -210,23 +210,15 @@ public class DoctorServiceTest {
 
     @Test
     public void testFindById_NonExistingDoctor() {
-
-//        //PROSTA WERSJA:
-//        long doctorId = 1L;
-//
-//        when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
-//
-//        assertThrows(DoctorNotFoundException.class, () -> {
-//            doctorService.findById(doctorId);
-//        });
-//
-//        verify(doctorRepositoryMock, times(1)).findById(doctorId);
-
-
         long doctorId = 1L;
 
-        when(doctorRepositoryMock.existsById(doctorId)).thenReturn(false);
         when(doctorRepositoryMock.findById(doctorId)).thenReturn(Optional.empty());
+
+        assertThrows(DoctorNotFoundException.class, () -> {
+            doctorService.findById(doctorId);
+        });
+
+        verify(doctorRepositoryMock, times(1)).findById(doctorId);
 
         Exception exception = assertThrows(DoctorNotFoundException.class, () -> {
             doctorService.findById(doctorId);
@@ -235,8 +227,6 @@ public class DoctorServiceTest {
         String expectedMessage = String.format("Doctor with id: %s not found!", doctorId);
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
-
-        verify(doctorRepositoryMock, times(0)).findById(doctorId);
     }
 
     @Test
