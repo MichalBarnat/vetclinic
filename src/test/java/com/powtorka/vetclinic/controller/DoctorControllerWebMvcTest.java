@@ -258,8 +258,8 @@ public class DoctorControllerWebMvcTest {
         when(doctorService.findById(1L)).thenReturn(null);
 
         postman.perform(get("/doctor/3")
-                .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isNotFound());
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
         verify(doctorService).deleteById(3L);
     }
@@ -287,7 +287,7 @@ public class DoctorControllerWebMvcTest {
         verify(doctorService).deleteAll();
 
         postman.perform(get("/doctor/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
         verify(doctorService).save(savedDoctor);

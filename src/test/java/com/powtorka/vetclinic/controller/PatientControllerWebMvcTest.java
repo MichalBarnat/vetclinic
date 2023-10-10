@@ -4,10 +4,7 @@ package com.powtorka.vetclinic.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.*;
-import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
-import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.model.patient.PatientDto;
-import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
+import com.powtorka.vetclinic.model.patient.*;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import com.powtorka.vetclinic.service.DoctorService;
@@ -59,6 +56,9 @@ public class PatientControllerWebMvcTest {
 
     @MockBean
     private PatientRepository patientRepository;
+
+    @MockBean
+    private Pageable mockedPageable;
 
     private Patient patient;
     private Patient savedPatient;
@@ -196,7 +196,7 @@ public class PatientControllerWebMvcTest {
                 .andExpect(jsonPath("$.age").value(5));
 
         verify(patientService).save(savedPatient);
-        verify(modelMapper).map(savedPatient,PatientDto.class);
+        verify(modelMapper).map(savedPatient, PatientDto.class);
     }
 
     @Test
@@ -215,90 +215,105 @@ public class PatientControllerWebMvcTest {
                 .andExpect(jsonPath("$.age").value(5));
     }
 
-//    @Test
-//    public void findAll_ShouldReturnPageContainingPatients() throws Exception{}
+    @Test
+    public void findAll_ShouldReturnPageContainingPatients() throws Exception {Page<Patient> page = new PageImpl<>(List.of(patient));
+        Pageable mockedPageable = PageRequest.of(0, 10);
 
-//    @Test
-//    public void deleteById_ShouldReturnStatusNoContent() throws Exception {
-//        String requestBody = objectMapper.writeValueAsString(savedPatient);
-//
-//        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class)))
-//                .thenReturn(savedPatient);
-//        when(patientService.save(any(Patient.class))).thenReturn(savedPatient);
-//        when(modelMapper.map(savedPatient, PatientDto.class)).thenReturn(expectedDto);
-//
-//        postman.perform(post("/patient")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(requestBody))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.name").value("Tyson"));
-//
-//        postman.perform(delete("/patient/3")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNoContent());
-//
-//        when(patientService.findById(1L)).thenReturn(null);
-//
-//        postman.perform(get("/patient/3")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//
-//        verify(patientService).deleteById(3L);
-//    }
+        when(patientService.findAll(eq(mockedPageable))).thenReturn(page);
+        when(modelMapper.map(any(CreatePatientPageCommand.class), eq(Pageable.class))).thenReturn(mockedPageable);
+        when(modelMapper.map(patient, PatientDto.class)).thenReturn(expectedDto);
 
-//    @Test
-//    public void deleteAll_ShouldReturnStatusNoContent() throws Exception {
-//        String requestBody = objectMapper.writeValueAsString(savedPatient);
-//
-//        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class)))
-//                .thenReturn(savedPatient);
-//        when(patientService.save(any(Patient.class))).thenReturn(savedPatient);
-//        when(modelMapper.map(savedPatient, PatientDto.class)).thenReturn(expectedDto);
-//
-//        postman.perform(post("/patient")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(requestBody))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.name").value("Tyson"));
-//
-//
-//        postman.perform(delete("/patient/deleteAll")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNoContent());
-//
-//        verify(patientService).deleteAll();
-//
-//        postman.perform(get("/patient/1")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//
-//        verify(patientService).save(savedPatient);
-//        verify(modelMapper).map(savedPatient, PatientDto.class);
-//    }
+        postman.perform(get("/patient")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Tyson"))
+                .andExpect(jsonPath("$[0].species").value("Species"))
+                .andExpect(jsonPath("$[0].breed").value("Breed"))
+                .andExpect(jsonPath("$[0].ownerName").value("Krystian"))
+                .andExpect(jsonPath("$[0].age").value(5));
+    }
 
-//    @Test
-//    public void edit_ShouldReturnStatusOkAndExpectedPatientDto() throws Exception {
-//
-//        when(patientService.editPatient(eq(1L), any(UdpatePatientCommand.class))).thenReturn(udpatedPatient);
-//        when(modelMapper.map(udpatedPatient, PatientDto.class)).thenReturn(expectedUdpatedDto);
-//
-//        String requestBody = new ObjectMapper().writeValueAsString(udpatePatientCommand);
-//
-//        postman.perform(put("/patient/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(requestBody))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(1))
-//                .andExpect(jsonPath("$.name").value("udpateTyson"))
-//                .andExpect(jsonPath("$.species").value("udpateSpecies"))
-//                .andExpect(jsonPath("$.breed").value("udpateBreed"))
-//                .andExpect(jsonPath("$.ownerName").value("udpateKrytian"))
-//                .andExpect(jsonPath("$.ownerEmail").value("udpateKrystian@gmail.com"))
-//                .andExpect(jsonPath("$.age").value(6));
-//
-//        verify(patientService).editPatient(eq(1L), any(UdpatePatientCommand.class));
-//        verify(modelMapper).map(udpatedPatient, PatientDto.class);
-//    }
+    @Test
+    public void deleteById_ShouldReturnStatusNoContent() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(savedPatient);
+
+        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class)))
+                .thenReturn(savedPatient);
+        when(patientService.save(any(Patient.class))).thenReturn(savedPatient);
+        when(modelMapper.map(savedPatient, PatientDto.class)).thenReturn(expectedDto);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Tyson"));
+
+        postman.perform(delete("/patient/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        when(patientService.findById(1L)).thenReturn(null);
+
+        postman.perform(get("/patient/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(patientService).deleteById(3L);
+    }
+
+    @Test
+    public void deleteAll_ShouldReturnStatusNoContent() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(savedPatient);
+
+        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class)))
+                .thenReturn(savedPatient);
+        when(patientService.save(any(Patient.class))).thenReturn(savedPatient);
+        when(modelMapper.map(savedPatient, PatientDto.class)).thenReturn(expectedDto);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Tyson"));
+
+
+        postman.perform(delete("/patient/deleteAll")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(patientService).deleteAll();
+
+        postman.perform(get("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(patientService).save(savedPatient);
+        verify(modelMapper).map(savedPatient, PatientDto.class);
+    }
+
+    @Test
+    public void edit_ShouldReturnStatusOkAndExpectedPatientDto() throws Exception {
+
+        when(patientService.editPatient(eq(1L), any(UdpatePatientCommand.class))).thenReturn(udpatedPatient);
+        when(modelMapper.map(udpatedPatient, PatientDto.class)).thenReturn(expectedUdpatedDto);
+
+        String requestBody = new ObjectMapper().writeValueAsString(udpatePatientCommand);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("udpateTyson"))
+                .andExpect(jsonPath("$.species").value("udpateSpecies"))
+                .andExpect(jsonPath("$.breed").value("udpateBreed"))
+                .andExpect(jsonPath("$.ownerName").value("udpateKrystian"))
+                .andExpect(jsonPath("$.age").value(6));
+
+        verify(patientService).editPatient(eq(1L), any(UdpatePatientCommand.class));
+        verify(modelMapper).map(udpatedPatient, PatientDto.class);
+    }
 
     @Test
     public void editPartially_ShouldReturnStatusOkAndExpectedPatientDto() throws Exception {
@@ -342,7 +357,6 @@ public class PatientControllerWebMvcTest {
 //        List<Patient> theOldestPatients = List.of(patient, qualifiedPatient);
 //
 //        when(patientService.findPatientsWithAgeGreaterThan(5)).thenReturn(theOldestPatients);
-//
 //        when(modelMapper.map(patient, PatientDto.class)).thenReturn(expectedDto);
 //
 //        postman.perform(get("/patient/the-oldest")
@@ -360,12 +374,10 @@ public class PatientControllerWebMvcTest {
 //                .andExpect(jsonPath("$[1].species").value("Species3"))
 //                .andExpect(jsonPath("$[1].breed").value("Breed3"))
 //                .andExpect(jsonPath("$[1].ownerName").value("Krystian3"))
-//                .andExpect(jsonPath("$[1].age").value(80));
+//                .andExpect(jsonPath("$[1].age").value(5));
 //
 //        verify(patientService).findPatientsWithAgeGreaterThan(5);
 //    }
-
-
 
 
 }

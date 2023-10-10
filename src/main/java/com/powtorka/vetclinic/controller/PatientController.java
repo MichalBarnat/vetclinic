@@ -9,9 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/patient")
@@ -23,6 +25,9 @@ public class PatientController {
     @GetMapping("/{id}")
     private ResponseEntity<PatientDto> findById(@PathVariable("id") Long id) {
         Patient patient = patientService.findById(id);
+        if(patient == null) {
+            return ResponseEntity.status(NOT_FOUND).body(null);
+        }
         return ResponseEntity.ok(modelMapper.map(patient, PatientDto.class));
     }
 
@@ -37,6 +42,11 @@ public class PatientController {
     private ResponseEntity<List<PatientDto>> findAll(CreatePatientPageCommand command) {
         Pageable pageable = modelMapper.map(command, Pageable.class);
         Page<Patient> patientPage = patientService.findAll(pageable);
+
+        if (patientPage == null || patientPage.getContent() == null) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
         List<PatientDto> list = patientPage.getContent()
                 .stream()
                 .map(patient -> modelMapper.map(patient, PatientDto.class))
@@ -56,7 +66,7 @@ public class PatientController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     private ResponseEntity<PatientDto> edit(@PathVariable("id") Long id, @RequestBody UdpatePatientCommand command) {
         Patient editedPatient = patientService.editPatient(id, command);
         return ResponseEntity.ok(modelMapper.map(editedPatient, PatientDto.class));
