@@ -8,7 +8,6 @@ import com.powtorka.vetclinic.model.patient.PatientDto;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -77,7 +76,7 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldSavePatient() throws Exception{
+    public void shouldSavePatient() throws Exception {
         Patient patient = Patient.builder()
                 .id(21)
                 .name("Arro")
@@ -93,8 +92,8 @@ public class PatientControllerIT {
         String requestBody = objectMapper.writeValueAsString(patient);
 
         postman.perform(post("/patient")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -120,7 +119,7 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldThrowValidationMessageWhenEmailIsInvalid() throws Exception{
+    public void shouldThrowValidationMessageWhenEmailIsInvalid() throws Exception {
         Patient patient = Patient.builder()
                 .name("Leo")
                 .species("Kot")
@@ -133,7 +132,7 @@ public class PatientControllerIT {
         String requestBody = objectMapper.writeValueAsString(patient);
 
         postman.perform(post("/patient").contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                        .content(requestBody))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400))
@@ -360,7 +359,7 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenTheOldestPatientInClinic() throws Exception{
+    public void shouldGivenTheOldestPatientInClinic() throws Exception {
         postman.perform(get("/patient?pageSize=1&pageNumber=0&sortBy=age&sortDirection=DESC"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -369,7 +368,7 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenTheSpeciesThe3OldestPatientsInClinic() throws Exception{
+    public void shouldGivenTheSpeciesThe3OldestPatientsInClinic() throws Exception {
         postman.perform(get("/patient?pageSize=3&pageNumber=0&sortBy=age&sortDirection=DESC"))
                 .andDo(print())
                 .andExpect(status().isOk())

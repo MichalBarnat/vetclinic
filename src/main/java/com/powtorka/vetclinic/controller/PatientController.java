@@ -25,7 +25,7 @@ public class PatientController {
     @GetMapping("/{id}")
     private ResponseEntity<PatientDto> findById(@PathVariable("id") Long id) {
         Patient patient = patientService.findById(id);
-        if(patient == null) {
+        if (patient == null) {
             return ResponseEntity.status(NOT_FOUND).body(null);
         }
         return ResponseEntity.ok(modelMapper.map(patient, PatientDto.class));
