@@ -53,6 +53,9 @@ public class DoctorControllerWebMvcTest {
     @MockBean
     private DoctorRepository doctorRepository;
 
+    @MockBean
+    private Pageable pageable;
+
     private Doctor doctor;
     private Doctor savedDoctor;
     private Doctor updatedDoctor;
@@ -171,6 +174,8 @@ public class DoctorControllerWebMvcTest {
                 .name("new name")
                 .surname("new surname")
                 .build();
+
+        pageable = PageRequest.of(0, 5);
     }
 
     @Test
@@ -217,24 +222,26 @@ public class DoctorControllerWebMvcTest {
                 .andExpect(jsonPath("$.rate").value(100));
     }
 
-//    @Test
-//    public void findAll_ShouldReturnPageContainingDoctors() throws Exception {
-//
-//        Page<Doctor> page = new PageImpl<>(List.of(doctor));
-//
-//        when(doctorService.findAll(any(Pageable.class))).thenReturn(page);
-//        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(expectedDto);
-//
-//        postman.perform(get("/doctor")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id").value(1))
-//                .andExpect(jsonPath("$[0].name").value("michal"))
-//                .andExpect(jsonPath("$[0].surname").value("barnat"))
-//                .andExpect(jsonPath("$[0].speciality").value("s"))
-//                .andExpect(jsonPath("$[0].animalSpeciality").value("as"))
-//                .andExpect(jsonPath("$[0].rate").value(100));
-//    }
+    @Test
+    public void findAll_ShouldReturnPageContainingDoctors() throws Exception {
+
+        Page<Doctor> page = new PageImpl<>(List.of(doctor));
+
+        when(doctorService.findAll(eq(pageable))).thenReturn(page);
+        when(modelMapper.map(any(CreateDoctorPageCommand.class), eq(Pageable.class))).thenReturn(pageable);
+        when(modelMapper.map(doctor, DoctorDto.class)).thenReturn(expectedDto);
+
+
+        postman.perform(get("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("michal"))
+                .andExpect(jsonPath("$[0].surname").value("barnat"))
+                .andExpect(jsonPath("$[0].speciality").value("s"))
+                .andExpect(jsonPath("$[0].animalSpeciality").value("as"))
+                .andExpect(jsonPath("$[0].rate").value(100));
+    }
 
     @Test
     public void deleteById_ShouldReturnStatusNoContent() throws Exception {
