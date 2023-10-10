@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +24,9 @@ public class AppointmentController {
     @GetMapping("/{id}")
     private ResponseEntity<AppointmentDto> findById(@PathVariable("id") Long id) {
         Appointment appointment = appointmentService.findById(id);
+        if(appointment == null){
+            return ResponseEntity.status(NOT_FOUND).body(null);
+        }
         return ResponseEntity.ok(modelMapper.map(appointment, AppointmentDto.class));
     }
 
