@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.model.doctor;
 
-import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

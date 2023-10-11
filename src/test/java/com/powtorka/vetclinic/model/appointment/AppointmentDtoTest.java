@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.model.appointment;
 
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

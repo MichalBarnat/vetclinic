@@ -34,17 +34,17 @@ public class DoctorControllerIT {
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
 
-    @AfterEach
-    void tearDown() throws LiquibaseException {
-        databaseCleaner.cleanUp();
-    }
-
     @Autowired
     public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
+    }
+
+    @AfterEach
+    void tearDown() throws LiquibaseException {
+        databaseCleaner.cleanUp();
     }
 
     @Test

@@ -1,9 +1,6 @@
 package com.powtorka.vetclinic.model.doctor;
 
-import com.powtorka.vetclinic.model.doctor.Doctor;
 import org.junit.Test;
-
-import javax.print.Doc;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;

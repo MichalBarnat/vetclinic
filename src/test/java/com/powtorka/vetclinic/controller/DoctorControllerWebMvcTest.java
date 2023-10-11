@@ -1,17 +1,12 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.service.DoctorService;
-import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,13 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.print.Doc;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Optional.empty;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
