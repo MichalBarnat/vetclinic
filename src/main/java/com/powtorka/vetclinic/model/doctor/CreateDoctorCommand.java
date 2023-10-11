@@ -7,7 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@Generated
 public class CreateDoctorCommand {
     private String name;
     private String surname;

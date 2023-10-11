@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.doctor.doctor;
+package com.powtorka.vetclinic.model.doctor;
 
 import com.powtorka.vetclinic.model.doctor.DoctorDto;
 import org.junit.Test;

@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
-@Generated
 public class CreateDoctorPageCommand {
     @Min(value = 0, message = "PAGE_NOT_NEGATIVE")
     private int pageNumber = 0;

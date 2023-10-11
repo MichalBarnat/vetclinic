@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.mappings;
+package com.powtorka.vetclinic.mappings.doctor;
 
 import com.powtorka.vetclinic.model.doctor.CreateDoctorPageCommand;
 import org.modelmapper.Converter;

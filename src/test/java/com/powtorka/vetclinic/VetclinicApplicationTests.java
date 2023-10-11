@@ -8,6 +8,7 @@ class VetclinicApplicationTests {
 
 	@Test
 	void contextLoads() {
+		VetclinicApplication.main(new String[]{});
 	}
 
 

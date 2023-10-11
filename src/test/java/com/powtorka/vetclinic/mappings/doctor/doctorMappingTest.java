@@ -1,9 +1,5 @@
 package com.powtorka.vetclinic.mappings.doctor;
 
-import com.powtorka.vetclinic.mappings.CreateDoctorCommandToDoctorConverter;
-import com.powtorka.vetclinic.mappings.UpdateDoctorCommandToDoctorConverter;
-import com.powtorka.vetclinic.mappings.DoctorToDoctorDtoConverter;
-import com.powtorka.vetclinic.mappings.DoctorToDoctorPageConverter;
 import com.powtorka.vetclinic.model.doctor.*;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.spi.MappingContext;

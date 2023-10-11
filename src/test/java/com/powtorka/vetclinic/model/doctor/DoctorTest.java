@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.doctor.doctor;
+package com.powtorka.vetclinic.model.doctor;
 
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import org.junit.Test;
@@ -100,6 +100,36 @@ public class DoctorTest {
 
         assertEquals(expectedString, actualToString);
 
+    }
+
+    @Test
+    public void testDoctorBuilderToString() {
+        String name = "John";
+        String surname = "Doe";
+        String speciality = "Cardiology";
+        String animalSpeciality = "None";
+        String email = "john.doe@example.com";
+        Integer rate = 90;
+        String pesel = "12345678901";
+
+        Doctor.DoctorBuilder builder = Doctor.builder()
+                .name(name)
+                .surname(surname)
+                .speciality(speciality)
+                .animalSpeciality(animalSpeciality)
+                .email(email)
+                .rate(rate)
+                .pesel(pesel);
+
+        String builderToString = builder.toString();
+
+        assertTrue(builderToString.contains(name));
+        assertTrue(builderToString.contains(surname));
+        assertTrue(builderToString.contains(speciality));
+        assertTrue(builderToString.contains(animalSpeciality));
+        assertTrue(builderToString.contains(email));
+        assertTrue(builderToString.contains(rate.toString()));
+        assertTrue(builderToString.contains(pesel));
     }
 
 }

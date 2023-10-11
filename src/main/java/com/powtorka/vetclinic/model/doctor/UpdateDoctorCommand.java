@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Generated
 public class UpdateDoctorCommand {
     private String name;
     private String surname;

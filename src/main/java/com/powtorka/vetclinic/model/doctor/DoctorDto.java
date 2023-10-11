@@ -6,7 +6,6 @@ import lombok.Value;
 
 @Value
 @Builder
-@Generated
 public class DoctorDto {
 
     Long id;

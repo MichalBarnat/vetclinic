@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.mappings;
+package com.powtorka.vetclinic.mappings.doctor;
 
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.DoctorDto;
