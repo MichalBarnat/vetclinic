@@ -28,23 +28,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(DoctorController.class)
 public class DoctorControllerWebMvcTest {
 
-    @Autowired
-    private MockMvc postman;
-
     @MockBean
     private ModelMapper modelMapper;
 
     @MockBean
     private DoctorService doctorService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private DoctorRepository doctorRepository;
 
     @MockBean
     private Pageable pageable;
+
+    private final MockMvc postman;
+    private final ObjectMapper objectMapper;
+
+    @Autowired
+    public DoctorControllerWebMvcTest(MockMvc postman, ObjectMapper objectMapper) {
+        this.postman = postman;
+        this.objectMapper = objectMapper;
+    }
 
     private Doctor doctor;
     private Doctor savedDoctor;

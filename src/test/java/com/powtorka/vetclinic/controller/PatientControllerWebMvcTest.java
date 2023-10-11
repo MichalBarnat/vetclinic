@@ -1,6 +1,5 @@
 package com.powtorka.vetclinic.controller;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.model.patient.*;
 import com.powtorka.vetclinic.repository.PatientRepository;
@@ -30,23 +29,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(PatientController.class)
 public class PatientControllerWebMvcTest {
 
-    @Autowired
-    private MockMvc postman;
-
     @MockBean
     private ModelMapper modelMapper;
 
     @MockBean
     private PatientService patientService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private PatientRepository patientRepository;
 
     @MockBean
     private Pageable mockedPageable;
+
+    private final MockMvc postman;
+    private final ObjectMapper objectMapper;
+
+    @Autowired
+    public PatientControllerWebMvcTest(MockMvc postman, ObjectMapper objectMapper) {
+        this.postman = postman;
+        this.objectMapper = objectMapper;
+    }
 
     private Patient patient;
     private Patient savedPatient;

@@ -16,14 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -80,47 +77,47 @@ public class PatientControllerIT {
                 .andExpect(jsonPath("$.age").value(12));
     }
 
-//    @Test
-//    public void shouldSavePatient() throws Exception {
-//        CreatePatientCommand command = CreatePatientCommand.builder()
-//                .name("Tyson")
-//                .species("Species")
-//                .breed("Breed")
-//                .ownerName("Krystian")
-//                .ownerEmail("krystian@gmail.com")
-//                .age(5)
-//                .build();
-//
-//        String requestBody = objectMapper.writeValueAsString(command);
-//
-//        postman.perform(get("/patient/21"))
-//                .andDo(print())
-//                .andExpect(status().isNotFound())
-//                .andExpect(jsonPath("$.code").value(404))
-//                .andExpect(jsonPath("$.status").value("Not Found"))
-//                .andExpect(jsonPath("$.message").value("Patient with id: 21 not found!"))
-//                .andExpect(jsonPath("$.uri").value("/patient/21"))
-//                .andExpect(jsonPath("$.method").value("GET"));
-//
-//        postman.perform(post("/patient")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(requestBody))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.name").value(command.getName()))
-//                .andExpect(jsonPath("$.species").value(command.getSpecies()))
-//                .andExpect(jsonPath("$.breed").value(command.getBreed()))
-//                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
-//                .andExpect(jsonPath("$.age").value(command.getAge()));
-//
-//        postman.perform(get("/patient/21"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value(command.getName()))
-//                .andExpect(jsonPath("$.species").value(command.getSpecies()))
-//                .andExpect(jsonPath("$.breed").value(command.getBreed()))
-//                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
-//                .andExpect(jsonPath("$.age").value(command.getAge()));
-//    }
+    @Test
+    public void shouldSavePatient() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("Tyson")
+                .species("Species")
+                .breed("Breed")
+                .ownerName("Krystian")
+                .ownerEmail("krystian@gmail.com")
+                .age(5)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(get("/patient/21"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Patient with id: 21 not found!"))
+                .andExpect(jsonPath("$.uri").value("/patient/21"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
+        postman.perform(post("/patient")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.species").value(command.getSpecies()))
+                .andExpect(jsonPath("$.breed").value(command.getBreed()))
+                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
+                .andExpect(jsonPath("$.age").value(command.getAge()));
+
+        postman.perform(get("/patient/21"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.species").value(command.getSpecies()))
+                .andExpect(jsonPath("$.breed").value(command.getBreed()))
+                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
+                .andExpect(jsonPath("$.age").value(command.getAge()));
+    }
 
     @Test
     public void shouldDeletePatient() throws Exception {

@@ -40,17 +40,6 @@ public class DoctorController {
 
     @GetMapping
     private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
-        // PO TYM dzialaja testy ktore zwracaja puste strony:
-//        Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
-//
-//        if (page != null && page.getContent() != null) {
-//            List<DoctorDto> list = page.stream()
-//                    .map(doctor -> modelMapper.map(doctor, DoctorDto.class))
-//                    .toList();
-//            return ResponseEntity.ok(list);
-//        } else {
-//            return ResponseEntity.ok(Collections.emptyList());
-//        }
 
         Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
 

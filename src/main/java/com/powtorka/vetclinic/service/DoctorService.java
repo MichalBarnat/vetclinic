@@ -21,11 +21,6 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
 
     public Doctor findById(long id) {
-//        if (doctorRepository.existsById(id)) {
-//            return doctorRepository.findById(id).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
-//        } else {
-//            throw new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id));
-//        }
         return doctorRepository.findById(id).orElseThrow(() -> new DoctorNotFoundException(String.format("Doctor with id: %s not found!", id)));
     }
 

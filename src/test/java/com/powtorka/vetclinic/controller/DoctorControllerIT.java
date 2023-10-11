@@ -63,7 +63,6 @@ public class DoctorControllerIT {
 
     @Test
     public void testSaveDoctor() throws Exception {
-        // Given
         CreateDoctorCommand command = CreateDoctorCommand.builder()
                 .name("New name")
                 .surname("New surname")
@@ -76,7 +75,6 @@ public class DoctorControllerIT {
 
         String requestBody = objectMapper.writeValueAsString(command);
 
-        // When
         postman.perform(get("/doctor/21"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -97,7 +95,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value(command.getAnimalSpeciality()))
                 .andExpect(jsonPath("$.rate").value(command.getRate()));
 
-        // Then
         postman.perform(get("/doctor/21"))
                 .andDo(print())
                 .andExpect(status().isOk())

@@ -29,6 +29,20 @@ public class GlobalExceptionHandler {
                 .build(), NOT_FOUND);
     }
 
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<ErrorMessage> patientNotFoundException(PatientNotFoundException ex, HttpServletRequest request) {
+        return new ResponseEntity<>(ErrorMessage.builder()
+                .dateTime(LocalDateTime.now())
+                .code(NOT_FOUND.value())
+                .status(NOT_FOUND.getReasonPhrase())
+                .message(ex.getMessage())
+                .uri(request.getRequestURI())
+                .method(request.getMethod())
+                .build(), NOT_FOUND);
+    }
+
+
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorMessage> handleConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request) {
         Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
