@@ -35,7 +35,21 @@ public class GlobalExceptionHandlerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.status").value("Not Found"))
-                .andExpect(jsonPath("$.message").isNotEmpty()) // Add more specific expectation if possible
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.uri").value(uri))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    void shouldReturnCustomErrorMessageOnPatientNotFoundException() throws Exception {
+        String uri = "/patient/999";
+
+        postman.perform(get(uri))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.uri").value(uri))
                 .andExpect(jsonPath("$.method").value("GET"));
     }
@@ -62,7 +76,7 @@ public class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.status").value("Bad Request"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.uri").value("/doctor"))
-                .andExpect(jsonPath("$.method").value("POST")); // or another HTTP method
+                .andExpect(jsonPath("$.method").value("POST"));
     }
 
     @Test
