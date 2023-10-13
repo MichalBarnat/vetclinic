@@ -61,6 +61,11 @@ public class AppointmentControllerWebMvcTest {
     private CreateAppointmentCommand createAppointmentCommand;
     private Appointment appointment;
     private AppointmentDto appointmentDto;
+    private Appointment updatedAppointment;
+    private AppointmentDto expectedUpdatedDto;
+    private UpdateAppointementCommand updateAppointmentCommand;
+
+
 
 
     @BeforeEach
@@ -95,6 +100,22 @@ public class AppointmentControllerWebMvcTest {
                 .price(20)
                 .build();
 
+        updatedAppointment = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
+                .build();
+
+        expectUpdatedAppointmentDto = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
+                .build();
+
         savedAppointment = Appointment.builder()
                 .id(1L)
                 .doctor(doctor)
@@ -124,6 +145,14 @@ public class AppointmentControllerWebMvcTest {
                 .patientId(1L)
                 .dateTime(LocalDateTime.parse("2023-08-31T20:26:03.93"))
                 .price(20)
+                .build();
+
+        updatedAppointmentCommand = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
                 .build();
 
     }
@@ -248,6 +277,39 @@ public class AppointmentControllerWebMvcTest {
         verify(appointmentService).save(savedAppointment);
         verify(modelMapper).map(savedAppointment, AppointmentDto.class);
     }
+
+    @Test
+    public void edit_ShouldReturnStatusOkAndExpectedAppointmentDto() throws Exception {
+
+        when(appointmentService.editAppointment(eq(1L), any(UpdateAppointementCommand.class))).thenReturn(updatedAppointment);
+
+        when(modelMapper.map(updatedAppointment, DoctorDto.class)).thenReturn(expectedUpdatedDto);
+
+        String requestBody = new ObjectMapper().writeValueAsString(updateAppointmentCommand);
+
+        postman.perform(put("/appointment/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.doctorId").value("updatedMichal"))
+                .andExpect(jsonPath("$.patientId").value("updatedBarnat"))
+                .andExpect(jsonPath("$.localDate").value("updatedS"))
+                .andExpect(jsonPath("$.price").value("updatedAs"));
+
+        verify(appointmentService).editAppointment(eq(1L), any(UpdateAppointmentComad.class));
+        verify(modelMapper).map(updatedAppointment, Appointment.class);
+    }
+
+
+    @Test
+    public void doctorNotFoundExceptionHandler_ShouldReturnStatusNotFound() throws Exception {
+
+        postman.perform(get("/api/appointment/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 
 
 }
