@@ -66,6 +66,6 @@ public class VetclinicApplication {
 	// kazdy: zainstalowac Docker Desktop
 	// postawic baze na dockerze, niech to bedzie PostgreSQL wg instrukcji: https://www.youtube.com/watch?v=aHbE3pTyG-Q
 
-	// bonus jakbyscie sie nudzili: zaimplementowac Swagger
+	// bonus jakbyscie sie nudzili: zaimplementowac Swagger//
 
 }
