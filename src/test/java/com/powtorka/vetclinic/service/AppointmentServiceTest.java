@@ -5,6 +5,7 @@ import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
+import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -176,14 +177,14 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void testDeleteAll(){
+    public void testDeleteAll() {
         appointmentService.deleteAll();
 
         verify(appointmentRepositoryMock, times(1)).deleteAll();
     }
 
     @Test
-    public void testEditAppointment(){
+    public void testEditAppointment() {
         Long appointmentId = 1L;
         Appointment orginalAppointment = new Appointment();
         orginalAppointment.setId(appointmentId);
@@ -194,10 +195,10 @@ public class AppointmentServiceTest {
 
         when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(orginalAppointment));
 
-        Appointment editedAppointment = appointmentService.editAppointment(appointmentId,command);
+        Appointment editedAppointment = appointmentService.editAppointment(appointmentId, command);
 
-        assertEquals(21,editedAppointment.getPrice(),0);
-        verify(appointmentRepositoryMock,times(1)).findById(appointmentId);
+        assertEquals(21, editedAppointment.getPrice(), 0);
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
     @Test
@@ -210,7 +211,7 @@ public class AppointmentServiceTest {
         when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(AppointmentNotFoundException.class, () -> {
-            appointmentService.editAppointment(appointmentId,command);
+            appointmentService.editAppointment(appointmentId, command);
         });
 
         String expectedMessage = String.format("Appointment with id %d not found!", appointmentId);
@@ -241,29 +242,63 @@ public class AppointmentServiceTest {
         verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
-//    @Test
-//    public void testEditPartially_NonExistingPatientAndDoctor() {
-//        Doctor doctor = new Doctor();
-//        doctor.setId(1L);
-//        Patient patient = new Patient();
-//        patient.setId(1L);
-//        Long appointmentId = 1L;
-//        Appointment oldAppointmemt = new Appointment();
-//        oldAppointmemt.setDoctor(null);
-//        oldAppointmemt.setPatient(null);
-//
-//        UpdateAppointementCommand updateAppointementCommand = new UpdateAppointementCommand();
-//        updateAppointementCommand.setDoctorId(1L);
-//        updateAppointementCommand.setPatientId(1L);
-//
-//        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(oldAppointmemt));
-//
-//        Appointment editedAppointment = appointmentService.editPartially(appointmentId, updateAppointementCommand);
-//
-//        assertEquals(1, editedAppointment.getDoctor());
-//        assertEquals(1, editedAppointment.getPatient());
-//        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
-//    }
+    @Test
+    public void testEditPartially_OneField() {
+        long appointmentId = 1L;
+        Appointment originalAppointment = new Appointment();
+        originalAppointment.setId(appointmentId);
+
+        Doctor doctor = Doctor.builder()
+                .id(1L)
+                .name("michal")
+                .surname("barnat")
+                .speciality("s")
+                .animalSpeciality("as")
+                .email("michalbarnat@gmail.com")
+                .rate(100)
+                .pesel("12312312312")
+                .build();
+
+        Patient patient = Patient.builder()
+                .id(1L)
+                .name("Tyson")
+                .species("Species")
+                .breed("Breed")
+                .ownerName("Krystian")
+                .ownerEmail("krystian@gmail.com")
+                .age(5)
+                .build();
+
+        originalAppointment.setDoctor(doctor);
+        originalAppointment.setPatient(patient);
+
+        UpdateAppointementCommand command = new UpdateAppointementCommand();
+        command.setPrice(100.5);
+
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(originalAppointment));
+
+        Appointment editedAppointment = appointmentService.editPartially(appointmentId, command);
+
+        assertEquals("michal", editedAppointment.getDoctor().getName());
+        assertEquals("Tyson", editedAppointment.getPatient().getName());
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
+    }
+
+    @Test
+    public void testEditPartially_NoFields() {
+        long appointmentId = 1L;
+        Appointment originalAppointment = new Appointment();
+        originalAppointment.setId(appointmentId);
+
+        UpdateAppointementCommand command = new UpdateAppointementCommand();
+
+        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(originalAppointment));
+
+        Appointment editedAppointment = appointmentService.editPartially(appointmentId, command);
+
+        assertEquals(1L, editedAppointment.getId());
+        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
+    }
 
 
 }

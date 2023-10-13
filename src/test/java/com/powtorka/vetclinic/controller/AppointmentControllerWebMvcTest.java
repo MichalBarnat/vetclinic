@@ -61,10 +61,39 @@ public class AppointmentControllerWebMvcTest {
     private CreateAppointmentCommand createAppointmentCommand;
     private Appointment appointment;
     private AppointmentDto appointmentDto;
+    private Appointment updatedAppointment;
+    private AppointmentDto expectedUpdatedDto;
+    private UpdateAppointementCommand updatedAppointmentCommand;
+    private Appointment partiallyUpdatedAppointment;
+    private AppointmentDto expectedPartiallyUpdateDto;
+    private CreateAppointmentCommand partiallyUpdateAppointmentCommand;
 
 
     @BeforeEach
-    public  void init() {
+    public void init() {
+
+        partiallyUpdateAppointmentCommand = CreateAppointmentCommand.builder()
+                .doctorId(1L)
+                .patientId(1L)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(100.5)
+                .build();
+
+        partiallyUpdatedAppointment = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(100.5)
+                .build();
+
+        expectedPartiallyUpdateDto = AppointmentDto.builder()
+                .id(1L)
+                .doctorId(1L)
+                .patientId(1L)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(100.5)
+                .build();
 
         doctor = Doctor.builder()
                 .id(1L)
@@ -93,6 +122,22 @@ public class AppointmentControllerWebMvcTest {
                 .patient(patient)
                 .dateTime(LocalDateTime.parse("2023-08-31T20:26:03.93"))
                 .price(20)
+                .build();
+
+        updatedAppointment = Appointment.builder()
+                .id(1L)
+                .doctor(doctor)
+                .patient(patient)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
+                .build();
+
+        expectedUpdatedDto = AppointmentDto.builder()
+                .id(1L)
+                .doctorId(1L)
+                .patientId(1L)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
                 .build();
 
         savedAppointment = Appointment.builder()
@@ -124,6 +169,13 @@ public class AppointmentControllerWebMvcTest {
                 .patientId(1L)
                 .dateTime(LocalDateTime.parse("2023-08-31T20:26:03.93"))
                 .price(20)
+                .build();
+
+        updatedAppointmentCommand = UpdateAppointementCommand.builder()
+                .doctorId(1L)
+                .patientId(1L)
+                .dateTime(LocalDateTime.parse("2022-08-31T20:26:03.93"))
+                .price(25)
                 .build();
 
     }
@@ -247,6 +299,61 @@ public class AppointmentControllerWebMvcTest {
 
         verify(appointmentService).save(savedAppointment);
         verify(modelMapper).map(savedAppointment, AppointmentDto.class);
+    }
+
+    @Test
+    public void edit_ShouldReturnStatusOkAndExpectedAppointmentDto() throws Exception {
+
+        when(appointmentService.editAppointment(eq(1L), any(UpdateAppointementCommand.class))).thenReturn(updatedAppointment);
+
+        when(modelMapper.map(updatedAppointment, AppointmentDto.class)).thenReturn(expectedUpdatedDto);
+
+        String requestBody = objectMapper.writeValueAsString(updatedAppointmentCommand);
+
+        postman.perform(put("/appointment/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.doctorId").value(1))
+                .andExpect(jsonPath("$.patientId").value(1))
+                .andExpect(jsonPath("$.dateTime").value("2022-08-31T20:26:03.93"))
+                .andExpect(jsonPath("$.price").value(25.0));
+
+        verify(appointmentService).editAppointment(eq(1L), any(UpdateAppointementCommand.class));
+        verify(modelMapper).map(updatedAppointment, AppointmentDto.class);
+    }
+
+    @Test
+    public void editPartially_ShouldReturnStatusOkAndExpectedAppointmentDto() throws Exception {
+
+        when(appointmentService.editPartially(eq(1L), any(UpdateAppointementCommand.class))).thenReturn(partiallyUpdatedAppointment);
+        when(modelMapper.map(partiallyUpdatedAppointment, AppointmentDto.class)).thenReturn(expectedPartiallyUpdateDto);
+
+        String requestBody = objectMapper.writeValueAsString(partiallyUpdateAppointmentCommand);
+
+        postman.perform(patch("/appointment/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.doctorId").value(1))
+                .andExpect(jsonPath("$.patientId").value(1))
+                .andExpect(jsonPath("$.dateTime").value("2022-08-31T20:26:03.93"))
+                .andExpect(jsonPath("$.price").value(100.5));
+
+        verify(appointmentService).editPartially(eq(1L), any(UpdateAppointementCommand.class));
+        verify(modelMapper).map(partiallyUpdatedAppointment, AppointmentDto.class);
+
+    }
+
+
+    @Test
+    public void doctorNotFoundExceptionHandler_ShouldReturnStatusNotFound() throws Exception {
+
+        postman.perform(get("/api/appointment/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
 
