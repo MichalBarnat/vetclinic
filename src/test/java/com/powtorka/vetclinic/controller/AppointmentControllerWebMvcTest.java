@@ -1,10 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
-import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.appointment.*;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import com.powtorka.vetclinic.service.AppointmentService;
@@ -15,21 +12,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.model.doctor.*;
-import com.powtorka.vetclinic.repository.DoctorRepository;
-import com.powtorka.vetclinic.service.DoctorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(DoctorController.class)
+@WebMvcTest(AppointmentController.class)
 public class AppointmentControllerWebMvcTest {
 
     @MockBean
@@ -60,7 +48,7 @@ public class AppointmentControllerWebMvcTest {
     private final MockMvc postman;
     private final ObjectMapper objectMapper;
 
-
+    @Autowired
     public AppointmentControllerWebMvcTest(MockMvc postman, ObjectMapper objectMapper) {
         this.postman = postman;
         this.objectMapper = objectMapper;
@@ -148,7 +136,7 @@ public class AppointmentControllerWebMvcTest {
         when(appointmentService.save(savedAppointment)).thenReturn(savedAppointment);
         when(modelMapper.map(savedAppointment, AppointmentDto.class)).thenReturn(expectedDto);
 
-        String requestBody = new ObjectMapper().writeValueAsString(createAppointmentCommand);
+        String requestBody = objectMapper.writeValueAsString(createAppointmentCommand);
 
         postman.perform(post("/appointment")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -180,7 +168,7 @@ public class AppointmentControllerWebMvcTest {
                 .andExpect(jsonPath("$.doctorId").value(1))
                 .andExpect(jsonPath("$.patientId").value(1))
                 .andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.93"))
-                .andExpect(jsonPath("$.cost").value(20));
+                .andExpect(jsonPath("$.price").value(20));
     }
 
     @Test
@@ -189,7 +177,7 @@ public class AppointmentControllerWebMvcTest {
         Page<Appointment> page = new PageImpl<>(List.of(appointment));
 
         when(appointmentService.findAll(eq(pageable))).thenReturn(page);
-        when(modelMapper.map(any(CreateAppointmentCommand.class), eq(Pageable.class))).thenReturn(pageable);
+        when(modelMapper.map(any(CreateAppointmentPageCommand.class), eq(Pageable.class))).thenReturn(pageable);
         when(modelMapper.map(appointment, AppointmentDto.class)).thenReturn(expectedDto);
 
 
@@ -197,11 +185,10 @@ public class AppointmentControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.doctorId").value(1))
-                .andExpect(jsonPath("$.patientId").value(1))
-                .andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.93"))
-                .andExpect(jsonPath("$.cost").value(20));
+                .andExpect(jsonPath("$[0].doctorId").value(1))
+                .andExpect(jsonPath("$[0].patientId").value(1))
+                .andExpect(jsonPath("$[0].dateTime").value("2023-08-31T20:26:03.93"))
+                .andExpect(jsonPath("$[0].price").value(20));
     }
 
     @Test
