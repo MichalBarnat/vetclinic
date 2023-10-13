@@ -1,0 +1,20 @@
+#Server:
+#  port: 8090
+#spring:
+#  application:
+#    name: vetClinic
+#  datasource:
+#    username: postgres
+#    password: changeme
+#    url: jdbc:postgresql://localhost:5432/
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#        show-sql: true
+#  liquibase:
+#    enabled: false
+#
