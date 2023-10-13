@@ -241,4 +241,29 @@ public class AppointmentServiceTest {
         verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
     }
 
+//    @Test
+//    public void testEditPartially_NonExistingPatientAndDoctor() {
+//        Doctor doctor = new Doctor();
+//        doctor.setId(1L);
+//        Patient patient = new Patient();
+//        patient.setId(1L);
+//        Long appointmentId = 1L;
+//        Appointment oldAppointmemt = new Appointment();
+//        oldAppointmemt.setDoctor(null);
+//        oldAppointmemt.setPatient(null);
+//
+//        UpdateAppointementCommand updateAppointementCommand = new UpdateAppointementCommand();
+//        updateAppointementCommand.setDoctorId(1L);
+//        updateAppointementCommand.setPatientId(1L);
+//
+//        when(appointmentRepositoryMock.findById(appointmentId)).thenReturn(Optional.of(oldAppointmemt));
+//
+//        Appointment editedAppointment = appointmentService.editPartially(appointmentId, updateAppointementCommand);
+//
+//        assertEquals(1, editedAppointment.getDoctor());
+//        assertEquals(1, editedAppointment.getPatient());
+//        verify(appointmentRepositoryMock, times(1)).findById(appointmentId);
+//    }
+
+
 }
