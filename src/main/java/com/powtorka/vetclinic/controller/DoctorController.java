@@ -23,6 +23,8 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final ModelMapper modelMapper;
 
+    //@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN') or hasRole('ADMIN')")
+    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
     private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
@@ -39,6 +41,7 @@ public class DoctorController {
         return new ResponseEntity<>(modelMapper.map(savedDoctor, DoctorDto.class), CREATED);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN') or hasRole('ADMIN')")
     @GetMapping
     private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
 
