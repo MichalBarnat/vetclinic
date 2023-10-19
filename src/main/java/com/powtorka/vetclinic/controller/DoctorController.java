@@ -4,9 +4,11 @@ import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -22,6 +24,7 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final ModelMapper modelMapper;
 
+    //@PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
@@ -31,6 +34,7 @@ public class DoctorController {
         return ResponseEntity.ok(modelMapper.map(doctor, DoctorDto.class));
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<DoctorDto> save(@RequestBody CreateDoctorCommand command) {
         Doctor toSave = modelMapper.map(command, Doctor.class);
