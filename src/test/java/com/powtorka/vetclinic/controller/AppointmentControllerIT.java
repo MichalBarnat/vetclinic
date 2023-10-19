@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
 @SpringBootTest(classes = VetclinicApplication.class)
 @AutoConfigureMockMvc
@@ -56,7 +57,8 @@ public class AppointmentControllerIT {
 
     @Test
     void shouldFindAppointmentById() throws Exception {
-        postman.perform(get("/appointment/19"))
+        postman.perform(get("/appointment/19")
+                        .with(httpBasic("user","password")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.doctorId").value(2))

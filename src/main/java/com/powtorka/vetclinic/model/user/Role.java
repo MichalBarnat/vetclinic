@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
+// todo to moglby byc enum (user/admin)
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +26,9 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return "ROLE_" + name;
     }
+
+    // uzytkownik moze miec dwie role: zwykly uzytkownik oraz admin
+    // zwykly uzytkownik ma miec privilege : READ - bezdie mogl tylko uzywac endpointow czytajacych dane
+    // uzytkownik z rola admin moze tak jak zwykly user czytac, czyli tez ma privilege READ,
+    // ale oprocz tego moze tez zapisywac/modyfikowac - oprocz privilege READ ma miec tez privilege WRITE
 }
