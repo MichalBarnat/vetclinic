@@ -4,6 +4,7 @@ import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,7 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final ModelMapper modelMapper;
 
-    //@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN') or hasRole('ADMIN')")
-    @PreAuthorize("permitAll()")
+    //@PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
@@ -34,6 +34,7 @@ public class DoctorController {
         return ResponseEntity.ok(modelMapper.map(doctor, DoctorDto.class));
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<DoctorDto> save(@RequestBody CreateDoctorCommand command) {
         Doctor toSave = modelMapper.map(command, Doctor.class);
@@ -41,7 +42,6 @@ public class DoctorController {
         return new ResponseEntity<>(modelMapper.map(savedDoctor, DoctorDto.class), CREATED);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN') or hasRole('ADMIN')")
     @GetMapping
     private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
 
@@ -53,14 +53,12 @@ public class DoctorController {
         return ResponseEntity.ok(list);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteAll")
     private ResponseEntity<Void> deleteAll() {
         doctorService.deleteAll();
