@@ -34,7 +34,7 @@
             <column header="id" name="id"/>
             <column header="username" name="username"/>
             <column header="password" name="password"/>
-            <column header="role_id" name="role_id"/>
+            <column header="role" name="role"/>
         </loadData>
     </changeSet>
 

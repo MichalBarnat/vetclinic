@@ -51,7 +51,7 @@
             </column>
             <column name="username" type="VARCHAR(255)"/>
             <column name="password" type="VARCHAR(255)"/>
-            <column name="role_id" type="BIGINT"/>
+            <column name="role" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
