@@ -45,7 +45,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Michal" id="1642024192330-4">
-        <createTable tableName="user">
+        <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>

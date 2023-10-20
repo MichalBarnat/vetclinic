@@ -1,2 +1,3 @@
-admin,pass,ADMIN
-user,pass,USER
+username,password,role
+admin,$2a$10$8X5t3TKrTJttZfQK3vg8B.ZqdGIzAOtI9j4k0fbTYiOWQcz.9u.a.,ADMIN
+user,$2a$10$2fIqG5gGMDxj6EGuvwD9jeNRcgyIZImVvEiSQse2sSGFOUyJcGm7q,USER

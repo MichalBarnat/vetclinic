@@ -13,10 +13,10 @@ public class MyUserDetails implements UserDetails {
     private String password;
     private Set<SimpleGrantedAuthority> authorities;
 
-    public MyUserDetails(String username, String password, Set<SimpleGrantedAuthority> authorities) {
-        this.username = username;
-        this.password = password;
-        this.authorities = authorities;
+    public MyUserDetails(UserEntity user) {
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.authorities = user.getRole().getGrantedAuthorities();
     }
 
     @Override
@@ -26,31 +26,31 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

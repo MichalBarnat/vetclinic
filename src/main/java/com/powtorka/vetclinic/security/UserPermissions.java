@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UserPermissions {
     READ,
-    WRITE
+    WRITE,
+    DELETE
 }

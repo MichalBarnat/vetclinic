@@ -9,15 +9,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.powtorka.vetclinic.security.UserPermissions.READ;
-import static com.powtorka.vetclinic.security.UserPermissions.WRITE;
+import static com.powtorka.vetclinic.security.UserPermissions.*;
 
 @Getter
 @AllArgsConstructor
 public enum UserRole {
 
     USER(new HashSet<>(Arrays.asList(READ))),
-    ADMIN(new HashSet<>(Arrays.asList(READ, WRITE)));
+    ADMIN(new HashSet<>(Arrays.asList(READ, WRITE, DELETE)));
 
     private final Set<UserPermissions> permissions;
 
