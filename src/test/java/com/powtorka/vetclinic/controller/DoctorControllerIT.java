@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -48,8 +49,8 @@ public class DoctorControllerIT {
     }
 
     @Test
-    void shouldFindDoctorById() throws Exception {
-        postman.perform(get("/doctor/1"))
+    void shouldFindDoctorByIdWithRoleUSER() throws Exception {
+        postman.perform(get("/doctor/1").with(httpBasic("user", "pass")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))

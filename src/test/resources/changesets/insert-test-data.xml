@@ -30,6 +30,12 @@
             <column header="date_time" name="date_time"/>
             <column header="price" name="price"/>
         </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/users.csv" quotchar="&quot;" separator="," tableName="users">
+            <column header="id" name="id"/>
+            <column header="username" name="username"/>
+            <column header="password" name="password"/>
+            <column header="role" name="role"/>
+        </loadData>
     </changeSet>
 
 </databaseChangeLog>
