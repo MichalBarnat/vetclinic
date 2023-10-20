@@ -49,6 +49,14 @@ public class DoctorControllerIT {
     }
 
     @Test
+    void shouldNotFindDoctorByIdWithoutAuthorization() throws Exception {
+        postman.perform(get("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
     void shouldFindDoctorByIdWithRoleUSER() throws Exception {
         postman.perform(get("/doctor/1").with(httpBasic("user", "pass")))
                 .andDo(print())
@@ -61,9 +69,21 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.rate").value(99));
     }
 
+    @Test
+    void shouldFindDoctorByIdWithRoleADMIN() throws Exception {
+        postman.perform(get("/doctor/1").with(httpBasic("admin", "admin")))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Michał"))
+                .andExpect(jsonPath("$.surname").value("Barnat"))
+                .andExpect(jsonPath("$.speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.rate").value(99));
+    }
 
     @Test
-    public void testSaveDoctor() throws Exception {
+    public void shouldNotSaveDoctorWithoutAuthorization() throws Exception {
         CreateDoctorCommand command = CreateDoctorCommand.builder()
                 .name("New name")
                 .surname("New surname")
@@ -76,7 +96,28 @@ public class DoctorControllerIT {
 
         String requestBody = objectMapper.writeValueAsString(command);
 
-        postman.perform(get("/doctor/21"))
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldNotSaveDoctorWithRoleUSER() throws Exception {
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
+                .pesel("12312312312")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(get("/doctor/21").with(httpBasic("user", "pass")))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))
@@ -87,7 +128,43 @@ public class DoctorControllerIT {
 
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        postman.perform(get("/doctor/21").with(httpBasic("admin", "admin")))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldSaveDoctorWithRoleADMIN() throws Exception {
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
+                .pesel("12312312312")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(get("/doctor/21").with(httpBasic("admin", "admin")))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Doctor with id: 21 not found!"))
+                .andExpect(jsonPath("$.uri").value("/doctor/21"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(command.getName()))
@@ -96,7 +173,7 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value(command.getAnimalSpeciality()))
                 .andExpect(jsonPath("$.rate").value(command.getRate()));
 
-        postman.perform(get("/doctor/21"))
+        postman.perform(get("/doctor/21").with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(command.getName()))
@@ -107,7 +184,7 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldEditDoctorNameAndSpeciality() throws Exception {
+    public void shouldNotEditDoctorNameAndSpecialityWithoutAuthorization() throws Exception {
 
         Doctor updatedDoctor = new Doctor();
         updatedDoctor.setName("New Name");
@@ -119,16 +196,51 @@ public class DoctorControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    public void shouldNotEditDoctorNameAndSpecialityWithRoleUSER() throws Exception {
+
+        Doctor updatedDoctor = new Doctor();
+        updatedDoctor.setName("New Name");
+        updatedDoctor.setSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(put("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void shouldEditDoctorNameAndSpecialityWithRoleADMIN() throws Exception {
+
+        Doctor updatedDoctor = new Doctor();
+        updatedDoctor.setName("New Name");
+        updatedDoctor.setSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(put("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("admin", "admin")))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("New Name"))
                 .andExpect(jsonPath("$.speciality").value("New Speciality"));
 
-
     }
 
     @Test
-    public void shouldEditPartiallyOnlyAnimalSpeciality() throws Exception {
+    public void shouldNotEditPartiallyOnlyAnimalSpecialityWithoutAuthorization() throws Exception {
 
         Doctor updatedDoctor = new Doctor();
         updatedDoctor.setAnimalSpeciality("New Speciality");
@@ -139,6 +251,38 @@ public class DoctorControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldNotEditPartiallyOnlyAnimalSpecialityWithRoleUSER() throws Exception {
+
+        Doctor updatedDoctor = new Doctor();
+        updatedDoctor.setAnimalSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(patch("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyAnimalSpecialityWithRoleADMIN() throws Exception {
+
+        Doctor updatedDoctor = new Doctor();
+        updatedDoctor.setAnimalSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(patch("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("admin", "admin")))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Michał"))
                 .andExpect(jsonPath("$.speciality").value("Chirurg"))
@@ -146,17 +290,42 @@ public class DoctorControllerIT {
     }
 
     @Test
-    public void shouldDeleteDoctor() throws Exception {
+    public void shouldNotDeleteDoctorWithRoleUSER() throws Exception {
 
-        postman.perform(delete("/doctor/1"))
+        postman.perform(delete("/doctor/1")
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void shouldDeleteDoctorWithRoleADMIN() throws Exception {
+
+        postman.perform(delete("/doctor/1")
+                        .with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
     }
 
     @Test
-    public void shouldShowNotFoundAsMessageWhenTryToFindDoctorWhoDoesNotExist() throws Exception {
-        postman.perform(get("/doctor/25"))
+    public void shouldShowNotFoundAsMessageWhenTryToFindDoctorWhoDoesNotExistWithRoleUSER() throws Exception {
+        postman.perform(get("/doctor/25")
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Doctor with id: 25 not found!"))
+                .andExpect(jsonPath("$.uri").value("/doctor/25"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    public void shouldShowNotFoundAsMessageWhenTryToFindDoctorWhoDoesNotExistWithRoleADMIN() throws Exception {
+        postman.perform(get("/doctor/25")
+                        .with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))

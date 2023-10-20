@@ -103,30 +103,6 @@ public class GlobalExceptionHandler {
                 .build(), CONFLICT);
     }
 
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<ErrorMessage> accessDeniedExceptionHandler(AccessDeniedException ex, HttpServletRequest httpServletRequest) {
-//        return new ResponseEntity<>(ErrorMessage.builder()
-//                .dateTime(LocalDateTime.now())
-//                .code(FORBIDDEN.value())
-//                .status(FORBIDDEN.getReasonPhrase())
-//                .message(ex.getMessage())
-//                .uri(httpServletRequest.getRequestURI())
-//                .method(httpServletRequest.getMethod())
-//                .build(), FORBIDDEN);
-//    }
-//
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity<ErrorMessage> authenticationExceptionHandler(AuthenticationException ex, HttpServletRequest httpServletRequest) {
-//        return new ResponseEntity<>(ErrorMessage.builder()
-//                .dateTime(LocalDateTime.now())
-//                .code(UNAUTHORIZED.value())
-//                .status(UNAUTHORIZED.getReasonPhrase())
-//                .message(ex.getMessage())
-//                .uri(httpServletRequest.getRequestURI())
-//                .method(httpServletRequest.getMethod())
-//                .build(), UNAUTHORIZED);
-//    }
-
 
 
 
