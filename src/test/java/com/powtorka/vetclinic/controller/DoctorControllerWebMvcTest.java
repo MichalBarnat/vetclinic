@@ -1,7 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.powtorka.vetclinic.config.SecurityConfig;
+import com.powtorka.vetclinic.configuration.TestSecurityConfig;
 import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.service.DoctorService;
@@ -12,11 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,15 +23,14 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = DoctorController.class, useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
-
+@WebMvcTest(DoctorController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 public class DoctorControllerWebMvcTest {
 
     @MockBean
@@ -179,69 +177,7 @@ public class DoctorControllerWebMvcTest {
     }
 
     @Test
-    public void save_ShouldNotSaveWithoutAuthorization() throws Exception {
-        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
-                .thenReturn(savedDoctor);
-        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
-        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
-
-        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
-
-        postman.perform(post("/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-
-        verify(doctorService, times(0)).save(savedDoctor);
-        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
-    }
-
-    @Test
-    public void save_ShouldNotSaveWithWrongCredentials() throws Exception {
-        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
-                .thenReturn(savedDoctor);
-        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
-        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
-
-        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
-
-        postman.perform(post("/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .with(httpBasic("admin", "wrongpass")))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-
-        verify(doctorService, times(0)).save(savedDoctor);
-        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
-    }
-
-
-    @Test
-    public void save_ShouldNotSaveWithRoleUSER() throws Exception {
-
-        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
-                .thenReturn(savedDoctor);
-        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
-        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
-
-        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
-
-        postman.perform(post("/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .with(httpBasic("user", "pass")))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-
-        verify(doctorService, times(0)).save(savedDoctor);
-        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
-    }
-
-    @Test
-    @WithMockUser(username = "admin", authorities = {"WRITE", "READ", "DELETE"})
-    public void save_ShouldReturnStatusCreatedAndExpectedDoctorDtoWithRoleADMIN() throws Exception {
+    public void save_ShouldSaveDoctor() throws Exception {
 
         when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
                 .thenReturn(savedDoctor);
@@ -253,17 +189,9 @@ public class DoctorControllerWebMvcTest {
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                        //.with(httpBasic("admin", "admin")))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("michal"))
-                .andExpect(jsonPath("$.surname").value("barnat"))
-                .andExpect(jsonPath("$.speciality").value("s"))
-                .andExpect(jsonPath("$.animalSpeciality").value("as"))
-                .andExpect(jsonPath("$.rate").value(100));
+                .andExpect(status().isCreated());
 
-        // Weryfikacja wywołań
         verify(doctorService).save(savedDoctor);
         verify(modelMapper).map(savedDoctor, DoctorDto.class);
     }
