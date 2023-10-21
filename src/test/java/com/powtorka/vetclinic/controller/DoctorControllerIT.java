@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
