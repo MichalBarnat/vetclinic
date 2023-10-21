@@ -26,7 +26,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
                 .dateTime(LocalDateTime.now())
                 .code(FORBIDDEN.value())
                 .status(FORBIDDEN.getReasonPhrase())
-                .message("Acces dienied: "+accessDeniedException.getMessage())
+                .message(accessDeniedException.getMessage())
                 .uri(request.getRequestURI())
                 .method(request.getMethod())
                 .build();

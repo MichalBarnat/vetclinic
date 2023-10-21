@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -172,18 +174,81 @@ public class DoctorControllerWebMvcTest {
     }
 
     @Test
-    public void save_ShouldReturnStatusCreatedAndExpectedDoctorDto() throws Exception {
+    public void save_ShouldNotSaveWithoutAuthorization() throws Exception {
+        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
+                .thenReturn(savedDoctor);
+        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
+        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
+
+        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(doctorService, times(0)).save(savedDoctor);
+        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
+    }
+
+    @Test
+    public void save_ShouldNotSaveWithWrongCredentials() throws Exception {
+        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
+                .thenReturn(savedDoctor);
+        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
+        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
+
+        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("admin", "wrongpass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(doctorService, times(0)).save(savedDoctor);
+        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
+    }
+
+
+    @Test
+    public void save_ShouldNotSaveWithRoleUSER() throws Exception {
 
         when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
                 .thenReturn(savedDoctor);
         when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
         when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
 
-        String requestBody = new ObjectMapper().writeValueAsString(createDoctorCommand);
+        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
 
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .with(httpBasic("user", "pass")))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(doctorService, times(0)).save(savedDoctor);
+        verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE", "READ", "DELETE"})
+    public void save_ShouldReturnStatusCreatedAndExpectedDoctorDtoWithRoleADMIN() throws Exception {
+
+        when(modelMapper.map(any(CreateDoctorCommand.class), eq(Doctor.class)))
+                .thenReturn(savedDoctor);
+        when(doctorService.save(savedDoctor)).thenReturn(savedDoctor);
+        when(modelMapper.map(savedDoctor, DoctorDto.class)).thenReturn(expectedDto);
+
+        String requestBody = objectMapper.writeValueAsString(createDoctorCommand);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
@@ -193,9 +258,11 @@ public class DoctorControllerWebMvcTest {
                 .andExpect(jsonPath("$.animalSpeciality").value("as"))
                 .andExpect(jsonPath("$.rate").value(100));
 
+        // Weryfikacja wywołań
         verify(doctorService).save(savedDoctor);
         verify(modelMapper).map(savedDoctor, DoctorDto.class);
     }
+
 
     @Test
     public void findById_ShouldReturnStatusOkAndExpectedDoctorDto() throws Exception {
@@ -299,14 +366,9 @@ public class DoctorControllerWebMvcTest {
     public void edit_ShouldReturnStatusOkAndExpectedDoctorDto() throws Exception {
 
         when(doctorService.editDoctor(eq(1L), any(UpdateDoctorCommand.class))).thenReturn(updatedDoctor);
-        // dlaczego ANY?
-        //Jeśli używasz Springa i przesyłasz obiekt jako ciało żądania HTTP, prawdopodobnie obiekt jest deserializowany na nowo,
-        // co oznacza, że nie jest to ta sama instancja obiektu. W takim przypadku używanie any(UpdateDoctorCommand.class) może być jedynym rozwiązaniem,
-        // chyba że zdecydujesz się na mockowanie deserializacji obiektu, co może być skomplikowane i nie zawsze jest najlepszym rozwiązaniem.
-
         when(modelMapper.map(updatedDoctor, DoctorDto.class)).thenReturn(expectedUpdatedDto);
 
-        String requestBody = new ObjectMapper().writeValueAsString(updateDoctorCommand);
+        String requestBody = objectMapper.writeValueAsString(updateDoctorCommand);
 
         postman.perform(put("/doctor/1")
                         .contentType(MediaType.APPLICATION_JSON)
