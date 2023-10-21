@@ -40,16 +40,16 @@ public class DoctorServiceTest {
         Doctor doctorToSave = new Doctor();
         doctorToSave.setName("John");
 
-        Doctor savedDoctorMock = new Doctor();
-        savedDoctorMock.setName("John");
-        savedDoctorMock.setId(1L);
+        Doctor savedDoctor = new Doctor();
+        savedDoctor.setName("John");
+        savedDoctor.setId(1L);
 
-        when(doctorRepositoryMock.save(eq(doctorToSave))).thenReturn(savedDoctorMock);
+        when(doctorRepositoryMock.save(eq(doctorToSave))).thenReturn(savedDoctor);
 
-        Doctor savedDoctor = doctorService.save(doctorToSave);
+        Doctor doctor = doctorService.save(doctorToSave);
 
-        assertEquals("John", savedDoctor.getName());
-        assertEquals(1L, savedDoctor.getId());
+        assertEquals("John", doctor.getName());
+        assertEquals(1L, doctor.getId());
         verify(doctorRepositoryMock).save(doctorToSave);
     }
 

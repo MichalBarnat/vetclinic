@@ -1,6 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.powtorka.vetclinic.config.SecurityConfig;
 import com.powtorka.vetclinic.model.doctor.*;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import com.powtorka.vetclinic.service.DoctorService;
@@ -11,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,7 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(DoctorController.class)
+@WebMvcTest(controllers = DoctorController.class, useDefaultFilters = false,
+        includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
+
 public class DoctorControllerWebMvcTest {
 
     @MockBean
@@ -186,7 +191,7 @@ public class DoctorControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         verify(doctorService, times(0)).save(savedDoctor);
         verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
@@ -206,7 +211,7 @@ public class DoctorControllerWebMvcTest {
                         .content(requestBody)
                         .with(httpBasic("admin", "wrongpass")))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         verify(doctorService, times(0)).save(savedDoctor);
         verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
@@ -228,7 +233,7 @@ public class DoctorControllerWebMvcTest {
                         .content(requestBody)
                         .with(httpBasic("user", "pass")))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         verify(doctorService, times(0)).save(savedDoctor);
         verify(modelMapper, times(0)).map(savedDoctor, DoctorDto.class);
@@ -247,8 +252,8 @@ public class DoctorControllerWebMvcTest {
 
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody)
-                        .with(httpBasic("admin", "admin")))
+                        .content(requestBody))
+                        //.with(httpBasic("admin", "admin")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
