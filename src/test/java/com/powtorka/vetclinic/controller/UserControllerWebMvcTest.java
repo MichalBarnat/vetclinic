@@ -2,6 +2,7 @@ package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.configuration.TestSecurityConfig;
+import com.powtorka.vetclinic.exceptions.UserEntityNotFoundException;
 import com.powtorka.vetclinic.model.user.UserEntity;
 import com.powtorka.vetclinic.repository.UserRepository;
 import com.powtorka.vetclinic.security.UserRole;
@@ -18,8 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 @Import(TestSecurityConfig.class)
 @ActiveProfiles("test")
-public class UserEntityWebMvcTest {
+public class UserControllerWebMvcTest {
 
     @MockBean
     private UserService userService;
@@ -42,7 +46,7 @@ public class UserEntityWebMvcTest {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public UserEntityWebMvcTest(MockMvc postman, ObjectMapper objectMapper) {
+    public UserControllerWebMvcTest(MockMvc postman, ObjectMapper objectMapper) {
         this.postman = postman;
         this.objectMapper = objectMapper;
     }
@@ -72,7 +76,38 @@ public class UserEntityWebMvcTest {
     }
 
     @Test
-    public void shouldReturnUserWithId1_andRoleUser() throws Exception {
+    public void saveAll_ShouldSaveUsers() throws Exception {
+        List<UserEntity> list = new ArrayList<>(Arrays.asList(user, admin));
+
+        when(userService.saveAll(list)).thenReturn(list);
+
+        String requestBody = objectMapper.writeValueAsString(list);
+
+        postman.perform(post("/user/saveAll")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void findById_shouldReturnErrorMessageWhenNotFoundUser() throws Exception {
+
+        when(userService.findById(1L)).thenThrow(new UserEntityNotFoundException("User with id: 1 not found!"));
+
+        postman.perform(get("/user/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("User with id: 1 not found!"))
+                .andExpect(jsonPath("$.uri").value("/user/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
+    }
+
+    @Test
+    public void findById_shouldReturnUserWithId1_andRoleUser() throws Exception {
         when(userService.save(user)).thenReturn(user);
 
         String requestBody = objectMapper.writeValueAsString(user);
@@ -96,7 +131,7 @@ public class UserEntityWebMvcTest {
     }
 
     @Test
-    public void shouldReturnUserWithId1_andRoleAdmin() throws Exception {
+    public void findById_shouldReturnUserWithId1_andRoleAdmin() throws Exception {
         when(userService.save(admin)).thenReturn(admin);
 
         String requestBody = objectMapper.writeValueAsString(admin);

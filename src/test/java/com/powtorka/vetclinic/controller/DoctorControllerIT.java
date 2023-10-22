@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -1157,6 +1158,280 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.[2].rate").value(91))
                 .andExpect(jsonPath("$.[3].name").value("Monika"))
                 .andExpect(jsonPath("$.[3].rate").value(83));
+    }
+
+    @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
+    public void shouldFindDoctorByIdWithReadPermission() throws Exception {
+        postman.perform(get("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Michał"))
+                .andExpect(jsonPath("$.surname").value("Barnat"))
+                .andExpect(jsonPath("$.speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.rate").value(99));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
+    public void shouldNotFindDoctorByIdWithWritePermission() throws Exception {
+        postman.perform(get("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
+    public void shouldNotFindDoctorByIdWithDeletePermission() throws Exception {
+        postman.perform(get("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
+    public void shouldNotSaveDoctorWithReadPermission() throws Exception {
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
+                .pesel("12312312312")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
+    public void shouldSaveDoctorWithWritePermission() throws Exception {
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
+                .pesel("12312312312")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.surname").value(command.getSurname()))
+                .andExpect(jsonPath("$.speciality").value(command.getSpeciality()))
+                .andExpect(jsonPath("$.animalSpeciality").value(command.getAnimalSpeciality()))
+                .andExpect(jsonPath("$.rate").value(command.getRate()));
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
+    public void shouldNotSaveDoctorWithDeletePermission() throws Exception {
+        CreateDoctorCommand command = CreateDoctorCommand.builder()
+                .name("New name")
+                .surname("New surname")
+                .speciality("New speciality")
+                .animalSpeciality("New animal speciality")
+                .email("test@qmail.com")
+                .rate(1)
+                .pesel("12312312312")
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/doctor")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
+    public void shouldNotEditDoctorWithReadPermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setName("New Name");
+        updatedDoctor.setSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(put("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("PUT"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
+    public void shouldEditDoctorWithWritePermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setName("New Name");
+        updatedDoctor.setSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(put("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.speciality").value("New Speciality"));
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
+    public void shouldNotEditDoctorWithDeletePermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setName("New Name");
+        updatedDoctor.setSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(put("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("PUT"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
+    public void shouldNotEditPartiallyDoctorWithReadPermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setAnimalSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(patch("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("PATCH"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
+    public void shouldEditPartiallyDoctorWithWritePermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setAnimalSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(patch("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Michał"))
+                .andExpect(jsonPath("$.speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.animalSpeciality").value("New Speciality"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
+    public void shouldNotEditPartiallyDoctorWithDeletePermission() throws Exception {
+        UpdateDoctorCommand updatedDoctor = new UpdateDoctorCommand();
+        updatedDoctor.setAnimalSpeciality("New Speciality");
+
+        String requestBody = objectMapper.writeValueAsString(updatedDoctor);
+
+        postman.perform(patch("/doctor/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("PATCH"));
+    }
+
+    @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
+    public void shouldNotDeleteDoctorWithReadPermission() throws Exception {
+        postman.perform(delete("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("DELETE"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
+    public void shouldNotDeleteDoctorWithWritePermission() throws Exception {
+        postman.perform(delete("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.status").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access Denied"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("DELETE"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
+    public void shouldDeleteDoctorWithDeletePermission() throws Exception {
+        postman.perform(delete("/doctor/1"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 
 }

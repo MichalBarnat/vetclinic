@@ -51,9 +51,6 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-//    public UserEntity findByUsername(String username) {
-//        return userRepository.findByUsername(username).orElseThrow();
-//    }
 
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserEntityNotFoundException(String.format("User with id: %d not found!", id)));
