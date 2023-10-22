@@ -1,13 +1,17 @@
 package com.powtorka.vetclinic.exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.powtorka.vetclinic.configuration.TestSecurityConfig;
 import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -18,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+
 public class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -27,6 +32,7 @@ public class GlobalExceptionHandlerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
     void shouldReturnCustomErrorMessageOnDoctorNotFoundException() throws Exception {
         String uri = "/doctor/999";
 
@@ -41,6 +47,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
     void shouldReturnCustomErrorMessageOnPatientNotFoundException() throws Exception {
         String uri = "/patient/999";
 
@@ -55,6 +62,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
     void shouldHandleConstraintViolationException_WhenCreatingDoctorWithTooShortName() throws Exception {
         CreateDoctorCommand command = CreateDoctorCommand.builder()
                 .name("A") // size min = 2
@@ -80,6 +88,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", authorities = {"READ"})
     void shouldHandleAppointmentNotFoundException() throws Exception {
         String uri = "/appointment/999";
 
@@ -93,6 +102,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"WRITE"})
     void shouldHandleAppointmentIsNotAvailableException() throws Exception {
         LocalDateTime dateTime = LocalDateTime.parse("2023-10-11T09:55:48.5352465");
 
@@ -125,6 +135,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"DELETE"})
     void shouldHandleDataIntegrityViolationException() throws Exception {
         postman.perform(delete("/doctor/1")
                         .contentType(MediaType.APPLICATION_JSON))

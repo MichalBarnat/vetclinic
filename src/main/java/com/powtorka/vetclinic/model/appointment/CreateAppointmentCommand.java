@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 @Generated
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateAppointmentCommand {
 
     private Long doctorId;
@@ -18,6 +20,5 @@ public class CreateAppointmentCommand {
     @Future
     private LocalDateTime dateTime;
     private double price;
-
 
 }
