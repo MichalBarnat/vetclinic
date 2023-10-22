@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final ModelMapper modelMapper;
 
-    //@PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     private ResponseEntity<AppointmentDto> findById(@PathVariable("id") Long id) {
         Appointment appointment = appointmentService.findById(id);
@@ -32,7 +30,6 @@ public class AppointmentController {
         return ResponseEntity.ok(modelMapper.map(appointment, AppointmentDto.class));
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<AppointmentDto> save(@RequestBody CreateAppointmentCommand command) {
         Appointment toSave = modelMapper.map(command, Appointment.class);

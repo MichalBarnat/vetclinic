@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.service;
 
+import com.powtorka.vetclinic.exceptions.UserEntityNotFoundException;
 import com.powtorka.vetclinic.model.user.MyUserDetails;
 import com.powtorka.vetclinic.model.user.UserEntity;
 import com.powtorka.vetclinic.repository.UserRepository;
@@ -29,7 +30,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .map(MyUserDetails::new)
-                .orElseThrow();
+                .orElseThrow(() -> new UserEntityNotFoundException(String.format("User with username: %s not found!", username)));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<UserRole> roles) {
@@ -50,12 +51,9 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    public UserEntity findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow();
-    }
 
     public UserEntity findById(Long id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id).orElseThrow(() -> new UserEntityNotFoundException(String.format("User with id: %d not found!", id)));
     }
 
 }

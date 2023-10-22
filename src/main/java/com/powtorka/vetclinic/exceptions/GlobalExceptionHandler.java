@@ -103,7 +103,16 @@ public class GlobalExceptionHandler {
                 .build(), CONFLICT);
     }
 
-
-
+    @ExceptionHandler(UserEntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleUserEntityNotFoundException(UserEntityNotFoundException ex, HttpServletRequest request) {
+        return new ResponseEntity<>(ErrorMessage.builder()
+                .dateTime(LocalDateTime.now())
+                .code(NOT_FOUND.value())
+                .status(NOT_FOUND.getReasonPhrase())
+                .message(ex.getMessage())
+                .uri(request.getRequestURI())
+                .method(request.getMethod())
+                .build(), NOT_FOUND);
+    }
 
 }
