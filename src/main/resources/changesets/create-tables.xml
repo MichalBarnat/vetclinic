@@ -50,8 +50,26 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="username" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
             <column name="password" type="VARCHAR(255)"/>
-            <column name="role" type="VARCHAR(255)"/>
+            <column name="roles" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Michal" id="1642024192330-5">
+        <createTable tableName="roles">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Michal" id="1642024192330-6">
+        <createTable tableName="user_roles">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INT"/>
+            <column name="role_id" type="INT"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
