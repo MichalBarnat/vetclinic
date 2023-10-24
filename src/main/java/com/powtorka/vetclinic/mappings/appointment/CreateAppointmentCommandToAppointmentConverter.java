@@ -1,7 +1,7 @@
 package com.powtorka.vetclinic.mappings.appointment;
 
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.CreateAppointmentCommand;
+import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.patient.Patient;
 import com.powtorka.vetclinic.service.DoctorService;

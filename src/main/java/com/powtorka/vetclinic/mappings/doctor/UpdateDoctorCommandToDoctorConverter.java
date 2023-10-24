@@ -1,7 +1,7 @@
 package com.powtorka.vetclinic.mappings.doctor;
 
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Service;

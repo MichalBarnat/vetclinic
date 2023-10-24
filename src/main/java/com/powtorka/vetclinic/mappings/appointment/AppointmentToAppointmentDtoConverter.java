@@ -1,7 +1,7 @@
 package com.powtorka.vetclinic.mappings.appointment;
 
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.AppointmentDto;
+import com.powtorka.vetclinic.model.appointment.dto.AppointmentDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

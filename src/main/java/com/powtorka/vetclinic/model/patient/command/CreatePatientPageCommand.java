@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.patient;
+package com.powtorka.vetclinic.model.patient.command;
 
 import com.powtorka.vetclinic.validators.ValueOfEnum;
 import jakarta.validation.constraints.Min;

@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.mappings.doctor;
 
-import com.powtorka.vetclinic.model.doctor.CreateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;

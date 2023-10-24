@@ -3,7 +3,7 @@ package com.powtorka.vetclinic.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
 import com.powtorka.vetclinic.model.patient.Patient;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;

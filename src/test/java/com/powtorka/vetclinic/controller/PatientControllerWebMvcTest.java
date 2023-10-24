@@ -2,6 +2,10 @@ package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.model.patient.*;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientPageCommand;
+import com.powtorka.vetclinic.model.patient.command.UdpatePatientCommand;
+import com.powtorka.vetclinic.model.patient.dto.PatientDto;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import com.powtorka.vetclinic.service.PatientService;
 import org.hamcrest.collection.IsEmptyCollection;

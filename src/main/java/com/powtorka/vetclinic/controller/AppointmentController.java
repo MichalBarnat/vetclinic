@@ -1,6 +1,10 @@
 package com.powtorka.vetclinic.controller;
 
 import com.powtorka.vetclinic.model.appointment.*;
+import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentCommand;
+import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentPageCommand;
+import com.powtorka.vetclinic.model.appointment.command.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.appointment.dto.AppointmentDto;
 import com.powtorka.vetclinic.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

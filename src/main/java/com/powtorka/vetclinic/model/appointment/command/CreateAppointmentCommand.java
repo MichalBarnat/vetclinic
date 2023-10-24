@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.appointment;
+package com.powtorka.vetclinic.model.appointment.command;
 
 import jakarta.validation.constraints.Future;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.appointment;
+package com.powtorka.vetclinic.model.appointment.dto;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

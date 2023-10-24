@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.mappings.appointment;
 
-import com.powtorka.vetclinic.model.appointment.CreateAppointmentPageCommand;
+import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentPageCommand;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.data.domain.Pageable;

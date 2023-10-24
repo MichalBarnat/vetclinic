@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.mappings.patient;
 
-import com.powtorka.vetclinic.model.patient.CreatePatientPageCommand;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientPageCommand;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.data.domain.Pageable;

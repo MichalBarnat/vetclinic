@@ -1,6 +1,10 @@
 package com.powtorka.vetclinic.controller;
 
 import com.powtorka.vetclinic.model.doctor.*;
+import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorPageCommand;
+import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.dto.DoctorDto;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

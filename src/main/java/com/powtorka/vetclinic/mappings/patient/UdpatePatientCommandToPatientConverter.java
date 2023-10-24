@@ -2,7 +2,7 @@ package com.powtorka.vetclinic.mappings.patient;
 
 import org.modelmapper.Converter;
 import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
+import com.powtorka.vetclinic.model.patient.command.UdpatePatientCommand;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Service;
 

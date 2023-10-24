@@ -2,7 +2,7 @@ package com.powtorka.vetclinic.service;
 
 import com.powtorka.vetclinic.exceptions.PatientNotFoundException;
 import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.model.patient.UdpatePatientCommand;
+import com.powtorka.vetclinic.model.patient.command.UdpatePatientCommand;
 import com.powtorka.vetclinic.repository.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

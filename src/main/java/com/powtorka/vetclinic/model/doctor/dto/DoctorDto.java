@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.doctor;
+package com.powtorka.vetclinic.model.doctor.dto;
 
 import lombok.Builder;
 import lombok.Generated;

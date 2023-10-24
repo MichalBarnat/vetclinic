@@ -2,11 +2,9 @@ package com.powtorka.vetclinic.service;
 
 import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
 import com.powtorka.vetclinic.repository.DoctorRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

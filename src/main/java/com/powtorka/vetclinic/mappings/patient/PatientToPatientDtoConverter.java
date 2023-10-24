@@ -1,7 +1,7 @@
 package com.powtorka.vetclinic.mappings.patient;
 
 import com.powtorka.vetclinic.model.patient.Patient;
-import com.powtorka.vetclinic.model.patient.PatientDto;
+import com.powtorka.vetclinic.model.patient.dto.PatientDto;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Service;

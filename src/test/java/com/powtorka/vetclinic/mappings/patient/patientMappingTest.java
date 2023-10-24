@@ -1,6 +1,10 @@
 package com.powtorka.vetclinic.mappings.patient;
 
 import com.powtorka.vetclinic.model.patient.*;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
+import com.powtorka.vetclinic.model.patient.command.CreatePatientPageCommand;
+import com.powtorka.vetclinic.model.patient.command.UdpatePatientCommand;
+import com.powtorka.vetclinic.model.patient.dto.PatientDto;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.data.domain.PageRequest;

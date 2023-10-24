@@ -1,6 +1,6 @@
 //package com.powtorka.vetclinic.model.doctor.patient;
 //
-//import com.powtorka.vetclinic.model.patient.CreatePatientCommand;
+//import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
 //import org.junit.Test;
 //import org.junit.jupiter.api.BeforeEach;
 //

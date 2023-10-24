@@ -3,7 +3,7 @@ package com.powtorka.vetclinic.service;
 import com.powtorka.vetclinic.exceptions.AppointmentIsNotAvailableExpcetion;
 import com.powtorka.vetclinic.exceptions.AppointmentNotFoundException;
 import com.powtorka.vetclinic.model.appointment.Appointment;
-import com.powtorka.vetclinic.model.appointment.UpdateAppointementCommand;
+import com.powtorka.vetclinic.model.appointment.command.UpdateAppointementCommand;
 import com.powtorka.vetclinic.repository.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
