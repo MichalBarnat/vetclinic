@@ -1,10 +1,12 @@
 package com.powtorka.vetclinic.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
-import com.powtorka.vetclinic.model.patient.Patient;
+import com.powtorka.vetclinic.model.patient.command.UdpatePatientCommand;
+import com.powtorka.vetclinic.payload.request.LoginRequest;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 @SpringBootTest(classes = VetclinicApplication.class)
 @AutoConfigureMockMvc
@@ -33,15 +37,22 @@ public class PatientControllerIT {
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
-
+    private final String VALID_USER_TOKEN;
+    private final String VALID_MODERATOR_TOKEN;
+    private final String VALID_ADMIN_TOKEN;
+    private final String INVALID_TOKEN;
 
 
     @Autowired
-    public PatientControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) {
+    public PatientControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) throws Exception {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
+        this.VALID_USER_TOKEN = getValidUserToken();
+        this.VALID_MODERATOR_TOKEN = getValidModeratorToken();
+        this.VALID_ADMIN_TOKEN = getValidAdminToken();
+        this.INVALID_TOKEN = getInvalidToken();
     }
 
     @AfterEach
@@ -49,8 +60,637 @@ public class PatientControllerIT {
         databaseCleaner.cleanUp();
     }
 
+    public String getValidUserToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("user", "pass");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken = jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getValidModeratorToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("mod", "pass");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken = jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getValidAdminToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("admin", "admin");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken = jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getInvalidToken() {
+        return "Bearer eyJasdDSADASCXdccasc.e123yJzxgsdfg3213123WIgvsgcgscVyIiwiasgvgsryjIxMzI5LCJleHAiOjE2OTgzMDc3Mjl9.4xllda6hz8gpX0gQ";
+    }
+
     @Test
-    void shouldFindPatientById() throws Exception {
+    void shouldNotFindPatientByIdWithoutAuthorization() throws Exception {
+        postman.perform(get("/patient/1"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    void shouldNotFindPatientByIdWithWrongToken() throws Exception {
+        postman.perform(get("/patient/1").header("Authorization", INVALID_TOKEN))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    void shouldFindPatientByIdWithRoleUSER() throws Exception {
+        postman.perform(get("/patient/1").header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(1));
+    }
+
+    @Test
+    void shouldFindPatientByIdWithRoleMODERATOR() throws Exception {
+        postman.perform(get("/patient/1").header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(1));
+    }
+
+    @Test
+    void shouldFindPatientByIdWithRoleADMIN() throws Exception {
+        postman.perform(get("/patient/1").header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(1));
+    }
+
+    @Test
+    public void shouldNotSavePatientWithoutAuthorization() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldNotSavePatientWithWrongToken() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", INVALID_TOKEN))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+    @Test
+    public void shouldNotSavePatientWithRoleUSER() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(get("/patient/21").header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Patient with id: 21 not found!"))
+                .andExpect(jsonPath("$.uri").value("/patient/21"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        postman.perform(get("/patient/21").header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    public void shouldNotSaveDoctorWithRoleAdmin() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MODERATOR")
+    public void shouldSaveDoctorWithRoleModerator() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.species").value(command.getSpecies()))
+                .andExpect(jsonPath("$.breed").value(command.getBreed()))
+                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
+                .andExpect(jsonPath("$.age").value(command.getAge()));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldSaveDoctorWithRoleAdmin() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("name")
+                .species("species")
+                .breed("breed")
+                .ownerName("ownername")
+                .ownerEmail("owneremail@qmail.com")
+                .age(1)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value(command.getName()))
+                .andExpect(jsonPath("$.species").value(command.getSpecies()))
+                .andExpect(jsonPath("$.breed").value(command.getBreed()))
+                .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
+                .andExpect(jsonPath("$.age").value(command.getAge()));
+    }
+
+    @Test
+    public void shouldNotEditPatientNameAndOwnerNameWithoutAuthorization() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New ownerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient/1"))
+                .andExpect(jsonPath("$.method").value("PUT"));
+
+    }
+
+    @Test
+    public void shouldNotEditPatientNameAndOwnerNameWithWrongToken() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", INVALID_TOKEN))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    public void shouldNotEditPatientNameAndOwnerNameWithRoleUSER() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void shouldEditPatientNameAndOwnerNameWithRoleMOREDATOR() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"));
+
+    }
+
+    @Test
+    public void shouldEditPatientNameAndOwnerNameWithRoleADMIN() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(put("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"));
+
+    }
+
+    @Test
+    public void shouldNotEditPartiallyWithoutAuthorization() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient/1"))
+                .andExpect(jsonPath("$.method").value("PATCH"));
+    }
+
+    @Test
+    public void shouldNotEditPartiallyWithWrongToken() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", INVALID_TOKEN))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void shouldNotEditPartiallyOnlyNameWithRoleUSER() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlOwnerNameWithRoleMODERATOR() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"));
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyOwnerNameWithRoleADMIN() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"));
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyNameAndAgeWithRoleMODERATOR() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+        updatedPatient.setAge(10);
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/20")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Boxer"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("10"));
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyNameAndAgeWithRoleADMIN() throws Exception {
+
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+        updatedPatient.setAge(10);
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/20")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Boxer"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("10"));
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyNameAndOwnerNameWithRoleMODERATOR() throws Exception {
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.species").value("Kot"))
+                .andExpect(jsonPath("$.breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("8"));
+
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyNameAndOwnerNameWithRoleADMIN() throws Exception {
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setName("New Name");
+        updatedPatient.setOwnerName("New OwnerName");
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.species").value("Kot"))
+                .andExpect(jsonPath("$.breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("8"));
+
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyOwnerNameAndAgeWithRoleMODERATOR() throws Exception {
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setOwnerName("New OwnerName");
+        updatedPatient.setAge(1);
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Luna"))
+                .andExpect(jsonPath("$.species").value("Kot"))
+                .andExpect(jsonPath("$.breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("1"));
+    }
+
+    @Test
+    public void shouldEditPartiallyOnlyOwnerNameAndAgeWithRoleADMIN() throws Exception {
+        UdpatePatientCommand updatedPatient = new UdpatePatientCommand();
+        updatedPatient.setOwnerName("New OwnerName");
+        updatedPatient.setAge(1);
+
+        String requestBody = objectMapper.writeValueAsString(updatedPatient);
+
+        postman.perform(patch("/patient/2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Luna"))
+                .andExpect(jsonPath("$.species").value("Kot"))
+                .andExpect(jsonPath("$.breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.ownerName").value("New OwnerName"))
+                .andExpect(jsonPath("$.age").value("1"));
+    }
+
+    @Test
+    public void shouldNotGivePatientsPageWithoutAuthorization() throws Exception {
+        postman.perform(get("/patient"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    public void shouldNotGivePatientsWhenAskForFirstPageWithoutAuthorization() throws Exception {
+        postman.perform(get("/patient?pageSize=5&pageNumber=0"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/patient"))
+                .andExpect(jsonPath("$.method").value("GET"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldFindPatientByIdWithUserRole() throws Exception {
         postman.perform(get("/patient/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -63,45 +703,72 @@ public class PatientControllerIT {
     }
 
     @Test
-    void shouldPartiallyEditPatientAge() throws Exception {
-        Patient updatedPatient = new Patient();
-        updatedPatient.setAge(12);
-
-        String requestBody = objectMapper.writeValueAsString(updatedPatient);
-
-        postman.perform(put("/patient/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+    @WithMockUser(roles = "MODERATOR")
+    void shouldFindPatientByIdWithModeratorRole() throws Exception {
+        postman.perform(get("/patient/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.age").value(12));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(1));
     }
 
     @Test
-    public void shouldSavePatient() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void shouldFindPatientByIdWithAdminRole() throws Exception {
+        postman.perform(get("/patient/1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Bella"))
+                .andExpect(jsonPath("$.species").value("Pies"))
+                .andExpect(jsonPath("$.breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.age").value(1));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    public void shouldNotSavePatientWithUserRole() throws Exception {
         CreatePatientCommand command = CreatePatientCommand.builder()
-                .name("Tyson")
-                .species("Species")
-                .breed("Breed")
-                .ownerName("Krystian")
-                .ownerEmail("krystian@gmail.com")
-                .age(5)
+                .name("New name")
+                .species("New species")
+                .breed("New breed")
+                .ownerName("New OwnerName")
+                .ownerEmail("owneremail@qmail.com")
+                .age(10)
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(command);
 
-        postman.perform(get("/patient/21"))
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value(404))
-                .andExpect(jsonPath("$.status").value("Not Found"))
-                .andExpect(jsonPath("$.message").value("Patient with id: 21 not found!"))
-                .andExpect(jsonPath("$.uri").value("/patient/21"))
-                .andExpect(jsonPath("$.method").value("GET"));
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MODERATOR")
+    public void shouldSavePatientWithModeratorRole() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("New name")
+                .species("New species")
+                .breed("New breed")
+                .ownerName("New OwnerName")
+                .ownerEmail("owneremail@qmail.com")
+                .age(10)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
 
         postman.perform(post("/patient")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(command.getName()))
                 .andExpect(jsonPath("$.species").value(command.getSpecies()))
@@ -109,18 +776,54 @@ public class PatientControllerIT {
                 .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
                 .andExpect(jsonPath("$.age").value(command.getAge()));
 
-        postman.perform(get("/patient/21"))
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldSavePatientWithAdminRole() throws Exception {
+        CreatePatientCommand command = CreatePatientCommand.builder()
+                .name("New name")
+                .species("New species")
+                .breed("New breed")
+                .ownerName("New OwnerName")
+                .ownerEmail("owneremail@qmail.com")
+                .age(10)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(command);
+
+        postman.perform(post("/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(command.getName()))
                 .andExpect(jsonPath("$.species").value(command.getSpecies()))
                 .andExpect(jsonPath("$.breed").value(command.getBreed()))
                 .andExpect(jsonPath("$.ownerName").value(command.getOwnerName()))
                 .andExpect(jsonPath("$.age").value(command.getAge()));
+
     }
 
     @Test
-    public void shouldDeletePatient() throws Exception {
+    @WithMockUser(roles = "USER")
+    public void shouldNotDeletePatientWithUserRole() throws Exception {
+        postman.perform(delete("/patient/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "MODERATOR")
+    public void shouldNotDeletePatientWithModeratorRole() throws Exception {
+        postman.perform(delete("/patient/1"))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldDeletePatientWithAdminRole() throws Exception {
         postman.perform(delete("/patient/1"))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -128,7 +831,7 @@ public class PatientControllerIT {
 
     @Test
     public void shouldThrowValidationMessageWhenEmailIsInvalid() throws Exception {
-        Patient patient = Patient.builder()
+        CreatePatientCommand patient = CreatePatientCommand.builder()
                 .name("Leo")
                 .species("Kot")
                 .breed("Tygrys Syberyjski")
@@ -140,7 +843,8 @@ public class PatientControllerIT {
         String requestBody = objectMapper.writeValueAsString(patient);
 
         postman.perform(post("/patient").contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400))
@@ -149,22 +853,71 @@ public class PatientControllerIT {
                 .andExpect(jsonPath("$.uri").value("/patient"))
                 .andExpect(jsonPath("$.method").value("POST"));
     }
-
-//    @Test
-//    void shouldThrowExceptionWhenTryGetPatientWhoDoNotExist() throws Exception {
-//        postman.perform(get("/patient/25"))
-//                .andDo(print())
-//                .andExpect(status().isNotFound())
-//                .andExpect(jsonPath("$.code").value(404))
-//                .andExpect(jsonPath("$.status").value("Not Found"))
-//                .andExpect(jsonPath("$.message").value("Patient with id: 25 not found!"))
-//                .andExpect(jsonPath("$.uri").value("/patient/25"))
-//                .andExpect(jsonPath("$.method").value("GET"));
-//    }
+//
+////    @Test
+////    void shouldThrowExceptionWhenTryGetPatientWhoDoNotExist() throws Exception {
+////        postman.perform(get("/patient/25"))
+////                .andDo(print())
+////                .andExpect(status().isNotFound())
+////                .andExpect(jsonPath("$.code").value(404))
+////                .andExpect(jsonPath("$.status").value("Not Found"))
+////                .andExpect(jsonPath("$.message").value("Patient with id: 25 not found!"))
+////                .andExpect(jsonPath("$.uri").value("/patient/25"))
+////                .andExpect(jsonPath("$.method").value("GET"));
+////    }
 
     @Test
-    public void shouldGivenFirst3PatientsWhenAskForFirstPage() throws Exception {
-        postman.perform(get("/patient?pageSize=3&pageNumber=0"))
+    public void shouldGivenFirst3PatientsWhenAskForFirstPageWithRoleUser() throws Exception {
+        postman.perform(get("/patient?pageSize=3&pageNumber=0")
+                        .header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Bella"))
+                .andExpect(jsonPath("$.[0].species").value("Pies"))
+                .andExpect(jsonPath("$.[0].breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.[0].ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.[0].age").value("1"))
+                .andExpect(jsonPath("$.[1].name").value("Luna"))
+                .andExpect(jsonPath("$.[1].species").value("Kot"))
+                .andExpect(jsonPath("$.[1].breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.[1].ownerName").value("Maria Nowak"))
+                .andExpect(jsonPath("$.[1].age").value("8"))
+                .andExpect(jsonPath("$.[2].name").value("Max"))
+                .andExpect(jsonPath("$.[2].species").value("Pies"))
+                .andExpect(jsonPath("$.[2].breed").value("Golden Retriever"))
+                .andExpect(jsonPath("$.[2].ownerName").value("Adam Wiśniewski"))
+                .andExpect(jsonPath("$.[2].age").value("15"));
+
+    }
+
+    @Test
+    public void shouldGivenFirst3PatientsWhenAskForFirstPageWithRoleModerator() throws Exception {
+        postman.perform(get("/patient?pageSize=3&pageNumber=0")
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Bella"))
+                .andExpect(jsonPath("$.[0].species").value("Pies"))
+                .andExpect(jsonPath("$.[0].breed").value("Labrador Retriever"))
+                .andExpect(jsonPath("$.[0].ownerName").value("Jan Kowalski"))
+                .andExpect(jsonPath("$.[0].age").value("1"))
+                .andExpect(jsonPath("$.[1].name").value("Luna"))
+                .andExpect(jsonPath("$.[1].species").value("Kot"))
+                .andExpect(jsonPath("$.[1].breed").value("Brytyjski krótkowłosy"))
+                .andExpect(jsonPath("$.[1].ownerName").value("Maria Nowak"))
+                .andExpect(jsonPath("$.[1].age").value("8"))
+                .andExpect(jsonPath("$.[2].name").value("Max"))
+                .andExpect(jsonPath("$.[2].species").value("Pies"))
+                .andExpect(jsonPath("$.[2].breed").value("Golden Retriever"))
+                .andExpect(jsonPath("$.[2].ownerName").value("Adam Wiśniewski"))
+                .andExpect(jsonPath("$.[2].age").value("15"));
+
+    }
+
+    @Test
+    public void shouldGivenFirst3PatientsWhenAskForFirstPageWithRoleAdmin() throws Exception {
+        postman.perform(get("/patient?pageSize=3&pageNumber=0")
+                        .header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Bella"))
@@ -187,7 +940,7 @@ public class PatientControllerIT {
 
     @Test
     public void shouldThrowValidationMessageWhenAgeIsMoreThan1000() throws Exception {
-        Patient patient = Patient.builder()
+        CreatePatientCommand patient = CreatePatientCommand.builder()
                 .name("Fiona")
                 .species("Pies")
                 .breed("Shitzu")
@@ -199,7 +952,8 @@ public class PatientControllerIT {
         String requestBody = objectMapper.writeValueAsString(patient);
 
         postman.perform(post("/patient").contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400))
@@ -210,8 +964,35 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGetTheOldestPatient() throws Exception {
-        postman.perform(get("/patient/the-oldest"))
+    public void shouldThrowValidationMessageWhenAgeIsLessThan0() throws Exception {
+        CreatePatientCommand patient = CreatePatientCommand.builder()
+                .name("Fiona")
+                .species("Pies")
+                .breed("Shitzu")
+                .ownerName("Kamil")
+                .ownerEmail("kamileczko132@gmail.com")
+                .age(-7)
+                .build();
+
+        String requestBody = objectMapper.writeValueAsString(patient);
+
+        postman.perform(post("/patient").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.status").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Validation failed: age Age must be greater or equal to 0; "))
+                .andExpect(jsonPath("$.uri").value("/patient"))
+                .andExpect(jsonPath("$.method").value("POST"));
+    }
+
+
+    @Test
+    public void shouldGetTheOldestPatientWithUserRole() throws Exception {
+        postman.perform(get("/patient/the-oldest")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Max"))
@@ -226,17 +1007,52 @@ public class PatientControllerIT {
                 .andExpect(jsonPath("$.[4].age").value(19))
                 .andExpect(jsonPath("$.[5].name").value("Leo"))
                 .andExpect(jsonPath("$.[5].age").value(20));
-        // W poniższej metodzie w PatientController ustawiono domyślnie graniczny wiek na 14:
-        //    @GetMapping("/the-oldest")
-        //    private ResponseEntity<List<Patient>> getTheOldestPatients(@RequestParam(name = "minAge", required = false, defaultValue = "14") int minAge) {
-        //        List<Patient> theOldestPatients = patientService.findPatientsWithAgeGreaterThan(minAge);
-        //        return ResponseEntity.ok(theOldestPatients);
-        //    }
     }
 
     @Test
-    public void shouldGiveListOfPatientsSortedByName() throws Exception {
-        postman.perform(get("/patient?sortBy=name"))
+    public void shouldGetTheOldestPatientWithModeratorRole() throws Exception {
+        postman.perform(get("/patient/the-oldest")
+                        .header("Authorization", VALID_MODERATOR_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Max"))
+                .andExpect(jsonPath("$.[0].age").value(15))
+                .andExpect(jsonPath("$.[1].name").value("Simba"))
+                .andExpect(jsonPath("$.[1].age").value(16))
+                .andExpect(jsonPath("$.[2].name").value("Charlie"))
+                .andExpect(jsonPath("$.[2].age").value(17))
+                .andExpect(jsonPath("$.[3].name").value("Milo"))
+                .andExpect(jsonPath("$.[3].age").value(18))
+                .andExpect(jsonPath("$.[4].name").value("Daisy"))
+                .andExpect(jsonPath("$.[4].age").value(19))
+                .andExpect(jsonPath("$.[5].name").value("Leo"))
+                .andExpect(jsonPath("$.[5].age").value(20));
+    }
+
+    @Test
+    public void shouldGetTheOldestPatientWithAdminRole() throws Exception {
+        postman.perform(get("/patient/the-oldest")
+                        .header("Authorization", VALID_ADMIN_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("Max"))
+                .andExpect(jsonPath("$.[0].age").value(15))
+                .andExpect(jsonPath("$.[1].name").value("Simba"))
+                .andExpect(jsonPath("$.[1].age").value(16))
+                .andExpect(jsonPath("$.[2].name").value("Charlie"))
+                .andExpect(jsonPath("$.[2].age").value(17))
+                .andExpect(jsonPath("$.[3].name").value("Milo"))
+                .andExpect(jsonPath("$.[3].age").value(18))
+                .andExpect(jsonPath("$.[4].name").value("Daisy"))
+                .andExpect(jsonPath("$.[4].age").value(19))
+                .andExpect(jsonPath("$.[5].name").value("Leo"))
+                .andExpect(jsonPath("$.[5].age").value(20));
+    }
+
+    @Test
+    public void shouldGiveListOfPatientsSortedByNameWithAdminRole() throws Exception {
+        postman.perform(get("/patient?sortBy=name")
+                        .header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Bella"))
@@ -244,9 +1060,11 @@ public class PatientControllerIT {
                 .andExpect(jsonPath("$.[2].name").value("Daisy"));
     }
 
+
     @Test
-    public void shouldGiveListOfPatientsSortedByNameDescending() throws Exception {
-        postman.perform(get("/patient?sortDirection=DESC&sortBy=name"))
+    public void shouldGiveListOfPatientsSortedByNameDescendingWithUserRole() throws Exception {
+        postman.perform(get("/patient?sortDirection=DESC&sortBy=name")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Ziggy"))
@@ -255,8 +1073,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfPatientsPageSize6SortedByAge() throws Exception {
-        postman.perform(get("/patient?pageSize=6&sortBy=age"))
+    public void shouldGiveListOfPatientsPageSize6SortedByAgeWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=6&sortBy=age")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Bella"))
@@ -277,8 +1096,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGiven6PatientsWhenAskForSecondPage() throws Exception {
-        postman.perform(get("/patient?pageSize=6&pageNumber=1"))
+    public void shouldGiven6PatientsWhenAskForSecondPageWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=6&pageNumber=1")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Lola"))
@@ -315,8 +1135,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGiven2PatientsWhenAskForSecondPageWhenPageSizeIs18() throws Exception {
-        postman.perform(get("/patient?pageSize=18&pageNumber=1"))
+    public void shouldGiven2PatientsWhenAskForSecondPageWhenPageSizeIs18WithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=18&pageNumber=1")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Molly"))
@@ -332,8 +1153,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenListOfPatientsPageSize6SortedByAgeDescending() throws Exception {
-        postman.perform(get("/patient?pageSize=6&sortBy=age&sortDirection=DESC"))
+    public void shouldGivenListOfPatientsPageSize6SortedByAgeDescendingWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=6&sortBy=age&sortDirection=DESC")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Leo"))
@@ -354,8 +1176,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenListOfPatientsOnPage2PageSize3SortedByAgeDescending() throws Exception {
-        postman.perform(get("/patient?pageSize=3&pageNumber=1&sortBy=age&sortDirection=DESC"))
+    public void shouldGivenListOfPatientsOnPage2PageSize3SortedByAgeDescendingWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=3&pageNumber=1&sortBy=age&sortDirection=DESC")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Charlie"))
@@ -367,8 +1190,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenTheOldestPatientInClinic() throws Exception {
-        postman.perform(get("/patient?pageSize=1&pageNumber=0&sortBy=age&sortDirection=DESC"))
+    public void shouldGivenTheOldestPatientInClinicWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=1&pageNumber=0&sortBy=age&sortDirection=DESC")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].name").value("Leo"))
@@ -376,8 +1200,9 @@ public class PatientControllerIT {
     }
 
     @Test
-    public void shouldGivenTheSpeciesThe3OldestPatientsInClinic() throws Exception {
-        postman.perform(get("/patient?pageSize=3&pageNumber=0&sortBy=age&sortDirection=DESC"))
+    public void shouldGivenTheSpeciesThe3OldestPatientsInClinicWithUserRole() throws Exception {
+        postman.perform(get("/patient?pageSize=3&pageNumber=0&sortBy=age&sortDirection=DESC")
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].species").value("Kot"))
