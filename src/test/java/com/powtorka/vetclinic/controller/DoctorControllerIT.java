@@ -74,7 +74,7 @@ public class DoctorControllerIT {
 
         JsonNode jsonNode = objectMapper.readTree(response);
 
-        String accessToken =  jsonNode.get("accessToken").asText();
+        String accessToken = jsonNode.get("accessToken").asText();
 
         return "Bearer " + accessToken;
     }
@@ -93,7 +93,7 @@ public class DoctorControllerIT {
 
         JsonNode jsonNode = objectMapper.readTree(response);
 
-        String accessToken =  jsonNode.get("accessToken").asText();
+        String accessToken = jsonNode.get("accessToken").asText();
 
         return "Bearer " + accessToken;
     }
@@ -112,7 +112,7 @@ public class DoctorControllerIT {
 
         JsonNode jsonNode = objectMapper.readTree(response);
 
-        String accessToken =  jsonNode.get("accessToken").asText();
+        String accessToken = jsonNode.get("accessToken").asText();
 
         return "Bearer " + accessToken;
     }
@@ -185,8 +185,6 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.rate").value(99));
     }
 
-
-
     @Test
     public void shouldNotSaveDoctorWithoutAuthorization() throws Exception {
         CreateDoctorCommand command = CreateDoctorCommand.builder()
@@ -207,14 +205,14 @@ public class DoctorControllerIT {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(401))
-                .andExpect(jsonPath("$.status").value("UNAUTHORIZED"))
-                .andExpect(jsonPath("$.message").value("Unauthorized : POST"))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
                 .andExpect(jsonPath("$.uri").value("/doctor"))
                 .andExpect(jsonPath("$.method").value("POST"));
     }
 
     @Test
-    public void shouldNotSaveDoctorWithWrongCredentials() throws Exception {
+    public void shouldNotSaveDoctorWithWrongToken() throws Exception {
         CreateDoctorCommand command = CreateDoctorCommand.builder()
                 .name("New name")
                 .surname("New surname")
@@ -230,9 +228,14 @@ public class DoctorControllerIT {
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
-                        .with(httpBasic("admin", "wrongpass")))
+                        .header("Authorization", INVALID_TOKEN))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/doctor"))
+                .andExpect(jsonPath("$.method").value("POST"));
     }
 
     @Test
@@ -249,7 +252,7 @@ public class DoctorControllerIT {
 
         String requestBody = objectMapper.writeValueAsString(command);
 
-        postman.perform(get("/doctor/21").with(httpBasic("user", "pass")))
+        postman.perform(get("/doctor/21").header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))
@@ -261,16 +264,11 @@ public class DoctorControllerIT {
         postman.perform(post("/doctor")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
-                        .with(httpBasic("user", "pass")))
+                        .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value(403))
-                .andExpect(jsonPath("$.status").value("Forbidden"))
-                .andExpect(jsonPath("$.message").value("Access Denied"))
-                .andExpect(jsonPath("$.uri").value("/doctor"))
-                .andExpect(jsonPath("$.method").value("POST"));
+                .andExpect(status().isForbidden());
 
-        postman.perform(get("/doctor/21").with(httpBasic("admin", "admin")))
+        postman.perform(get("/doctor/21").header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
