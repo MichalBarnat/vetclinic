@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.mappings.doctor;
 
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorPageCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorPageCommand;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.data.domain.Pageable;

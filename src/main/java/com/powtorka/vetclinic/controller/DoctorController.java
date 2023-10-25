@@ -1,9 +1,9 @@
 package com.powtorka.vetclinic.controller;
 
 import com.powtorka.vetclinic.model.doctor.*;
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorPageCommand;
-import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorPageCommand;
+import com.powtorka.vetclinic.model.doctor.command.UpdateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.dto.DoctorDto;
 import com.powtorka.vetclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class DoctorController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    private ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<DoctorDto> findById(@PathVariable("id") Long id) {
         Doctor doctor = doctorService.findById(id);
         if(doctor == null) {
             return ResponseEntity.status(NOT_FOUND).body(null);
@@ -37,7 +37,7 @@ public class DoctorController {
     }
 
     @PostMapping
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<DoctorDto> save(@RequestBody CreateDoctorCommand command) {
         Doctor toSave = modelMapper.map(command, Doctor.class);
         Doctor savedDoctor = doctorService.save(toSave);
@@ -45,8 +45,8 @@ public class DoctorController {
     }
 
     @GetMapping
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    private ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<List<DoctorDto>> findAll(CreateDoctorPageCommand command) {
 
         Page<Doctor> page = doctorService.findAll(modelMapper.map(command, Pageable.class));
 
@@ -57,36 +57,36 @@ public class DoctorController {
     }
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
-    private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         doctorService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/deleteAll")
-    //@PreAuthorize("hasRole('ADMIN')")
-    private ResponseEntity<Void> deleteAll() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteAll() {
         doctorService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR')")
-    private ResponseEntity<DoctorDto> edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public ResponseEntity<DoctorDto> edit(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editDoctor(id, command);
         return ResponseEntity.ok(modelMapper.map(editedDoctor, DoctorDto.class));
     }
 
     @PatchMapping("/{id}")
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR')")
-    private ResponseEntity<DoctorDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public ResponseEntity<DoctorDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateDoctorCommand command) {
         Doctor editedDoctor = doctorService.editPartially(id, command);
         return ResponseEntity.ok(modelMapper.map(editedDoctor, DoctorDto.class));
     }
 
     @GetMapping("/top-rated")
-    //@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    private ResponseEntity<List<Doctor>> getTopRatedDoctors(@RequestParam(name = "minRate", required = false, defaultValue = "80") int minRate) {
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<List<Doctor>> getTopRatedDoctors(@RequestParam(name = "minRate", required = false, defaultValue = "80") int minRate) {
         List<Doctor> topRatedDoctors = doctorService.findDoctorsWithRateGreaterThan(minRate);
         return ResponseEntity.ok(topRatedDoctors);
     }

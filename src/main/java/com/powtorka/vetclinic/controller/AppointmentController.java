@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class AppointmentController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{id}")
-    private ResponseEntity<AppointmentDto> findById(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<AppointmentDto> findById(@PathVariable("id") Long id) {
         Appointment appointment = appointmentService.findById(id);
         if(appointment == null){
             return ResponseEntity.status(NOT_FOUND).body(null);
@@ -35,6 +37,7 @@ public class AppointmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<AppointmentDto> save(@RequestBody CreateAppointmentCommand command) {
         Appointment toSave = modelMapper.map(command, Appointment.class);
         Appointment savedAppointment = appointmentService.save(toSave);
@@ -42,7 +45,8 @@ public class AppointmentController {
     }
 
     @GetMapping
-    private ResponseEntity<List<AppointmentDto>> findAll(CreateAppointmentPageCommand command) {
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    public ResponseEntity<List<AppointmentDto>> findAll(CreateAppointmentPageCommand command) {
         List<AppointmentDto> list = appointmentService.findAll(modelMapper.map(command, Pageable.class))
                 .stream()
                 .map(appointment -> modelMapper.map(appointment, AppointmentDto.class))
@@ -51,25 +55,29 @@ public class AppointmentController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         appointmentService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/deleteAll")
-    private ResponseEntity<Void> deleteAll() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteAll() {
         appointmentService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<AppointmentDto> edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public ResponseEntity<AppointmentDto> edit(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editAppointment(id, command);
         return ResponseEntity.ok(modelMapper.map(editedAppointment, AppointmentDto.class));
     }
 
     @PatchMapping("/{id}")
-    private ResponseEntity<AppointmentDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    public ResponseEntity<AppointmentDto> editPartially(@PathVariable("id") Long id, @RequestBody UpdateAppointementCommand command) {
         Appointment editedAppointment = appointmentService.editPartially(id, command);
         return ResponseEntity.ok(modelMapper.map(editedAppointment, AppointmentDto.class));
     }

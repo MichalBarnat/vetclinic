@@ -2,7 +2,7 @@ package com.powtorka.vetclinic.exceptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentCommand;
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

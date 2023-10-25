@@ -1,9 +1,9 @@
 package com.powtorka.vetclinic.mappings.doctor;
 
 import com.powtorka.vetclinic.model.doctor.*;
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.comand.CreateDoctorPageCommand;
-import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.CreateDoctorPageCommand;
+import com.powtorka.vetclinic.model.doctor.command.UpdateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.dto.DoctorDto;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.spi.MappingContext;

@@ -2,7 +2,7 @@ package com.powtorka.vetclinic.service;
 
 import com.powtorka.vetclinic.exceptions.DoctorNotFoundException;
 import com.powtorka.vetclinic.model.doctor.Doctor;
-import com.powtorka.vetclinic.model.doctor.comand.UpdateDoctorCommand;
+import com.powtorka.vetclinic.model.doctor.command.UpdateDoctorCommand;
 import com.powtorka.vetclinic.repository.DoctorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

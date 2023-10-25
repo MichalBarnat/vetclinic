@@ -1,3 +1,4 @@
 username,email,password,roles
 admin,admin@o2.pl,$2a$10$8X5t3TKrTJttZfQK3vg8B.ZqdGIzAOtI9j4k0fbTYiOWQcz.9u.a.,admin
 user,user@gmail.com,$2a$10$2fIqG5gGMDxj6EGuvwD9jeNRcgyIZImVvEiSQse2sSGFOUyJcGm7q,user
+mod,mod@vp.pl,$2a$10$2fIqG5gGMDxj6EGuvwD9jeNRcgyIZImVvEiSQse2sSGFOUyJcGm7q,mod

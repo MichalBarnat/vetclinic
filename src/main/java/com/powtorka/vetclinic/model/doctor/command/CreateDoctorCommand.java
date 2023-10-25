@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.doctor.comand;
+package com.powtorka.vetclinic.model.doctor.command;
 
 import lombok.*;
 
