@@ -1,10 +1,12 @@
 package com.powtorka.vetclinic.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
 import com.powtorka.vetclinic.model.doctor.command.CreateDoctorCommand;
 import com.powtorka.vetclinic.model.doctor.command.UpdateDoctorCommand;
+import com.powtorka.vetclinic.payload.request.LoginRequest;
 import liquibase.exception.LiquibaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -35,18 +37,88 @@ public class DoctorControllerIT {
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
     private final ModelMapper modelMapper;
+    private final String VALID_USER_TOKEN;
+    private final String VALID_MODERATOR_TOKEN;
+    private final String VALID_ADMIN_TOKEN;
+    private final String INVALID_TOKEN;
 
     @Autowired
-    public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) {
+    public DoctorControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper) throws Exception {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
         this.modelMapper = modelMapper;
+        this.VALID_USER_TOKEN = getValidUserToken();
+        this.VALID_MODERATOR_TOKEN = getValidModeratorToken();
+        this.VALID_ADMIN_TOKEN = getValidAdminToken();
+        this.INVALID_TOKEN = getInvalidToken();
+
     }
 
     @AfterEach
     void tearDown() throws LiquibaseException {
         databaseCleaner.cleanUp();
+    }
+
+    public String getValidUserToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("user", "pass");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken =  jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getValidModeratorToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("mod", "pass");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken =  jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getValidAdminToken() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("admin", "admin");
+
+        String requestBody = objectMapper.writeValueAsString(loginRequest);
+
+        String response = postman.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode jsonNode = objectMapper.readTree(response);
+
+        String accessToken =  jsonNode.get("accessToken").asText();
+
+        return "Bearer " + accessToken;
+    }
+
+    public String getInvalidToken() {
+        return "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiO11112VyIiwiaWF0IjoxNjk4MjIxMzI5LCJleHAiOjE2OTgzMDc3Mjl9.4xllda6hz8gpX8Ya2222fQaunQNAv0bLn7r3333Q0gQ";
     }
 
     @Test
@@ -62,17 +134,34 @@ public class DoctorControllerIT {
     }
 
     @Test
-    void shouldNotFindDoctorByIdWithWrongCredentials() throws Exception {
-        postman.perform(get("/doctor/1")
-                        .with(httpBasic("user", "wrongpass")))
+    void shouldNotFindDoctorByIdWithWrongToken() throws Exception {
+        postman.perform(get("/doctor/1").header("Authorization", INVALID_TOKEN))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
+                .andExpect(jsonPath("$.uri").value("/doctor/1"))
+                .andExpect(jsonPath("$.method").value("GET"));
     }
 
 
     @Test
     void shouldFindDoctorByIdWithRoleUSER() throws Exception {
-        postman.perform(get("/doctor/1").with(httpBasic("user", "pass")))
+        postman.perform(get("/doctor/1").header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Michał"))
+                .andExpect(jsonPath("$.surname").value("Barnat"))
+                .andExpect(jsonPath("$.speciality").value("Chirurg"))
+                .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
+                .andExpect(jsonPath("$.rate").value(99));
+    }
+
+    @Test
+    void shouldFindDoctorByIdWithRoleMODERATOR() throws Exception {
+        postman.perform(get("/doctor/1").header("Authorization", VALID_MODERATOR_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -85,7 +174,7 @@ public class DoctorControllerIT {
 
     @Test
     void shouldFindDoctorByIdWithRoleADMIN() throws Exception {
-        postman.perform(get("/doctor/1").with(httpBasic("admin", "admin")))
+        postman.perform(get("/doctor/1").header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -95,6 +184,8 @@ public class DoctorControllerIT {
                 .andExpect(jsonPath("$.animalSpeciality").value("Weterynarz chirurgiczny"))
                 .andExpect(jsonPath("$.rate").value(99));
     }
+
+
 
     @Test
     public void shouldNotSaveDoctorWithoutAuthorization() throws Exception {
