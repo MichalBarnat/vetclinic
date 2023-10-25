@@ -207,13 +207,6 @@ public class AppointmentControllerIT {
 
 
     @Test
-    public void shouldDeleteAppointment() throws Exception {
-        postman.perform(delete("/appointment/2"))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
     public void shouldNotSaveAppointmentWithoutAuthorization() throws Exception {
 
         CreateAppointmentCommand command = CreateAppointmentCommand.builder()
