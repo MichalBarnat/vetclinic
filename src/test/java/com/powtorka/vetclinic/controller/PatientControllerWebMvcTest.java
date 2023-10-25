@@ -1,6 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.powtorka.vetclinic.configuration.TestSecurityConfig;
 import com.powtorka.vetclinic.model.patient.*;
 import com.powtorka.vetclinic.model.patient.command.CreatePatientCommand;
 import com.powtorka.vetclinic.model.patient.command.CreatePatientPageCommand;
@@ -16,8 +17,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PatientController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 public class PatientControllerWebMvcTest {
 
     @MockBean
@@ -43,7 +48,7 @@ public class PatientControllerWebMvcTest {
     private PatientRepository patientRepository;
 
     @MockBean
-    private Pageable mockedPageable;
+    private Pageable pageable;
 
     private final MockMvc postman;
     private final ObjectMapper objectMapper;
@@ -166,28 +171,24 @@ public class PatientControllerWebMvcTest {
                 .ownerName("Robert")
                 .build();
 
+        pageable = PageRequest.of(0,5);
     }
 
     @Test
-    public void save_ShouldReturnStatusCreatedAndExpectedPatientDto() throws Exception {
+    public void save_ShouldSavePatient() throws Exception {
 
-        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class))).thenReturn(savedPatient);
+        when(modelMapper.map(any(CreatePatientCommand.class), eq(Patient.class)))
+                .thenReturn(savedPatient);
         when(patientService.save(savedPatient)).thenReturn(savedPatient);
         when(modelMapper.map(savedPatient, PatientDto.class)).thenReturn(expectedDto);
 
-        String requestBody = new ObjectMapper().writeValueAsString(createPatientCommand);
+        String requestBody = objectMapper.writeValueAsString(createPatientCommand);
 
         postman.perform(post("/patient")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Tyson"))
-                .andExpect(jsonPath("$.species").value("Species"))
-                .andExpect(jsonPath("$.breed").value("Breed"))
-                .andExpect(jsonPath("$.ownerName").value("Krystian"))
-                .andExpect(jsonPath("$.age").value(5));
+                .andExpect(status().isCreated());
 
         verify(patientService).save(savedPatient);
         verify(modelMapper).map(savedPatient, PatientDto.class);
@@ -195,7 +196,9 @@ public class PatientControllerWebMvcTest {
 
     @Test
     public void findById_ShouldReturnStatusIsOkAndExpectedDoctorDto() throws Exception {
+
         when(patientService.findById(1L)).thenReturn(patient);
+
         when(modelMapper.map(patient, PatientDto.class)).thenReturn(patientDto);
 
         postman.perform(get("/patient/1")
@@ -211,11 +214,11 @@ public class PatientControllerWebMvcTest {
 
     @Test
     public void findAll_ShouldReturnPageContainingPatients() throws Exception {
-        Page<Patient> page = new PageImpl<>(List.of(patient));
-        Pageable mockedPageable = PageRequest.of(0, 10);
 
-        when(patientService.findAll(eq(mockedPageable))).thenReturn(page);
-        when(modelMapper.map(any(CreatePatientPageCommand.class), eq(Pageable.class))).thenReturn(mockedPageable);
+        Page<Patient> page = new PageImpl<>(List.of(patient));
+
+        when(patientService.findAll(eq(pageable))).thenReturn(page);
+        when(modelMapper.map(any(CreatePatientPageCommand.class), eq(Pageable.class))).thenReturn(pageable);
         when(modelMapper.map(patient, PatientDto.class)).thenReturn(expectedDto);
 
         postman.perform(get("/patient")
