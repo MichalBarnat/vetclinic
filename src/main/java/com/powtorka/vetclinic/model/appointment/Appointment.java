@@ -4,7 +4,9 @@ package com.powtorka.vetclinic.model.appointment;
 import com.powtorka.vetclinic.model.doctor.Doctor;
 import com.powtorka.vetclinic.model.patient.Patient;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +26,7 @@ public class Appointment {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "patient_id", nullable = false)
     Patient patient;
-    //@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     LocalDateTime dateTime;
+    @Min(value = 0, message = "Price must be higher or equal to 0!")
     double price;
 }
