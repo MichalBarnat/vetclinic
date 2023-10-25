@@ -37,7 +37,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
                 .status("Unauthorized")
                 .message(authException.getMessage())
                 .uri(request.getRequestURI())
-                .message(request.getMethod())
+                .method(request.getMethod())
                 .build();
 
         objectMapper.writeValue(response.getOutputStream(), errorMessage);

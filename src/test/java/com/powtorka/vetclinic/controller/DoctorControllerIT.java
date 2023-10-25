@@ -55,8 +55,8 @@ public class DoctorControllerIT {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(401))
-                .andExpect(jsonPath("$.status").value("UNAUTHORIZED"))
-                .andExpect(jsonPath("$.message").value("Unauthorized : GET"))
+                .andExpect(jsonPath("$.status").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
                 .andExpect(jsonPath("$.uri").value("/doctor/1"))
                 .andExpect(jsonPath("$.method").value("GET"));
     }
