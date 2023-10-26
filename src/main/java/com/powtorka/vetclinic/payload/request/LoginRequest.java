@@ -2,10 +2,12 @@ package com.powtorka.vetclinic.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated
 public class LoginRequest {
     @NotBlank
     private String username;

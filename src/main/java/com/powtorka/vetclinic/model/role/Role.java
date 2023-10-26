@@ -2,12 +2,14 @@ package com.powtorka.vetclinic.model.role;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
+@Generated
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

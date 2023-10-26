@@ -3,9 +3,11 @@ package com.powtorka.vetclinic.payload.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Generated;
 
 import java.util.Set;
 
+@Generated
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)

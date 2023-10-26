@@ -1,7 +1,10 @@
 package com.powtorka.vetclinic.payload.response;
 
+import lombok.Generated;
+
 import java.util.List;
 
+@Generated
 public class JwtResponse {
     private String token;
     private String type = "Bearer";

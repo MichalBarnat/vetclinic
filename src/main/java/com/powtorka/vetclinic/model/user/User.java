@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -18,6 +19,7 @@ uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
 @NoArgsConstructor
+@Generated
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

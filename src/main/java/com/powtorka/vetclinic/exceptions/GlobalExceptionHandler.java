@@ -6,8 +6,6 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -101,18 +99,6 @@ public class GlobalExceptionHandler {
                 .uri(request.getRequestURI())
                 .method(request.getMethod())
                 .build(), CONFLICT);
-    }
-
-    @ExceptionHandler(UserEntityNotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleUserEntityNotFoundException(UserEntityNotFoundException ex, HttpServletRequest request) {
-        return new ResponseEntity<>(ErrorMessage.builder()
-                .dateTime(LocalDateTime.now())
-                .code(NOT_FOUND.value())
-                .status(NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
-                .uri(request.getRequestURI())
-                .method(request.getMethod())
-                .build(), NOT_FOUND);
     }
 
 }

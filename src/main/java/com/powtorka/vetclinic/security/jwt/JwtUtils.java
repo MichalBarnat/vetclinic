@@ -4,6 +4,7 @@ import com.powtorka.vetclinic.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,14 +50,14 @@ public class JwtUtils {
         try {
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
             return true;
-        } catch (MalformedJwtException e) {
-            LOGGER.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             LOGGER.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
             LOGGER.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             LOGGER.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (SignatureException e) {
+            LOGGER.error("Invalid JWT token: {}", e.getMessage());
         }
 
         return false;

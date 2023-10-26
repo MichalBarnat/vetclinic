@@ -1,5 +1,8 @@
 package com.powtorka.vetclinic.payload.response;
 
+import lombok.Generated;
+
+@Generated
 public class MessageResponse {
     private String message;
 
