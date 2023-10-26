@@ -10,7 +10,7 @@ public class VetclinicApplication {
 		SpringApplication.run(VetclinicApplication.class, args);
 	}
 
-	// TODO projekt aplikacji
+	// projekt aplikacji
 	// w modelu znajda sie 3 encje - Doctor, Patient, Appointment
 	// Doctor ma pola id, name, surname, specialty, animalSpecialty, email, rate, PESEL
 	// Patient ma pola id, name, species, breed, ownerName, ownerEmail, age
@@ -68,7 +68,7 @@ public class VetclinicApplication {
 
 	// bonus jakbyscie sie nudzili: zaimplementowac Swagger//
 
-	// TODO 13.10.2023
+	// 13.10.2023
 	// Zaimplementuj Spring Basic Security w projekcie oraz model Usera, ktory moze byc zarowno zwyklym uzytkownikiem,
 	// jak i administratorem. Administrator ma pelne uprawnienia w aplikacji (dostep do kontrolerow), natomiast user moze dokonac tylko
 	// i wylacznie odczytu (nie moze nic modyfikowac ani usuwac). Wykorzystja do tego system Roles and Privileges.

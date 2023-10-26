@@ -61,7 +61,7 @@ public class AppointmentService {
                     appointmentToEdit.setDateTime(command.getDateTime());
                     appointmentToEdit.setPrice(command.getPrice());
                     return appointmentToEdit;
-                }).orElseThrow(() -> new AppointmentNotFoundException(String.format("Appointment with this id not found!")));
+                }).orElseThrow(() -> new AppointmentNotFoundException(String.format("Appointment with id: %s not found!", id)));
     }
 
     @Transactional

@@ -31,12 +31,12 @@ public class UserDetailsImpl implements UserDetails {
 
         authorities.addAll(user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList()));
+                .toList());
 
         // Add permissions to authorities directly from the user
         authorities.addAll(user.getPermissions().stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.getName().name()))
-                .collect(Collectors.toList()));
+                .toList());
 
         return new UserDetailsImpl(
                 user.getId(),

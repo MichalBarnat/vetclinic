@@ -51,7 +51,7 @@ public class PatientController {
         Pageable pageable = modelMapper.map(command, Pageable.class);
         Page<Patient> patientPage = patientService.findAll(pageable);
 
-        if (patientPage == null || patientPage.getContent() == null) {
+        if (patientPage == null ) {
             return ResponseEntity.ok(Collections.emptyList());
         }
 

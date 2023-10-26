@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.controller;
 
+import com.powtorka.vetclinic.exceptions.RoleNotFoundException;
 import com.powtorka.vetclinic.model.security.permission.EPermission;
 import com.powtorka.vetclinic.model.security.permission.Permission;
 import com.powtorka.vetclinic.model.security.role.ERole;
@@ -54,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -107,19 +108,19 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(RoleNotFoundException::new);
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(RoleNotFoundException::new);
                         roles.add(adminRole);
                         break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(RoleNotFoundException::new);
                         roles.add(modRole);
                         break;
                     case "doctor_admin":

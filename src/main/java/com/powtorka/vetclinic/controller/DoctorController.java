@@ -94,14 +94,14 @@ public class DoctorController {
     @GetMapping("/testRead")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
     public ResponseEntity<String> testRead() {
-        String hello = "hello";
+        String hello = "hello READ TEST";
         return ResponseEntity.ok(hello);
     }
 
     @GetMapping("/testWrite")
     @PreAuthorize("hasAuthority('DOCTOR_WRITE')")
     public ResponseEntity<String> testWrite() {
-        String hello = "hello";
+        String hello = "hello WRITE TEST";
         return ResponseEntity.ok(hello);
     }
 
