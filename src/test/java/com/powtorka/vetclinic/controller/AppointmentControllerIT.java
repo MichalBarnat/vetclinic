@@ -151,7 +151,7 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorId").value(1))
                 .andExpect(jsonPath("$.patientId").value(1))
-                //.andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.934080200"))
+                .andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.93"))
                 .andExpect(jsonPath("$.price").value(105));
     }
 
@@ -163,7 +163,7 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorId").value(1))
                 .andExpect(jsonPath("$.patientId").value(1))
-                //.andExpect(jsonPath("$.dateTime").value(LocalDateTime.parse("2023-08-31T20:26:03.930000000")))
+                .andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.93"))
                 .andExpect(jsonPath("$.price").value(105));
     }
 
@@ -175,7 +175,7 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.doctorId").value(1))
                 .andExpect(jsonPath("$.patientId").value(1))
-                //.andExpect(jsonPath("$.dateTime").value(LocalDateTime.parse("2023-08-31T20:26:03.930000000")))
+                .andExpect(jsonPath("$.dateTime").value("2023-08-31T20:26:03.93"))
                 .andExpect(jsonPath("$.price").value(105));
     }
 
