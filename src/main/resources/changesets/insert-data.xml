@@ -33,8 +33,8 @@
         <loadData encoding="UTF-8" file="changesets/data/users.csv" quotchar="&quot;" separator="," tableName="users">
             <column header="id" name="id"/>
             <column header="username" name="username"/>
+            <column header="email" name="email"/>
             <column header="password" name="password"/>
-            <column header="role" name="role"/>
         </loadData>
         <loadData encoding="UTF-8" file="changesets/data/roles.csv" quotchar="&quot;" separator="," tableName="roles">
             <column header="id" name="id"/>

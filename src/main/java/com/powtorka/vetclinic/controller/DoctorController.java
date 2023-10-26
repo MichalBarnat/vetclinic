@@ -91,9 +91,16 @@ public class DoctorController {
         return ResponseEntity.ok(topRatedDoctors);
     }
 
-    @GetMapping("/test")
+    @GetMapping("/testRead")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    public ResponseEntity<String> test() {
+    public ResponseEntity<String> testRead() {
+        String hello = "hello";
+        return ResponseEntity.ok(hello);
+    }
+
+    @GetMapping("/testWrite")
+    @PreAuthorize("hasAuthority('DOCTOR_WRITE')")
+    public ResponseEntity<String> testWrite() {
         String hello = "hello";
         return ResponseEntity.ok(hello);
     }
