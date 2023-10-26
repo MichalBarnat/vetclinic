@@ -1,12 +1,15 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.model.role.ERole;
-import com.powtorka.vetclinic.model.role.Role;
-import com.powtorka.vetclinic.model.user.User;
+import com.powtorka.vetclinic.model.security.permission.EPermission;
+import com.powtorka.vetclinic.model.security.permission.Permission;
+import com.powtorka.vetclinic.model.security.role.ERole;
+import com.powtorka.vetclinic.model.security.role.Role;
+import com.powtorka.vetclinic.model.security.user.User;
 import com.powtorka.vetclinic.payload.request.LoginRequest;
 import com.powtorka.vetclinic.payload.request.SignupRequest;
 import com.powtorka.vetclinic.payload.response.JwtResponse;
 import com.powtorka.vetclinic.payload.response.MessageResponse;
+import com.powtorka.vetclinic.repository.PermissionRepository;
 import com.powtorka.vetclinic.repository.RoleRepository;
 import com.powtorka.vetclinic.repository.UserRepository;
 import com.powtorka.vetclinic.security.jwt.JwtUtils;
@@ -24,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,14 +39,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
     }
@@ -58,16 +63,25 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+
+        List<String> roles = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
+
+        userDetails.getAuthorities().forEach(authority -> {
+            if (authority.getAuthority().startsWith("ROLE_")) {
+                roles.add(authority.getAuthority());
+            } else {
+                permissions.add(authority.getAuthority());
+            }
+        });
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles, permissions));
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
@@ -88,7 +102,7 @@ public class AuthController {
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRole();
+        Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
@@ -102,13 +116,26 @@ public class AuthController {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-
                         break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-
+                        break;
+                    case "doctor_admin":
+                        Role doctorAdminRole = roleRepository.findByName(ERole.ROLE_DOCTOR_ADMIN)
+                                .orElseThrow();
+                        roles.add(doctorAdminRole);
+                        break;
+                    case "patient_admin":
+                        Role patientAdminRole = roleRepository.findByName(ERole.ROLE_PATIENT_ADMIN)
+                                .orElseThrow();
+                        roles.add(patientAdminRole);
+                        break;
+                    case "appointment_admin":
+                        Role appointmentAdminRole = roleRepository.findByName(ERole.ROLE_APPOINTMENT_ADMIN)
+                                .orElseThrow();
+                        roles.add(appointmentAdminRole);
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -118,9 +145,22 @@ public class AuthController {
             });
         }
 
+        Set<String> strPermissions = signUpRequest.getPermissions();
+        Set<Permission> permissions = new HashSet<>();
+
+        if (strPermissions != null) {
+            strPermissions.forEach(permissionName -> {
+                Permission permission = permissionRepository.findByName(EPermission.valueOf(permissionName))
+                        .orElseThrow(() -> new RuntimeException("Error: Permission is not found."));
+                permissions.add(permission);
+            });
+        }
+
+        user.setPermissions(permissions);
         user.setRoles(roles);
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
 }

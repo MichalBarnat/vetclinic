@@ -1,12 +1,13 @@
 package com.powtorka.vetclinic.security.services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.powtorka.vetclinic.model.user.User;
+import com.powtorka.vetclinic.model.security.user.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +26,17 @@ public class UserDetailsImpl implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        authorities.addAll(user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        // Add permissions to authorities directly from the user
+        authorities.addAll(user.getPermissions().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getName().name()))
+                .collect(Collectors.toList()));
 
         return new UserDetailsImpl(
                 user.getId(),

@@ -33,17 +33,26 @@
         <loadData encoding="UTF-8" file="changesets/data/users.csv" quotchar="&quot;" separator="," tableName="users">
             <column header="id" name="id"/>
             <column header="username" name="username"/>
+            <column header="email" name="email"/>
             <column header="password" name="password"/>
-            <column header="role" name="role"/>
         </loadData>
         <loadData encoding="UTF-8" file="changesets/data/roles.csv" quotchar="&quot;" separator="," tableName="roles">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
         </loadData>
-        <loadData encoding="UTF-8" file="changesets/data/user_roles.csv" quotchar="&quot;" separator="," tableName="user_roles">
+        <loadData encoding="UTF-8" file="changesets/data/users_roles.csv" quotchar="&quot;" separator="," tableName="users_roles">
             <column header="id" name="id"/>
             <column header="user_id" name="user_id"/>
             <column header="role_id" name="role_id"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/permissions.csv" quotchar="&quot;" separator="," tableName="permissions">
+            <column header="id" name="id"/>
+            <column header="name" name="name"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/users_permissions.csv" quotchar="&quot;" separator="," tableName="users_permissions">
+            <column header="id" name="id"/>
+            <column header="user_id" name="user_id"/>
+            <column header="permission_id" name="permission_id"/>
         </loadData>
     </changeSet>
 

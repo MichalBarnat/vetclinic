@@ -1,4 +1,4 @@
-package com.powtorka.vetclinic.model.role;
+package com.powtorka.vetclinic.model.security.role;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,7 +16,7 @@ public class Role {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 30)
     private ERole name;
 
     public Role(ERole name) {

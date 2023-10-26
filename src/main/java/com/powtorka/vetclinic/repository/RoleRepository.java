@@ -1,13 +1,12 @@
 package com.powtorka.vetclinic.repository;
 
-import com.powtorka.vetclinic.model.role.ERole;
-import com.powtorka.vetclinic.model.role.Role;
+import com.powtorka.vetclinic.model.security.role.ERole;
+import com.powtorka.vetclinic.model.security.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByName(ERole name);
 }

@@ -4,7 +4,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet author="krystian" id="2">
-        <loadData encoding="UTF-8" file="data/patients.csv" quotchar="&quot;" separator="," tableName="patient">
+        <loadData encoding="UTF-8" file="changesets/data/patients.csv" quotchar="&quot;" separator="," tableName="patient">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
             <column header="species" name="species"/>
@@ -13,7 +13,7 @@
             <column header="owner_email" name="owner_email"/>
             <column header="age" name="age"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
+        <loadData encoding="UTF-8" file="changesets/data/doctors.csv" quotchar="&quot;" separator="," tableName="doctor">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
             <column header="surname" name="surname"/>
@@ -23,27 +23,36 @@
             <column header="rate" name="rate"/>
             <column header="pesel" name="pesel"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/appointments.csv" quotchar="&quot;" separator="," tableName="appointment">
+        <loadData encoding="UTF-8" file="changesets/data/appointments.csv" quotchar="&quot;" separator="," tableName="appointment">
             <column header="id" name="id"/>
             <column header="doctor_id" name="doctor_id"/>
             <column header="patient_id" name="patient_id"/>
             <column header="date_time" name="date_time"/>
             <column header="price" name="price"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/users.csv" quotchar="&quot;" separator="," tableName="users">
+        <loadData encoding="UTF-8" file="changesets/data/users.csv" quotchar="&quot;" separator="," tableName="users">
             <column header="id" name="id"/>
             <column header="username" name="username"/>
+            <column header="email" name="email"/>
             <column header="password" name="password"/>
-            <column header="role" name="role"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/roles.csv" quotchar="&quot;" separator="," tableName="roles">
+        <loadData encoding="UTF-8" file="changesets/data/roles.csv" quotchar="&quot;" separator="," tableName="roles">
             <column header="id" name="id"/>
             <column header="name" name="name"/>
         </loadData>
-        <loadData encoding="UTF-8" file="data/user_roles.csv" quotchar="&quot;" separator="," tableName="user_roles">
+        <loadData encoding="UTF-8" file="changesets/data/users_roles.csv" quotchar="&quot;" separator="," tableName="users_roles">
             <column header="id" name="id"/>
             <column header="user_id" name="user_id"/>
             <column header="role_id" name="role_id"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/permissions.csv" quotchar="&quot;" separator="," tableName="permissions">
+            <column header="id" name="id"/>
+            <column header="name" name="name"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/users_permissions.csv" quotchar="&quot;" separator="," tableName="users_permissions">
+            <column header="id" name="id"/>
+            <column header="user_id" name="user_id"/>
+            <column header="permission_id" name="permission_id"/>
         </loadData>
     </changeSet>
 
