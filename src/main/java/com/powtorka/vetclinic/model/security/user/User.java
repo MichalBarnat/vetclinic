@@ -1,6 +1,6 @@
-package com.powtorka.vetclinic.model.user;
+package com.powtorka.vetclinic.model.security.user;
 
-import com.powtorka.vetclinic.model.role.Role;
+import com.powtorka.vetclinic.model.security.role.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,25 +1,19 @@
-package com.powtorka.vetclinic.model.role;
+package com.powtorka.vetclinic.model.security.permission;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "permissions")
 @Data
-@NoArgsConstructor
 @Generated
-public class Role {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private ERole name;
-
-    public Role(ERole name) {
-        this.name = name;
-    }
+    private EPermission name;
 }

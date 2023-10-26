@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.repository;
 
-import com.powtorka.vetclinic.model.user.User;
+import com.powtorka.vetclinic.model.security.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

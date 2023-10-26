@@ -1,6 +1,6 @@
 package com.powtorka.vetclinic.security.services;
 
-import com.powtorka.vetclinic.model.user.User;
+import com.powtorka.vetclinic.model.security.user.User;
 import com.powtorka.vetclinic.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -20,6 +20,8 @@ public class SignupRequest {
 
     private Set<String> role;
 
+    private Set<String> permission;
+
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
@@ -54,5 +56,13 @@ public class SignupRequest {
 
     public void setRole(Set<String> role) {
         this.role = role;
+    }
+
+    public Set<String> getPermissions() {
+        return permission;
+    }
+
+    public void setPermissions(Set<String> permissions) {
+        this.permission = permissions;
     }
 }

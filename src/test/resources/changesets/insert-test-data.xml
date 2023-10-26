@@ -45,6 +45,15 @@
             <column header="user_id" name="user_id"/>
             <column header="role_id" name="role_id"/>
         </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/permissions.csv" quotchar="&quot;" separator="," tableName="permissions">
+            <column header="id" name="id"/>
+            <column header="name" name="name"/>
+        </loadData>
+        <loadData encoding="UTF-8" file="changesets/data/roles_permissions.csv" quotchar="&quot;" separator="," tableName="roles_permissions">
+            <column header="id" name="id"/>
+            <column header="role_id" name="role_id"/>
+            <column header="permissions_id" name="permissions_id"/>
+        </loadData>
     </changeSet>
 
 </databaseChangeLog>

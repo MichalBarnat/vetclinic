@@ -1,12 +1,15 @@
 package com.powtorka.vetclinic.controller;
 
-import com.powtorka.vetclinic.model.role.ERole;
-import com.powtorka.vetclinic.model.role.Role;
-import com.powtorka.vetclinic.model.user.User;
+import com.powtorka.vetclinic.model.security.permission.EPermission;
+import com.powtorka.vetclinic.model.security.permission.Permission;
+import com.powtorka.vetclinic.model.security.role.ERole;
+import com.powtorka.vetclinic.model.security.role.Role;
+import com.powtorka.vetclinic.model.security.user.User;
 import com.powtorka.vetclinic.payload.request.LoginRequest;
 import com.powtorka.vetclinic.payload.request.SignupRequest;
 import com.powtorka.vetclinic.payload.response.JwtResponse;
 import com.powtorka.vetclinic.payload.response.MessageResponse;
+import com.powtorka.vetclinic.repository.PermissionRepository;
 import com.powtorka.vetclinic.repository.RoleRepository;
 import com.powtorka.vetclinic.repository.UserRepository;
 import com.powtorka.vetclinic.security.jwt.JwtUtils;
@@ -36,14 +39,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
     }
@@ -102,13 +107,23 @@ public class AuthController {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-
                         break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-
+                        break;
+                    case "doctor_admin":
+                        Role doctorAdminRole = roleRepository.findByName(ERole.ROLE_DOCTOR_ADMIN)
+                                .orElseThrow();
+                        break;
+                    case "patient_admin":
+                        Role patientAdminRole = roleRepository.findByName(ERole.ROLE_PATIENT_ADMIN)
+                                .orElseThrow();
+                        break;
+                    case "appointment_admin":
+                        Role appointmentAdminRole = roleRepository.findByName(ERole.ROLE_APPOINTMENT_ADMIN)
+                                .orElseThrow();
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -117,6 +132,53 @@ public class AuthController {
                 }
             });
         }
+
+        Set<String> strPermissions = signUpRequest.getPermissions();
+        Set<Permission> permissions = new HashSet<>();
+
+        if (strPermissions != null) {
+            strPermissions.forEach(permissionName -> {
+                switch (permissionName) {
+                    case "DOCTOR_READ":
+                        Permission doctorReadPermission = permissionRepository.findByName(EPermission.DOCTOR_READ)
+                                .orElseThrow();
+                        permissions.add(doctorReadPermission);
+                        break;
+                    case "DOCTOR_WRITE":
+                        Permission doctorWritePermission = permissionRepository.findByName(EPermission.DOCTOR_WRITE)
+                                .orElseThrow();
+                        permissions.add(doctorWritePermission);
+                        break;
+                    case "PATIENT_READ":
+                        Permission patientReadPermission = permissionRepository.findByName(EPermission.PATIENT_READ)
+                                .orElseThrow();
+                        permissions.add(patientReadPermission);
+                        break;
+                    case "PATIENT_WRITE":
+                        Permission patientWritePermission = permissionRepository.findByName(EPermission.PATIENT_WRITE)
+                                .orElseThrow();
+                        permissions.add(patientWritePermission);
+                        break;
+                    case "APPOINTMENT_READ":
+                        Permission appointmentReadPermission = permissionRepository.findByName(EPermission.APPOINTMENT_READ)
+                                .orElseThrow();
+                        permissions.add(appointmentReadPermission);
+                        break;
+                    case "APPOINTMENT_WRITE":
+                        Permission appointmentWritePermission = permissionRepository.findByName(EPermission.APPOINTMENT_WRITE)
+                                .orElseThrow();
+                        permissions.add(appointmentWritePermission);
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+
+        roles.forEach(role -> {
+            role.setPermissions(permissions);
+            roleRepository.save(role);
+        });
 
         user.setRoles(roles);
         userRepository.save(user);
