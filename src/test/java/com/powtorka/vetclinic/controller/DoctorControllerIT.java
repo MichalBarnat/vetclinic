@@ -1890,4 +1890,23 @@ public class DoctorControllerIT {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    @WithMockUser(authorities = {"DOCTOR_READ"})
+    public void shouldHaveAccessToTestDoctorReadPage() throws Exception {
+        postman.perform(get("/doctor/testRead"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("hello READ TEST"));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"DOCTOR_WRITE"})
+    public void shouldHaveAccessToTestDoctorWritePage() throws Exception {
+        postman.perform(get("/doctor/testWrite"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("hello WRITE TEST"));
+    }
+
+
 }
