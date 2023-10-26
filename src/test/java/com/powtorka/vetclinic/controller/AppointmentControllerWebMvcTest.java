@@ -1,6 +1,7 @@
 package com.powtorka.vetclinic.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.powtorka.vetclinic.configuration.TestSecurityConfig;
 import com.powtorka.vetclinic.model.appointment.*;
 import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentPageCommand;
@@ -13,7 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import com.powtorka.vetclinic.model.doctor.*;
@@ -35,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(AppointmentController.class)
+@Import(TestSecurityConfig.class)
+@ActiveProfiles("test")
 public class AppointmentControllerWebMvcTest {
 
     @MockBean
@@ -211,7 +216,7 @@ public class AppointmentControllerWebMvcTest {
     }
 
     @Test
-    public void findById_ShouldReturnStatusOkAndExpectedApointmentDto() throws Exception {
+    public void findById_ShouldReturnStatusOkAndExpectedAppointmentDto() throws Exception {
 
         when(appointmentService.findById(1L)).thenReturn(appointment);
 

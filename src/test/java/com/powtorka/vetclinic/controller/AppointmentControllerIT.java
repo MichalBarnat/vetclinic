@@ -4,22 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.powtorka.vetclinic.DatabaseCleaner;
 import com.powtorka.vetclinic.VetclinicApplication;
-import com.powtorka.vetclinic.model.appointment.Appointment;
 import com.powtorka.vetclinic.model.appointment.command.CreateAppointmentCommand;
 import com.powtorka.vetclinic.model.appointment.command.UpdateAppointementCommand;
-import com.powtorka.vetclinic.model.doctor.command.CreateDoctorCommand;
-import com.powtorka.vetclinic.model.doctor.command.UpdateDoctorCommand;
 import com.powtorka.vetclinic.payload.request.LoginRequest;
-import com.powtorka.vetclinic.service.DoctorService;
-import com.powtorka.vetclinic.service.PatientService;
 import liquibase.exception.LiquibaseException;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -30,12 +21,10 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 
-import static com.powtorka.vetclinic.security.services.UserDetailsImpl.build;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
 @SpringBootTest(classes = VetclinicApplication.class)
 @AutoConfigureMockMvc
@@ -45,9 +34,6 @@ public class AppointmentControllerIT {
     private final MockMvc postman;
     private final ObjectMapper objectMapper;
     private final DatabaseCleaner databaseCleaner;
-    private final ModelMapper modelMapper;
-    private final DoctorService doctorService;
-    private final PatientService patientService;
     private final String VALID_USER_TOKEN;
     private final String VALID_MODERATOR_TOKEN;
     private final String VALID_ADMIN_TOKEN;
@@ -59,18 +45,14 @@ public class AppointmentControllerIT {
     }
 
     @Autowired
-    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner, ModelMapper modelMapper, MockMvc mockMvc, DoctorService doctorService, PatientService patientService) throws Exception {
+    public AppointmentControllerIT(MockMvc postman, ObjectMapper objectMapper, DatabaseCleaner databaseCleaner) throws Exception {
         this.postman = postman;
         this.objectMapper = objectMapper;
         this.databaseCleaner = databaseCleaner;
-        this.modelMapper = modelMapper;
-        this.doctorService = doctorService;
-        this.patientService = patientService;
         this.VALID_USER_TOKEN = getValidUserToken();
         this.VALID_MODERATOR_TOKEN = getValidModeratorToken();
         this.VALID_ADMIN_TOKEN = getValidAdminToken();
         this.INVALID_TOKEN = getInvalidToken();
-        MockitoAnnotations.openMocks(this);
     }
 
     public String getValidUserToken() throws Exception {
@@ -159,14 +141,6 @@ public class AppointmentControllerIT {
                 .andExpect(jsonPath("$.message").value("Full authentication is required to access this resource"))
                 .andExpect(jsonPath("$.uri").value("/appointment/1"))
                 .andExpect(jsonPath("$.method").value("GET"));
-    }
-
-    @Test
-    void shouldNotFindByIdWithWrongCredentials() throws Exception {
-        postman.perform(get("/appointment/1")
-                        .with(httpBasic("user", "wrongpass")))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -269,6 +243,22 @@ public class AppointmentControllerIT {
 
         String requestBody = objectMapper.writeValueAsString(command);
 
+
+        postman.perform(get("/appointment/21").header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404))
+                .andExpect(jsonPath("$.status").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Appointment with id 21 not found!"))
+                .andExpect(jsonPath("$.uri").value("/appointment/21"))
+                .andExpect(jsonPath("$.method").value("GET"));
+
+        postman.perform(post("/appointment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", VALID_USER_TOKEN))
+                .andDo(print())
+                .andExpect(status().isForbidden());
 
         postman.perform(get("/appointment/21").header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
@@ -909,7 +899,7 @@ public class AppointmentControllerIT {
     }
 
     @Test
-    public void shouldNotDeleteAppointmentWithRoleADMIN() throws Exception {
+    public void shouldDeleteAppointmentWithRoleADMIN() throws Exception {
 
         postman.perform(delete("/appointment/1")
                         .header("Authorization", VALID_ADMIN_TOKEN))
@@ -1187,7 +1177,7 @@ public class AppointmentControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfAppointmentsSortedByPriceInDescentingOrderWithRoleUSER() throws Exception {
+    public void shouldGiveListOfAppointmentsSortedByPriceInDescendingOrderWithRoleUSER() throws Exception {
         postman.perform(get("/appointment?sortDirection=DESC&sortBy=price")
                         .header("Authorization", VALID_USER_TOKEN))
                 .andDo(print())
@@ -1200,7 +1190,7 @@ public class AppointmentControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfAppointmentsSortedByPriceInDescentingOrderWithRoleMODERATOR() throws Exception {
+    public void shouldGiveListOfAppointmentsSortedByPriceInDescendingOrderWithRoleMODERATOR() throws Exception {
         postman.perform(get("/appointment?sortDirection=DESC&sortBy=price")
                         .header("Authorization", VALID_MODERATOR_TOKEN))
                 .andDo(print())
@@ -1213,7 +1203,7 @@ public class AppointmentControllerIT {
     }
 
     @Test
-    public void shouldGiveListOfAppointmentsSortedByPriceInDescentingOrderWithRoleADMIN() throws Exception {
+    public void shouldGiveListOfAppointmentsSortedByPriceInDescendingOrderWithRoleADMIN() throws Exception {
         postman.perform(get("/appointment?sortDirection=DESC&sortBy=price")
                         .header("Authorization", VALID_ADMIN_TOKEN))
                 .andDo(print())
