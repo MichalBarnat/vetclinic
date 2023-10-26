@@ -29,17 +29,14 @@ public class UserDetailsImpl implements UserDetails {
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // Add roles to authorities
         authorities.addAll(user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList()));
 
-        // Add permissions to authorities
-        user.getRoles().forEach(role -> {
-            authorities.addAll(role.getPermissions().stream()
-                    .map(permission -> new SimpleGrantedAuthority(permission.getName().name()))
-                    .collect(Collectors.toList()));
-        });
+        // Add permissions to authorities directly from the user
+        authorities.addAll(user.getPermissions().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getName().name()))
+                .collect(Collectors.toList()));
 
         return new UserDetailsImpl(
                 user.getId(),

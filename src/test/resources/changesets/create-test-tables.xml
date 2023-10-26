@@ -63,7 +63,7 @@
         </createTable>
     </changeSet>
     <changeSet author="Michal" id="1642024192330-6">
-        <createTable tableName="user_roles">
+        <createTable tableName="users_roles">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -80,12 +80,16 @@
         </createTable>
     </changeSet>
     <changeSet author="Michal" id="1642024192330-8">
-        <createTable tableName="roles_permissions">
+        <createTable tableName="users_permissions">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="role_id" type="INT"/>
-            <column name="permission_id" type="INT"/>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 </databaseChangeLog>

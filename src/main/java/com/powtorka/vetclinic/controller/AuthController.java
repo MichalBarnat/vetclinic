@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -151,48 +150,13 @@ public class AuthController {
 
         if (strPermissions != null) {
             strPermissions.forEach(permissionName -> {
-                switch (permissionName) {
-                    case "DOCTOR_READ":
-                        Permission doctorReadPermission = permissionRepository.findByName(EPermission.DOCTOR_READ)
-                                .orElseThrow();
-                        permissions.add(doctorReadPermission);
-                        break;
-                    case "DOCTOR_WRITE":
-                        Permission doctorWritePermission = permissionRepository.findByName(EPermission.DOCTOR_WRITE)
-                                .orElseThrow();
-                        permissions.add(doctorWritePermission);
-                        break;
-                    case "PATIENT_READ":
-                        Permission patientReadPermission = permissionRepository.findByName(EPermission.PATIENT_READ)
-                                .orElseThrow();
-                        permissions.add(patientReadPermission);
-                        break;
-                    case "PATIENT_WRITE":
-                        Permission patientWritePermission = permissionRepository.findByName(EPermission.PATIENT_WRITE)
-                                .orElseThrow();
-                        permissions.add(patientWritePermission);
-                        break;
-                    case "APPOINTMENT_READ":
-                        Permission appointmentReadPermission = permissionRepository.findByName(EPermission.APPOINTMENT_READ)
-                                .orElseThrow();
-                        permissions.add(appointmentReadPermission);
-                        break;
-                    case "APPOINTMENT_WRITE":
-                        Permission appointmentWritePermission = permissionRepository.findByName(EPermission.APPOINTMENT_WRITE)
-                                .orElseThrow();
-                        permissions.add(appointmentWritePermission);
-                        break;
-                    default:
-                        break;
-                }
+                Permission permission = permissionRepository.findByName(EPermission.valueOf(permissionName))
+                        .orElseThrow(() -> new RuntimeException("Error: Permission is not found."));
+                permissions.add(permission);
             });
         }
 
-        roles.forEach(role -> {
-            role.setPermissions(permissions);
-            roleRepository.save(role);
-        });
-
+        user.setPermissions(permissions);
         user.setRoles(roles);
         userRepository.save(user);
 

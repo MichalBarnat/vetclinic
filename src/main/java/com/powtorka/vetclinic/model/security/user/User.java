@@ -1,5 +1,6 @@
 package com.powtorka.vetclinic.model.security.user;
 
+import com.powtorka.vetclinic.model.security.permission.Permission;
 import com.powtorka.vetclinic.model.security.role.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -36,10 +37,16 @@ public class User {
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
+    @JoinTable(name = "users_roles",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns =  @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "users_permissions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> permissions = new HashSet<>();
 
     public User(String username, String email, String password) {
         this.username = username;
