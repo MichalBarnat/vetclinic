@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,16 +64,25 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+
+        List<String> roles = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
+
+        userDetails.getAuthorities().forEach(authority -> {
+            if (authority.getAuthority().startsWith("ROLE_")) {
+                roles.add(authority.getAuthority());
+            } else {
+                permissions.add(authority.getAuthority());
+            }
+        });
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles, permissions));
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
@@ -93,7 +103,7 @@ public class AuthController {
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRole();
+        Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
@@ -116,14 +126,17 @@ public class AuthController {
                     case "doctor_admin":
                         Role doctorAdminRole = roleRepository.findByName(ERole.ROLE_DOCTOR_ADMIN)
                                 .orElseThrow();
+                        roles.add(doctorAdminRole);
                         break;
                     case "patient_admin":
                         Role patientAdminRole = roleRepository.findByName(ERole.ROLE_PATIENT_ADMIN)
                                 .orElseThrow();
+                        roles.add(patientAdminRole);
                         break;
                     case "appointment_admin":
                         Role appointmentAdminRole = roleRepository.findByName(ERole.ROLE_APPOINTMENT_ADMIN)
                                 .orElseThrow();
+                        roles.add(appointmentAdminRole);
                         break;
                     default:
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -185,4 +198,5 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
+
 }
